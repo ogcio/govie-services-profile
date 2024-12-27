@@ -1,0 +1,6 @@
+dist
+node_modules
+results.xml
+.env
+.env.*
+!.env.sample

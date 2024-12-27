@@ -1,0 +1,2 @@
+npm run check:formatting
+npm run check:linting
