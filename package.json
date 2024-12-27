@@ -12,7 +12,10 @@
     "check:linting": "biome lint",
     "fix:linting": "biome lint --write",
     "prepare": "husky || true",
-    "test": "NODE_OPTIONS='--import tsx' vitest run --reporter junit --reporter default --coverage --outputFile=results.xml"
+    "test": "NODE_OPTIONS='--import tsx' vitest run --reporter junit --reporter default --coverage --outputFile=results.xml",
+    "migrate": "node db/create-db.js && db-migrate --migrations-dir db/migrations --config db/database.json up",
+    "migrate:down": "db-migrate --migrations-dir db/migrations --config db/database.json down",
+    "migrate:create": "db-migrate --migrations-dir db/migrations --config db/database.json create $npm_config_file --sql-file"
   },
   "dependencies": {
     "@fastify/autoload": "^6.0.2",
