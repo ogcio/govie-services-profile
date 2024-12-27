@@ -6,11 +6,18 @@ import fp from "fastify-plugin";
 import buildServer from "./server.js";
 
 export async function initializeServer() {
-  const server = fastify(
-    getLoggingConfiguration({
+  const server = fastify({
+    ...getLoggingConfiguration({
       additionalLoggerConfigs: { level: process.env.LOG_LEVEL ?? "debug" },
     }),
-  ).withTypeProvider<TypeBoxTypeProvider>();
+    ajv: {
+      customOptions: {
+        coerceTypes: false,
+        removeAdditional: "all",
+      },
+    },
+  }).withTypeProvider<TypeBoxTypeProvider>();
+
   server.register(fp(buildServer));
   await server.ready();
   await server.swagger();

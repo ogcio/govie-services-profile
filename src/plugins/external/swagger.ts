@@ -13,8 +13,8 @@ export default fp(
     await fastify.register(fastifySwagger, {
       openapi: {
         info: {
-          title: "OGCIO Fastify Scaffolding API",
-          description: "API for OGCIO Fastify Scaffolding",
+          title: "Life Events Profile API",
+          description: "API for Life Events Profile Service",
           version: (await getPackageInfo()).version,
         },
         components: {
