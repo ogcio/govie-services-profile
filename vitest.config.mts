@@ -6,7 +6,12 @@ export default defineConfig({
     coverage: {
       reporter: ["text"],
       provider: "v8",
-      exclude: [...defaultExclude, "commitlint.config.js", "src/test/**/*.ts"],
+      exclude: [
+        ...defaultExclude,
+        "commitlint.config.js",
+        "src/test/**/*.ts",
+        "db/**/*",
+      ],
     },
     include: [
       "./src/@(test?(s)|__test?(s)__)/**/*.test.@(js|cjs|mjs|tap|cts|jsx|mts|ts|tsx)",
