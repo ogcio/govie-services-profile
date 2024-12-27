@@ -1,7 +1,7 @@
 {
-  "name": "@ogcio/fastify-scaffolding",
+  "name": "@ogcio/profile-api",
   "version": "0.0.1",
-  "description": "Fastify Scaffolding",
+  "description": "Profile API",
   "type": "module",
   "scripts": {
     "start": "node dist/index.js",
@@ -25,15 +25,20 @@
     "@ogcio/fastify-error-handler": "^5.1.0",
     "@ogcio/fastify-logging-wrapper": "^5.1.0",
     "@sinclair/typebox": "^0.34.11",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
     "close-with-grace": "^2.1.0",
     "fastify": "^5.1.0",
-    "fastify-plugin": "^5.0.1"
+    "fastify-plugin": "^5.0.1",
+    "pg": "^8.13.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@commitlint/config-conventional": "^19.6.0",
     "@types/http-errors": "^2.0.4",
     "@vitest/coverage-v8": "^2.1.8",
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.11.10",
     "commitlint": "^19.6.0",
     "fastify-cli": "^7.1.0",
     "husky": "^9.1.7",
@@ -44,8 +49,14 @@
   "engines": {
     "node": ">=22.0.0"
   },
-  "author": {
-    "name": "Samuele Salvatico",
-    "email": "samuele.salvatico@nearform.com"
-  }
+  "authors": [
+    {
+      "name": "Samuele Salvatico",
+      "email": "samuele.salvatico@nearform.com"
+    },
+    {
+      "name": "Matteo La Cognata",
+      "email": "matteo.lacognata@nearform.com"
+    }
+  ]
 }
