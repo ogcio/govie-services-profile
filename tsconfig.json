@@ -13,7 +13,15 @@
     "outDir": "dist",
     "rootDir": "src",
     "resolveJsonModule": true,
-    "typeRoots": ["src/types"]
+    "typeRoots": ["src/types"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["src/*"]
+    }
+  },
+  "tsc-alias": {
+    "verbose": false,
+    "resolveFullPaths": true
   },
   "include": ["./src"]
 }

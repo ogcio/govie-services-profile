@@ -20,12 +20,8 @@ export default async function buildServer(
     options: { ...options },
   });
 
-  server.register(fastifyAutoload, {
-    dir: join(import.meta.dirname, "routes"),
-    autoHooks: true,
-    cascadeHooks: true,
-    // ignore the files that starts with shared or utils
-    ignorePattern: /.*(shared|utils)\-?(.+)?\.(t|j)s$/,
+  await server.register(fastifyAutoload, {
+    dir: join(import.meta.dirname, "plugins/internal"),
     options: { ...options },
   });
 

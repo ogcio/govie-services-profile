@@ -4,7 +4,7 @@ import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 import fp from "fastify-plugin";
-import { getPackageInfo } from "../../utils/get-package-info.js";
+import { getPackageInfo } from "~/utils/get-package-info.js";
 
 export default fp(
   async (fastify: FastifyInstance, opts: FastifyPluginAsync) => {

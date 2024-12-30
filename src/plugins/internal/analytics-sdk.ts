@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 import fp from "fastify-plugin";
-import { getAnalyticsSdk } from "../../utils/authentication-factory.js";
+import { getAnalyticsSdk } from "~/utils/authentication-factory.js";
 
 const operationIdToNotTrack: Record<string, boolean> = { healthcheck: true };
 

@@ -1,0 +1,28 @@
+meta {
+  name: Public Servant can get any profile
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/profiles/:profileId?organizationId=the-mock-org
+  body: none
+  auth: none
+}
+
+query {
+  organizationId: the-mock-org
+}
+
+params:path {
+  profileId: {{profileId}}
+}
+
+headers {
+  Authorization: Bearer {{publicServantToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.email: eq {{citizenEmail}}
+}

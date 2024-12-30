@@ -1,4 +1,6 @@
 import type { FastifyInstance } from "fastify";
+import profiles from "./profiles/index.js";
 
-// biome-ignore lint/correctness/noUnusedVariables: TODO: add routes
-export default async function routes(app: FastifyInstance) {}
+export default async function routes(app: FastifyInstance) {
+  app.register(profiles, { prefix: "/profiles" });
+}

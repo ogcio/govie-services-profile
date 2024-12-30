@@ -1,51 +1,71 @@
-CREATE TABLE IF NOT EXISTS user_details(
-    user_id UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
-    title TEXT NOT NULL,
-    firstName TEXT NOT NULL,
-    lastName TEXT NOT NULL,
-    date_of_birth DATE NOT NULL,
-    ppsn TEXT NOT NULL,
-    gender TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    email TEXT NOT NULL,
+CREATE TABLE profiles (
+    /* varchar because logto id is not a uuid but a nano id */
+    id varchar(12) PRIMARY KEY DEFAULT SUBSTRING(
+        gen_random_uuid ()::text,
+        0,
+        12
+    ),
+    public_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    /* The common user (person) this profile belongs to */
+    primary_user_id varchar(12) NOT NULL,
+    safe_level INT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    primary key(user_id)
+    deleted_at TIMESTAMPTZ
 );
 
-CREATE TABLE IF NOT EXISTS user_addresses (
-    address_id UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
-    user_id UUID NOT NULL,
-    address_line1 TEXT NOT NULL,
-    address_line2 TEXT,
-    city TEXT NOT NULL,
-    eirecode TEXT NOT NULL,
-    is_primary BOOLEAN NOT NULL DEFAULT FALSE,
-    ownership_status TEXT NOT NULL,
-    start_date  TIMESTAMPTZ NOT NULL,
-    end_date  TIMESTAMPTZ,
+CREATE TABLE profile_details (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    profile_id varchar(12) NOT NULL REFERENCES profiles (id),
+    organisation_id varchar(255),
+    is_latest BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE profile_data (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    profile_details_id UUID NOT NULL REFERENCES profile_details (id),
+    name VARCHAR(255) NOT NULL,
+    value_type VARCHAR(50) NOT NULL CHECK (
+        value_type IN ('string', 'number')
+    ),
+    value_string VARCHAR(255),
+    value_number NUMERIC,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES user_details(user_id)
+    CONSTRAINT check_value_type CHECK (
+        (
+            value_type = 'string'
+            AND value_string IS NOT NULL
+        )
+        OR (
+            value_type = 'number'
+            AND value_number IS NOT NULL
+        )
+    )
 );
 
-CREATE TABLE IF NOT EXISTS entitlements (
-    id UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
-    type TEXT NOT NULL, -- eventually could be an enum
-    start_date TIMESTAMPTZ NOT NULL,
-    end_date TIMESTAMPTZ,
-    document_number TEXT NOT NULL,
-    user_id UUID NOT NULL,
-    firstName TEXT NOT NULL, 
-    lastName TEXT NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES user_details(user_id)
+CREATE TABLE profile_imports (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    job_id VARCHAR(255) NOT NULL,
+    organisation_id varchar(255),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS form_errors(
-    user_id UUID NOT NULL,
-    field TEXT NOT NULL,
-    error_value TEXT,
-    error_message TEXT NOT NULL
+CREATE TABLE profile_import_details (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+    profile_import_id UUID NOT NULL REFERENCES profile_imports (id),
+    data JSONB NOT NULL,
+    status VARCHAR(50) NOT NULL CHECK (
+        status IN (
+            'pending',
+            'processing',
+            'completed',
+            'failed',
+            'cancelled',
+            'unrecoverable'
+        )
+    ) DEFAULT 'pending',
+    error_message TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

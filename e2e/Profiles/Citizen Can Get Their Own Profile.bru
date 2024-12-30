@@ -1,0 +1,28 @@
+meta {
+  name: Citizen can get their own profile
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/profiles/:profileId?organizationId=the-mock-org
+  body: none
+  auth: none
+}
+
+query {
+  organizationId: the-mock-org
+}
+
+params:path {
+  profileId: {{profileId}}
+}
+
+headers {
+  Authorization: Bearer {{citizenToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.email: eq {{citizenEmail}}
+}

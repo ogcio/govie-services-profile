@@ -1,0 +1,48 @@
+meta {
+  name: Public Servant can import profiles
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/profiles/import?organizationId=the-mock-org
+  body: json
+  auth: none
+}
+
+query {
+  organizationId: the-mock-org
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{publicServantToken}}
+}
+
+body:json {
+  [
+    {
+      "address": "street",
+      "city": "rome",
+      "first_name": "Maxo",
+      "last_name": "Mino",
+      "email": "max.mina@email.com",
+      "phone": "33365611100",
+      "date_of_birth": "1980-01-02"
+    },
+    {
+      "address": "road",
+      "city": "florence",
+      "first_name": "John",
+      "last_name": "Belusho",
+      "email": "john.brown@email.com",
+      "phone": "3330844111",
+      "date_of_birth": "1960-10-02"
+    }
+  ]
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.length: eq 2
+}

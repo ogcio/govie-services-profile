@@ -7,6 +7,7 @@ import {
   getM2MTokenFn,
 } from "@ogcio/building-blocks-sdk";
 import type { FastifyBaseLogger } from "fastify";
+import { trimSlash } from "./trim-slash.js";
 
 type SetupSdks = DefinedServices<{
   services: {
@@ -25,12 +26,6 @@ type SetupSdks = DefinedServices<{
   };
   getTokenFn: TokenFunction;
 }>;
-
-const trimSlash = (input: string) => {
-  let i = input.length;
-  while (i-- && input.charAt(i) === "/");
-  return input.substring(0, i + 1);
-};
 
 const profileBackendUrl = `${trimSlash(process.env.PROFILE_BACKEND_URL ?? "")}/`;
 let analytics: BuildingBlocksSDK["analytics"] | undefined = undefined;

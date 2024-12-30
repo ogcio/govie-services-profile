@@ -1,0 +1,46 @@
+meta {
+  name: Public Servant can list profiles
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/profiles?organizationId=the-mock-org
+  body: none
+  auth: none
+}
+
+query {
+  organizationId: the-mock-org
+}
+
+body:json {
+  [
+    {
+      "address": "street",
+      "city": "rome",
+      "first_name": "Max",
+      "last_name": "Min",
+      "email": "max.min@email.com",
+      "phone": "333666111",
+      "date_of_birth": "1980-01-02"
+    },
+    {
+      "address": "road",
+      "city": "florence",
+      "first_name": "John",
+      "last_name": "Belushi",
+      "email": "john.bel@email.com",
+      "phone": "3334444111",
+      "date_of_birth": "1960-10-02"
+    }
+  ]
+}
+
+script:post-response {
+  const users = res.body.data;
+  
+  const user = users[0];
+  
+  bru.setVar("profileId", user.id);
+}

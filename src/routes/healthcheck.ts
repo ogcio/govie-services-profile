@@ -1,33 +1,44 @@
-import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { httpErrors } from "@fastify/sensible";
+import { getErrorMessage } from "@ogcio/shared-errors";
 import type { FastifyInstance } from "fastify";
-import { getPackageInfo } from "../utils/get-package-info.js";
-import type {
-  FastifyReplyTypebox,
-  FastifyRequestTypebox,
-} from "./shared-routes.js";
+import { isHttpError } from "http-errors";
+import { getPackageInfo } from "~/utils/get-package-info.js";
 
-const healthCheckSchema = {
-  tags: ["Health"],
-  description:
-    "It checks the current health status of the APIs, pinging all the related items",
-};
-
-const plugin: FastifyPluginAsyncTypebox = async function healthCheck(
-  app: FastifyInstance,
-) {
+export default async function healthCheck(app: FastifyInstance) {
   app.get(
     "/health",
     {
-      schema: healthCheckSchema,
+      schema: {
+        tags: ["Health"],
+        hide: true,
+        description:
+          "It checks the current health status of the APIs, pinging all the related items",
+      },
     },
-    async (
-      _request: FastifyRequestTypebox<typeof healthCheckSchema>,
-      _reply: FastifyReplyTypebox<typeof healthCheckSchema>,
-    ) => {
-      const { name, version } = await getPackageInfo();
-      return { [name]: version };
+    async () => {
+      await checkDb(app);
+      const version = await getPackageInfo();
+      return { "profile-api": version };
     },
   );
-};
+}
 
-export default plugin;
+const checkDb = async (app: FastifyInstance): Promise<void> => {
+  const pool = await app.pg.connect();
+  try {
+    const res = await app.pg.query('SELECT 1 as "column"');
+    if (res.rowCount !== 1) {
+      throw httpErrors.internalServerError(
+        `Expected 1 record, got ${res.rowCount}`,
+      );
+    }
+  } catch (e) {
+    if (isHttpError(e)) {
+      throw e;
+    }
+
+    throw httpErrors.internalServerError(getErrorMessage(e));
+  } finally {
+    pool.release();
+  }
+};

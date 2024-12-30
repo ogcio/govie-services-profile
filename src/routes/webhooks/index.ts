@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import type { FastifyInstance } from "fastify";
-import { processUserWebhook } from "../../services/webhooks/users.js";
+import { processUserWebhook } from "~/services/webhooks/users.js";
 
 // https://docs.logto.io/docs/recipes/webhooks/securing-your-webhooks/
 export const verifySignature = (

@@ -1,2 +1,0 @@
-ALTER TABLE user_details
-DROP COLUMN preferred_language

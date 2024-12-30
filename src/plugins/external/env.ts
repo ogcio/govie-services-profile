@@ -14,6 +14,9 @@ declare module "fastify" {
       LOGTO_JWK_ENDPOINT: string;
       LOGTO_OIDC_ENDPOINT: string;
       LOGTO_WEBHOOK_SIGNING_KEY: string;
+      LOGTO_MANAGEMENT_API_CLIENT_ID: string;
+      LOGTO_MANAGEMENT_API_CLIENT_SECRET: string;
+      LOGTO_MANAGEMENT_API_ENDPOINT: string;
     };
   }
 }
@@ -30,6 +33,9 @@ const schema = {
     "LOGTO_JWK_ENDPOINT",
     "LOGTO_OIDC_ENDPOINT",
     "LOGTO_WEBHOOK_SIGNING_KEY",
+    "LOGTO_MANAGEMENT_API_CLIENT_ID",
+    "LOGTO_MANAGEMENT_API_CLIENT_SECRET",
+    "LOGTO_MANAGEMENT_API_ENDPOINT",
   ],
   properties: {
     PORT: { type: "number" },
@@ -43,6 +49,9 @@ const schema = {
     LOGTO_JWK_ENDPOINT: { type: "string" },
     LOGTO_OIDC_ENDPOINT: { type: "string" },
     LOGTO_WEBHOOK_SIGNING_KEY: { type: "string" },
+    LOGTO_MANAGEMENT_API_CLIENT_ID: { type: "string" },
+    LOGTO_MANAGEMENT_API_CLIENT_SECRET: { type: "string" },
+    LOGTO_MANAGEMENT_API_ENDPOINT: { type: "string" },
   },
 };
 
