@@ -49,6 +49,17 @@ CREATE TABLE profile_imports (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     job_id VARCHAR(255) NOT NULL,
     organisation_id varchar(255),
+    status VARCHAR(50) NOT NULL CHECK (
+        status IN (
+            'pending',
+            'processing',
+            'completed',
+            'failed',
+            'cancelled',
+            'unrecoverable',
+            'success',
+        )
+    ) DEFAULT 'pending',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -62,8 +73,8 @@ CREATE TABLE profile_import_details (
             'processing',
             'completed',
             'failed',
-            'cancelled',
-            'unrecoverable'
+            'unrecoverable', 
+            'success',
         )
     ) DEFAULT 'pending',
     error_message TEXT,

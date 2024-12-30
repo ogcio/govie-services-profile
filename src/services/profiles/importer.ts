@@ -43,9 +43,42 @@ const createImportDetails = async (
       profile_import_id,  
       data
     ) VALUES ${values}
+     RETURNING id;
   `;
 
-  await client.query(queryDetails, params);
+  const result = await client.query<{ id: string }>(queryDetails, params);
+  return result.rows.map((row) => row.id);
+};
+
+const markImportRowStatus = async (
+  client: PoolClient,
+  importDetailsIdList: string[],
+  status: string,
+) => {
+  const placeholders = importDetailsIdList
+    .map((_, index) => `$${index + 2}`)
+    .join(",");
+
+  await client.query(
+    `UPDATE profile_import_details SET status = $1 WHERE id IN (${placeholders});`,
+    [status, ...importDetailsIdList],
+  );
+};
+
+const markImportRowError = async (
+  client: PoolClient,
+  importDetailsIdList: string[],
+  error: string,
+  status = "failed",
+) => {
+  const placeholders = importDetailsIdList
+    .map((_, index) => `$${index + 3}`)
+    .join(",");
+
+  await client.query(
+    `UPDATE profile_import_details SET error_message = $1, status = $2 WHERE id IN (${placeholders});`,
+    [error, status, ...importDetailsIdList],
+  );
 };
 
 const getImportData = async (
@@ -89,4 +122,6 @@ export {
   getImportDataForUserEmail,
   createImportDetails,
   findImportJob,
+  markImportRowError,
+  markImportRowStatus,
 };
