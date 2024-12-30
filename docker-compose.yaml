@@ -1,0 +1,27 @@
+services:
+  postgresql:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      PGUSER: ${POSTGRES_USER:-postgres} # will use current os user otherwise.
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - profile-db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-U", "postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  profile-db:
+    driver: local
+
+# custom network to be able to reach Logto running on same network with another Docker Compose file
+networks:
+  logto_network:
+    external: true

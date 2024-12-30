@@ -29,9 +29,7 @@ const createImportDetails = async (
   jobId: string,
   profiles: ImportProfiles,
 ) => {
-  const values = profiles
-    .map((_, index) => `($1, $${index * 2 + 2})`)
-    .join(",");
+  const values = profiles.map((_, index) => `($1, $${index + 2})`).join(",");
 
   const profileImportId = await findImportJob(client, jobId);
 
