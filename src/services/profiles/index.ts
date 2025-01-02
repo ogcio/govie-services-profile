@@ -27,9 +27,11 @@ const processProfilesImport = async (
     "email" | "first_name" | "last_name"
   >[] = [];
 
+  const client = await app.pg.pool.connect();
+
   // Bail out early if a job cannot be created
   const { jobId, importDetailsIdList } = await withClient(
-    app.pg.pool,
+    client,
     async (client) => {
       return await createImportJobAndDetails(client, organizationId, profiles);
     },
@@ -46,7 +48,7 @@ const processProfilesImport = async (
 
       // Mark the row status as processing
       await withClient(
-        app.pg.pool,
+        client,
         async (client) => {
           await markImportRowStatus(client, [importDetailsId], "processing");
         },
@@ -54,7 +56,7 @@ const processProfilesImport = async (
       );
 
       const existingProfileId = await withClient(
-        app.pg.pool,
+        client,
         async (client) => {
           return await findExistingProfile(client, profile.email);
         },
@@ -74,7 +76,7 @@ const processProfilesImport = async (
       console.log("PROFILE EXISTS");
 
       await withClient(
-        app.pg.pool,
+        client,
         async (client) => {
           await createAndUpdateProfileDetails(
             client,
@@ -88,7 +90,7 @@ const processProfilesImport = async (
 
       // Mark the row as completed
       await withClient(
-        app.pg.pool,
+        client,
         async (client) => {
           await markImportRowStatus(client, [importDetailsId], "completed");
         },
@@ -97,7 +99,7 @@ const processProfilesImport = async (
     } catch (err) {
       // mark the row with an error
       await withClient(
-        app.pg.pool,
+        client,
         async (client) => {
           await markImportRowError(
             client,
@@ -119,7 +121,7 @@ const processProfilesImport = async (
     } catch (err) {
       // mark the whole import job with an unrecoverable error
       await withClient(
-        app.pg.pool,
+        client,
         async (client) => {
           await markImportRowError(
             client,

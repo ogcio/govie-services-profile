@@ -1,3 +1,4 @@
+import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { processProfilesImport } from "~/services/profiles/index.js";
@@ -12,11 +13,10 @@ type PostProfilesImportRequest = {
   Querystring: { organizationId: string };
 };
 
-export default async function profiles(app: FastifyInstance) {
-  // --------------------------------------------------
-  // POST /profiles/import
-  // --------------------------------------------------
-  app.post<PostProfilesImportRequest>(
+export const autoPrefix = "/api/v1";
+
+const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
+  fastify.post<PostProfilesImportRequest>(
     "/import",
     {
       // preValidation: (req, res) =>
@@ -34,10 +34,12 @@ export default async function profiles(app: FastifyInstance) {
     },
     async (request: FastifyRequest<PostProfilesImportRequest>) => {
       await processProfilesImport(
-        app,
+        fastify,
         request.body,
         request.query.organizationId,
       );
     },
   );
-}
+};
+
+export default plugin;

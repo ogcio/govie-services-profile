@@ -1,21 +1,12 @@
-import { createHmac } from "node:crypto";
+import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import type { FastifyInstance } from "fastify";
 import { processUserWebhook } from "~/services/webhooks/users.js";
+import { verifySignature } from "~/utils/verify-signature.js";
 
-// https://docs.logto.io/docs/recipes/webhooks/securing-your-webhooks/
-export const verifySignature = (
-  signingKey: string,
-  rawBody: Buffer,
-  expectedSignature: string,
-) => {
-  const hmac = createHmac("sha256", signingKey);
-  hmac.update(rawBody);
-  const signature = hmac.digest("hex");
-  return signature === expectedSignature;
-};
+export const autoPrefix = "/api/v1";
 
-export default async function webhooks(app: FastifyInstance) {
-  app.post(
+const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
+  fastify.post(
     "/user-login-wh",
     {
       config: {
@@ -24,7 +15,7 @@ export default async function webhooks(app: FastifyInstance) {
     },
     async (req) => {
       const isSignatureVerified = verifySignature(
-        app.config.LOGTO_WEBHOOK_SIGNING_KEY,
+        fastify.config.LOGTO_WEBHOOK_SIGNING_KEY,
         req.rawBody as Buffer,
         req.headers["logto-signature-sha-256"] as string,
       );
@@ -33,9 +24,11 @@ export default async function webhooks(app: FastifyInstance) {
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       const body = req.body as any;
 
-      await processUserWebhook({ body, pool: app.pg.pool });
+      await processUserWebhook({ body, pool: fastify.pg.pool });
 
       return { status: "ok" };
     },
   );
-}
+};
+
+export default plugin;
