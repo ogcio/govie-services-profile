@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type { PoolClient } from "pg";
-import type { ImportProfiles } from "~/types/profile.js";
+import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
 import {
@@ -17,13 +17,13 @@ import { createUsersOnLogto } from "./interact-logto.js";
 // - check logto integration
 // - create logto webhook
 // - use enums not strings
-const processProfilesImport = async (
+const processClientImport = async (
   app: FastifyInstance,
-  profiles: ImportProfiles,
+  profiles: ImportProfilesBody,
   organizationId: string,
 ) => {
   const newProfiles: Pick<
-    ImportProfiles[0],
+    ImportProfilesBody[0],
     "email" | "first_name" | "last_name"
   >[] = [];
 
@@ -152,7 +152,7 @@ const processProfilesImport = async (
 const createImportJobAndDetails = async (
   client: PoolClient,
   organizationId: string,
-  profiles: ImportProfiles,
+  profiles: ImportProfilesBody,
 ) => {
   return await withRollback(client, async () => {
     const jobId = await createImportJob(client, organizationId);
@@ -169,7 +169,7 @@ const createAndUpdateProfileDetails = async (
   client: PoolClient,
   profileId: string,
   organizationId: string,
-  details: ImportProfiles[0],
+  details: ImportProfilesBody[0],
 ) => {
   await withRollback(client, async () => {
     const profileDetailId = await createProfileDetails(
@@ -200,7 +200,7 @@ const createProfileDetails = async (
   client: PoolClient,
   profileId: string,
   organizationId: string,
-  details: ImportProfiles[0],
+  details: ImportProfilesBody[0],
 ) => {
   const query = `INSERT INTO profile_details(
         profile_id,
@@ -229,4 +229,4 @@ const updateProfileDetails = async (
   await client.query(query, values);
 };
 
-export { processProfilesImport };
+export { processClientImport };

@@ -1,16 +1,11 @@
 import { join } from "path";
 import fastifyAutoload from "@fastify/autoload";
-import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
-import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import type { FastifyInstance, FastifyPluginOptions } from "fastify";
 
 export default async function buildServer(
   server: FastifyInstance,
   options: FastifyPluginOptions,
 ) {
-  initializeLoggingHooks(server);
-  initializeErrorHandler(server);
-
   server.decorate("dirname", import.meta.dirname);
 
   await server.register(fastifyAutoload, {

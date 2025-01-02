@@ -1,7 +1,16 @@
 import { createHmac } from "node:crypto";
 
+const verifySignatureOrThrow = async ({
+  key,
+  body,
+  signature,
+}: { key: string; body: Buffer; signature: string }) => {
+  const isSignatureVerified = verifySignature(key, body, signature);
+  if (!isSignatureVerified) throw new Error("Signature not verified...");
+};
+
 // https://docs.logto.io/docs/recipes/webhooks/securing-your-webhooks/
-export const verifySignature = (
+const verifySignature = (
   signingKey: string,
   rawBody: Buffer,
   expectedSignature: string,
@@ -11,3 +20,5 @@ export const verifySignature = (
   const signature = hmac.digest("hex");
   return signature === expectedSignature;
 };
+
+export { verifySignatureOrThrow };

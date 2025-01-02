@@ -1,17 +1,11 @@
 import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import type { FastifyInstance } from "fastify";
+import { healthCheckSchema } from "~/schemas/healthcheck.js";
 import type {
   FastifyReplyTypebox,
   FastifyRequestTypebox,
-} from "~/schemas/shared-routes.js";
+} from "~/schemas/shared.js";
 import { getPackageInfo } from "~/utils/get-package-info.js";
-
-const healthCheckSchema = {
-  tags: ["Health"],
-  hide: true,
-  description:
-    "It checks the current health status of the APIs, pinging all the related items",
-};
 
 const plugin: FastifyPluginAsyncTypebox = async function healthCheck(
   app: FastifyInstance,

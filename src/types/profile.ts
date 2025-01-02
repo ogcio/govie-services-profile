@@ -1,50 +1,31 @@
-import { type Static, Type } from "@sinclair/typebox";
-import { getWithIdAndTimestamps } from "~/utils/get-with-id-and-timestamps.js";
+// import { type Static, Type } from "@sinclair/typebox";
+// import { getWithIdAndTimestamps } from "~/utils/get-with-id-and-timestamps.js";
 
-const ProfileSchema = Type.Object({
-  public_name: Type.String(),
-  email: Type.String({ format: "email" }),
-  primary_user_id: Type.String(),
-});
+// const ProfileSchema = Type.Object({
+//   public_name: Type.String(),
+//   email: Type.String({ format: "email" }),
+//   primary_user_id: Type.String(),
+// });
 
-const FullProfileSchema = getWithIdAndTimestamps(ProfileSchema, true);
-type FullProfile = Static<typeof FullProfileSchema>;
+// const FullProfileSchema = getWithIdAndTimestamps(ProfileSchema, true);
+// type FullProfile = Static<typeof FullProfileSchema>;
 
-const ProfileToImportDetailSchema = Type.Object({
-  address: Type.String(),
-  city: Type.String(),
-  first_name: Type.String(),
-  last_name: Type.String(),
-  email: Type.String({ format: "email" }),
-  phone: Type.String(),
-  date_of_birth: Type.String({ format: "date" }),
-});
+// const FullProfileWithDetailsSchema = Type.Composite([
+//   FullProfileSchema,
+//   Type.Object({ details: ProfileToImportDetailSchema }),
+// ]);
 
-const ImportProfilesSchema = Type.Array(ProfileToImportDetailSchema);
-type ProfileToImportDetail = Static<typeof ProfileToImportDetailSchema>;
+// const ImportOutputSchema = Type.Array(FullProfileWithDetailsSchema);
 
-const FullProfileWithDetailsSchema = Type.Composite([
-  FullProfileSchema,
-  Type.Object({ details: ProfileToImportDetailSchema }),
-]);
+// type FullProfileWithDetails = Static<typeof FullProfileWithDetailsSchema>;
 
-const ImportOutputSchema = Type.Array(FullProfileWithDetailsSchema);
+// export type {
+//   FullProfile,
+//   FullProfileWithDetails,
+// };
 
-type FullProfileWithDetails = Static<typeof FullProfileWithDetailsSchema>;
-
-type ImportProfiles = Static<typeof ImportProfilesSchema>;
-
-export type {
-  FullProfile,
-  FullProfileWithDetails,
-  ImportProfiles,
-  ProfileToImportDetail,
-};
-
-export {
-  FullProfileSchema,
-  FullProfileWithDetailsSchema,
-  ImportProfilesSchema,
-  ProfileToImportDetailSchema,
-  ImportOutputSchema,
-};
+// export {
+//   FullProfileSchema,
+//   FullProfileWithDetailsSchema,
+//   ImportOutputSchema,
+// };

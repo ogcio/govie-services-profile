@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import type { PostgresDb } from "@fastify/postgres";
 import type { Pool, PoolClient } from "pg";
-import type { ImportProfiles } from "~/types/profile.js";
+import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 
 type Database = (PostgresDb & Record<string, PostgresDb>) | Pool;
 
@@ -27,7 +27,7 @@ const findImportJob = async (client: PoolClient, jobId: string) => {
 const createImportDetails = async (
   client: PoolClient,
   jobId: string,
-  profiles: ImportProfiles,
+  profiles: ImportProfilesBody,
 ) => {
   const values = profiles.map((_, index) => `($1, $${index + 2})`).join(",");
 
@@ -104,7 +104,7 @@ const getImportDataForUserEmail = async (
   jobId: string,
   email: string,
 ) => {
-  const result = await pg.query<{ profile: ImportProfiles[0] }>(
+  const result = await pg.query<{ profile: ImportProfilesBody[0] }>(
     `
 SELECT arr.item_object as profile
 FROM profile_imports,

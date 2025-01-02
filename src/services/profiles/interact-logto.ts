@@ -1,9 +1,9 @@
 import { getAccessToken } from "@ogcio/api-auth";
 import type { FastifyInstance } from "fastify";
-import type { ImportProfiles } from "~/types/profile.js";
+import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 
 export const createUsersOnLogto = async (
-  profiles: Pick<ImportProfiles[0], "email" | "first_name" | "last_name">[],
+  profiles: Pick<ImportProfilesBody[0], "email" | "first_name" | "last_name">[],
   config: FastifyInstance["config"],
   organizationId: string,
   jobId: string,
