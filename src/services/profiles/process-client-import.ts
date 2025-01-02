@@ -3,13 +3,16 @@ import type { PoolClient } from "pg";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
+import { createUsersOnLogto } from "./interact-logto.js";
+import { createProfileDetails } from "./sql/create-profile-details.js";
+import { findExistingProfile } from "./sql/find-existing-profile.js";
 import {
   createImportDetails,
   createImportJob,
   markImportRowError,
   markImportRowStatus,
-} from "./importer.js";
-import { createUsersOnLogto } from "./interact-logto.js";
+} from "./sql/index.js";
+import { updateProfileDetails } from "./sql/update-profile-details.js";
 
 // TODO:
 // - mark profile import status
@@ -186,47 +189,6 @@ const createAndUpdateProfileDetails = async (
       profileId,
     );
   });
-};
-
-const findExistingProfile = async (client: PoolClient, email: string) => {
-  const query = "SELECT id FROM profiles WHERE email = $1;";
-  const values = [email];
-
-  const result = await client.query<{ id: string }>(query, values);
-  return result.rows[0]?.id;
-};
-
-const createProfileDetails = async (
-  client: PoolClient,
-  profileId: string,
-  organizationId: string,
-  details: ImportProfilesBody[0],
-) => {
-  const query = `INSERT INTO profile_details(
-        profile_id,
-        organisation_id,
-        details,
-        is_latest
-    ) VALUES ($1, $2, $3, $4) RETURNING id;`;
-
-  const values = [profileId, organizationId, details, true];
-
-  const result = await client.query<{ id: string }>(query, values);
-  return result.rows[0]?.id;
-};
-
-const updateProfileDetails = async (
-  client: PoolClient,
-  profileDetailId: string,
-  organizationId: string,
-  profileId: string,
-) => {
-  const query =
-    "UPDATE profile_details SET is_latest = false WHERE id <> $1 AND organisation_id = $2 AND profile_id = $3;";
-
-  const values = [profileDetailId, organizationId, profileId];
-
-  await client.query(query, values);
 };
 
 export { processClientImport };
