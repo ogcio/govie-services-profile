@@ -4,7 +4,6 @@ import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import type { FastifyInstance, FastifyPluginOptions } from "fastify";
 import healthCheck from "./routes/healthcheck.js";
-import routes from "./routes/index.js";
 
 export default async function buildServer(
   server: FastifyInstance,
@@ -25,7 +24,14 @@ export default async function buildServer(
     options: { ...options },
   });
 
-  server.register(healthCheck);
+  server.register(fastifyAutoload, {
+    dir: join(import.meta.dirname, "routes"),
+    autoHooks: true,
+    cascadeHooks: true,
+    // ignore the files that starts with shared or utils
+    ignorePattern: /^.*(shared|utils)\-?(.+)?\.ts$/,
+    options: { ...options },
+  });
 
-  server.register(routes, { prefix: "/api/v1" });
+  server.register(healthCheck);
 }
