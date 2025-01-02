@@ -13,7 +13,7 @@ type PostProfilesImportRequest = {
   Querystring: { organizationId: string };
 };
 
-export const autoPrefix = "/api/v1";
+export const autoPrefix = "/api/v1/profiles";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   fastify.post<PostProfilesImportRequest>(

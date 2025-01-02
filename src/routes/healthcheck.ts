@@ -6,10 +6,6 @@ import type {
 } from "~/schemas/shared-routes.js";
 import { getPackageInfo } from "~/utils/get-package-info.js";
 
-// This makes the healthcheck not prefixed with default prefix
-// then the endpoint will be /health, without /api/v1/
-export const prefixOverride = "";
-
 const healthCheckSchema = {
   tags: ["Health"],
   hide: true,
@@ -36,3 +32,7 @@ const plugin: FastifyPluginAsyncTypebox = async function healthCheck(
 };
 
 export default plugin;
+
+// This makes the healthcheck not prefixed with default prefix
+// then the endpoint will be /health, without /api/v1/
+export const prefixOverride = "";

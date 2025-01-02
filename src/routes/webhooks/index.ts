@@ -3,8 +3,6 @@ import type { FastifyInstance } from "fastify";
 import { processUserWebhook } from "~/services/webhooks/users.js";
 import { verifySignature } from "~/utils/verify-signature.js";
 
-export const autoPrefix = "/api/v1";
-
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   fastify.post(
     "/user-login-wh",
@@ -32,3 +30,4 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
 };
 
 export default plugin;
+export const autoPrefix = "/api/v1";

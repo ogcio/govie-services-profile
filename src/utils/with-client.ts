@@ -10,7 +10,5 @@ export const withClient = async <T>(
     return await callback(client);
   } catch (err) {
     throw new Error(isNativeError(err) ? err.message : errorMessage);
-  } finally {
-    client.release();
   }
 };
