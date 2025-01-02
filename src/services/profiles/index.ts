@@ -16,6 +16,7 @@ import { createUsersOnLogto } from "./interact-logto.js";
 // - check user permissions
 // - check logto integration
 // - create logto webhook
+// - use enums not strings
 const processProfilesImport = async (
   app: FastifyInstance,
   profiles: ImportProfiles,

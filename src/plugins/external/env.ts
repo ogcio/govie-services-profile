@@ -1,23 +1,28 @@
 import env from "@fastify/env";
 
+interface EnvDbConfig {
+  POSTGRES_USER: string;
+  POSTGRES_PASSWORD: string;
+  POSTGRES_HOST: string;
+  POSTGRES_PORT: number;
+  POSTGRES_DATABASE: string;
+}
+
+interface EnvConfig extends EnvDbConfig {
+  PORT: number;
+  FASTIFY_CLOSE_GRACE_DELAY: number;
+  LOG_LEVEL: string;
+  LOGTO_JWK_ENDPOINT: string;
+  LOGTO_OIDC_ENDPOINT: string;
+  LOGTO_WEBHOOK_SIGNING_KEY: string;
+  LOGTO_MANAGEMENT_API_CLIENT_ID: string;
+  LOGTO_MANAGEMENT_API_CLIENT_SECRET: string;
+  LOGTO_MANAGEMENT_API_ENDPOINT: string;
+}
+
 declare module "fastify" {
   export interface FastifyInstance {
-    config: {
-      PORT: number;
-      FASTIFY_CLOSE_GRACE_DELAY: number;
-      LOG_LEVEL: string;
-      POSTGRES_USER: string;
-      POSTGRES_PASSWORD: string;
-      POSTGRES_HOST: string;
-      POSTGRES_PORT: number;
-      POSTGRES_DB_NAME: string;
-      LOGTO_JWK_ENDPOINT: string;
-      LOGTO_OIDC_ENDPOINT: string;
-      LOGTO_WEBHOOK_SIGNING_KEY: string;
-      LOGTO_MANAGEMENT_API_CLIENT_ID: string;
-      LOGTO_MANAGEMENT_API_CLIENT_SECRET: string;
-      LOGTO_MANAGEMENT_API_ENDPOINT: string;
-    };
+    config: EnvConfig;
   }
 }
 
@@ -29,7 +34,7 @@ const schema = {
     "POSTGRES_PASSWORD",
     "POSTGRES_HOST",
     "POSTGRES_PORT",
-    "POSTGRES_DB_NAME",
+    "POSTGRES_DATABASE",
     "LOGTO_JWK_ENDPOINT",
     "LOGTO_OIDC_ENDPOINT",
     "LOGTO_WEBHOOK_SIGNING_KEY",
@@ -45,7 +50,7 @@ const schema = {
     POSTGRES_PASSWORD: { type: "string" },
     POSTGRES_HOST: { type: "string" },
     POSTGRES_PORT: { type: "number" },
-    POSTGRES_DB_NAME: { type: "string" },
+    POSTGRES_DATABASE: { type: "string" },
     LOGTO_JWK_ENDPOINT: { type: "string" },
     LOGTO_OIDC_ENDPOINT: { type: "string" },
     LOGTO_WEBHOOK_SIGNING_KEY: { type: "string" },
@@ -61,3 +66,4 @@ export const autoConfig = {
 };
 
 export default env;
+export type { EnvConfig, EnvDbConfig };

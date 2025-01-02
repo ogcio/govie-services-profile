@@ -7,7 +7,7 @@ export const autoConfig = (fastify: FastifyInstance) => {
     port: fastify.config.POSTGRES_PORT,
     user: fastify.config.POSTGRES_USER,
     password: fastify.config.POSTGRES_PASSWORD,
-    database: fastify.config.POSTGRES_DB_NAME,
+    database: fastify.config.POSTGRES_DATABASE,
   };
 };
 

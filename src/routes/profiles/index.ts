@@ -9,7 +9,7 @@ const PROFILE_TAGS = ["Profiles"];
 type PostProfilesImportRequest = {
   Body: ImportProfiles;
   Reply: null;
-  QueryParams: { organizationId: string };
+  Querystring: { organizationId: string };
 };
 
 export default async function profiles(app: FastifyInstance) {
@@ -33,16 +33,11 @@ export default async function profiles(app: FastifyInstance) {
       },
     },
     async (request: FastifyRequest<PostProfilesImportRequest>) => {
-      try {
-        await processProfilesImport(
-          app,
-          request.body,
-          (request.query as Record<string, string>).organizationId,
-        );
-      } catch (err) {
-        console.error(err);
-        throw app.httpErrors.internalServerError((err as Error).message);
-      }
+      await processProfilesImport(
+        app,
+        request.body,
+        request.query.organizationId,
+      );
     },
   );
 }

@@ -14,9 +14,10 @@
     "fix:linting": "biome lint --write",
     "prepare": "husky || true",
     "test": "NODE_OPTIONS='--import tsx' vitest run --reporter junit --reporter default --coverage --outputFile=results.xml",
-    "migrate": "node db/create-db.js && db-migrate --migrations-dir db/migrations --config db/database.json up",
-    "migrate:down": "db-migrate --migrations-dir db/migrations --config db/database.json down",
-    "migrate:create": "db-migrate --migrations-dir db/migrations --config db/database.json create $npm_config_file --sql-file"
+    "db:create": "tsx --env-file=.env ./src/migrations/scripts/create-database.ts",
+    "db:drop": "tsx --env-file=.env ./src/migrations/scripts/drop-database.ts",
+    "db:migrate": "tsx --env-file=.env ./src/migrations/scripts/migrate.ts",
+    "db:rollback": "tsx --env-file=.env ./src/migrations/scripts/migrate.ts -- version=0"
   },
   "dependencies": {
     "@fastify/autoload": "^6.0.3",
@@ -40,11 +41,13 @@
     "fastify": "^5.2.0",
     "fastify-plugin": "^5.0.1",
     "fastify-raw-body": "^5.0.0",
-    "pg": "^8.13.1"
+    "pg": "^8.13.1",
+    "postgrator": "^8.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@commitlint/config-conventional": "^19.6.0",
+    "@testcontainers/postgresql": "^10.16.0",
     "@types/http-errors": "^2.0.4",
     "@vitest/coverage-v8": "^2.1.8",
     "@types/node": "^22.10.2",
