@@ -1,3 +1,4 @@
+import path from "path";
 import { defaultExclude, defineConfig } from "vitest/config";
 
 export default defineConfig({
@@ -19,5 +20,10 @@ export default defineConfig({
     exclude: ["./src/**/@(fixture*(s)|dist|node_modules)/**"],
     maxConcurrency: 1,
     testTimeout: 30000, // Timeout in milliseconds (30 seconds)
+  },
+  resolve: {
+    alias: {
+      "~": path.resolve(__dirname, "./src"),
+    },
   },
 });

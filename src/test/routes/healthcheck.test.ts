@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { assert, afterEach, describe, test } from "vitest";
-import { build } from "../helper.js";
+import { build } from "../test-server-builder.js";
 
 describe("Healthcheck works as expected", {}, () => {
   let app: FastifyInstance | undefined;
