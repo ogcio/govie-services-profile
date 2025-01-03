@@ -31,6 +31,5 @@ export const withRetry = async <T>(
     }
   }
 
-  console.error(`Operation failed after ${maxRetries} retries`, lastError);
   throw lastError || new Error(`Operation failed after ${maxRetries} retries`);
 };

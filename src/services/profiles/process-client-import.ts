@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import type { LogtoError, LogtoErrorBody } from "~/clients/logto.js";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
@@ -11,6 +12,7 @@ import {
   markImportRowError,
   markImportRowStatus,
 } from "./sql/index.js";
+import { markImportStatus } from "./sql/mark-import-status.js";
 import { updateProfileDetails } from "./sql/update-profile-details.js";
 
 // TODO:
@@ -27,7 +29,8 @@ export const processClientImport = async (
   const client = await app.pg.pool.connect();
 
   try {
-    // Bail out early if a job cannot be created
+    // 1. Create import job and import details
+    app.log.info("About to create job for importing profiles");
     const { jobId, importDetailsIdList } = await withClient(
       client,
       async (client) => {
@@ -44,15 +47,12 @@ export const processClientImport = async (
       "Failed to create job for importing profiles",
     );
 
-    // Try to process each profile
+    // 2. Try to process each profile
+    app.log.info(`About to process ${profiles.length} profiles`);
     const profilesToCreate = await Promise.all(
       profiles.map(async (profile) => {
         const importDetailsId = importDetailsIdList[profiles.indexOf(profile)];
-
         try {
-          // TODO: add proper logging
-          console.log("PROCESSING PROFILE: ", profile);
-
           // Mark the row status as processing
           await withClient(
             client,
@@ -74,16 +74,7 @@ export const processClientImport = async (
             "Failed to find existing profile",
           );
 
-          if (!existingProfileId) {
-            // TODO: add proper logging
-            console.log("PROFILE DOES NOT EXIST");
-
-            const { first_name, last_name, email } = profile;
-            return { first_name, last_name, email };
-          }
-
-          // TODO: add proper logging
-          console.log("PROFILE EXISTS");
+          if (!existingProfileId) return profile;
 
           await withClient(
             client,
@@ -112,6 +103,7 @@ export const processClientImport = async (
             client,
             async (client) => {
               await markImportRowStatus(client, [importDetailsId], "completed");
+              await markImportStatus(client, jobId, "completed");
             },
             "Failed to mark import row completed",
           );
@@ -132,12 +124,12 @@ export const processClientImport = async (
       }),
     );
 
-    // Create profiles in Logto
+    // 3. Create profiles in Logto
     if (profilesToCreate.length) {
+      app.log.info(
+        `About to create ${profilesToCreate.length} profiles on Logto`,
+      );
       try {
-        // TODO: add proper logging
-        console.log("INVOKING LOGTO");
-
         await createLogtoUsers(
           profilesToCreate,
           app.config,
@@ -152,9 +144,10 @@ export const processClientImport = async (
             await markImportRowError(
               client,
               importDetailsIdList,
-              (err as Error).message,
+              ((err as LogtoError).body as LogtoErrorBody).message,
               "unrecoverable",
             );
+            await markImportStatus(client, jobId, "unrecoverable");
           },
           "Failed to mark unrecoverable import error",
         );

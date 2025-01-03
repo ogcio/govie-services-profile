@@ -1,10 +1,14 @@
 import { withRetry } from "~/utils/with-retry.js";
 
+export type LogtoErrorBody = {
+  message: string;
+  code: string;
+};
 export class LogtoError extends Error {
   constructor(
     message: string,
     public status: number,
-    public body: unknown,
+    public body: LogtoErrorBody | unknown,
   ) {
     super(message);
   }
