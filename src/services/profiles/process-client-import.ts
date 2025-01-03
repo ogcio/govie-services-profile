@@ -1,5 +1,4 @@
 import type { FastifyInstance } from "fastify";
-import type { PoolClient } from "pg";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
@@ -20,16 +19,11 @@ import { updateProfileDetails } from "./sql/update-profile-details.js";
 // - check logto integration
 // - create logto webhook
 // - use enums not strings
-const processClientImport = async (
+export const processClientImport = async (
   app: FastifyInstance,
   profiles: ImportProfilesBody,
   organizationId: string,
 ) => {
-  const newProfiles: Pick<
-    ImportProfilesBody[0],
-    "email" | "first_name" | "last_name"
-  >[] = [];
-
   const client = await app.pg.pool.connect();
 
   try {
@@ -37,95 +31,119 @@ const processClientImport = async (
     const { jobId, importDetailsIdList } = await withClient(
       client,
       async (client) => {
-        return await createImportJobAndDetails(
-          client,
-          organizationId,
-          profiles,
-        );
+        return await withRollback(client, async () => {
+          const jobId = await createImportJob(client, organizationId);
+          const importDetailsIdList = await createImportDetails(
+            client,
+            jobId,
+            profiles,
+          );
+          return { jobId, importDetailsIdList };
+        });
       },
-      "Failed to import profiles",
+      "Failed to create job for importing profiles",
     );
 
     // Try to process each profile
-    for (const profile of profiles) {
-      const importDetailsId = importDetailsIdList[profiles.indexOf(profile)];
+    const profilesToCreate = await Promise.all(
+      profiles.map(async (profile) => {
+        const importDetailsId = importDetailsIdList[profiles.indexOf(profile)];
 
-      try {
-        // TODO: add proper logging
-        console.log("PROCESSING PROFILE: ", profile);
-
-        // Mark the row status as processing
-        await withClient(
-          client,
-          async (client) => {
-            await markImportRowStatus(client, [importDetailsId], "processing");
-          },
-          "Failed to mark import row processing",
-        );
-
-        const existingProfileId = await withClient(
-          client,
-          async (client) => {
-            return await findExistingProfile(client, profile.email);
-          },
-          "Failed to find existing profile",
-        );
-
-        if (!existingProfileId) {
+        try {
           // TODO: add proper logging
-          console.log("PROFILE DOES NOT EXIST");
+          console.log("PROCESSING PROFILE: ", profile);
 
-          const { first_name, last_name, email } = profile;
-          newProfiles.push({ first_name, last_name, email });
-          continue;
+          // Mark the row status as processing
+          await withClient(
+            client,
+            async (client) => {
+              await markImportRowStatus(
+                client,
+                [importDetailsId],
+                "processing",
+              );
+            },
+            "Failed to mark import row processing",
+          );
+
+          const existingProfileId = await withClient(
+            client,
+            async (client) => {
+              return await findExistingProfile(client, profile.email);
+            },
+            "Failed to find existing profile",
+          );
+
+          if (!existingProfileId) {
+            // TODO: add proper logging
+            console.log("PROFILE DOES NOT EXIST");
+
+            const { first_name, last_name, email } = profile;
+            return { first_name, last_name, email };
+          }
+
+          // TODO: add proper logging
+          console.log("PROFILE EXISTS");
+
+          await withClient(
+            client,
+            async (client) => {
+              await withRollback(client, async () => {
+                const profileDetailId = await createProfileDetails(
+                  client,
+                  existingProfileId,
+                  organizationId,
+                  profile,
+                );
+
+                await updateProfileDetails(
+                  client,
+                  profileDetailId,
+                  organizationId,
+                  existingProfileId,
+                );
+              });
+            },
+            "Failed to create and update profile details",
+          );
+
+          // Mark the row as completed
+          await withClient(
+            client,
+            async (client) => {
+              await markImportRowStatus(client, [importDetailsId], "completed");
+            },
+            "Failed to mark import row completed",
+          );
+        } catch (err) {
+          // mark the row with an error
+          await withClient(
+            client,
+            async (client) => {
+              await markImportRowError(
+                client,
+                [importDetailsId],
+                (err as Error).message,
+              );
+            },
+            "Failed to mark import row error",
+          );
         }
+      }),
+    );
 
-        // TODO: add proper logging
-        console.log("PROFILE EXISTS");
-
-        await withClient(
-          client,
-          async (client) => {
-            await createAndUpdateProfileDetails(
-              client,
-              existingProfileId,
-              organizationId,
-              profile,
-            );
-          },
-          "Failed to create and update profile details",
-        );
-
-        // Mark the row as completed
-        await withClient(
-          client,
-          async (client) => {
-            await markImportRowStatus(client, [importDetailsId], "completed");
-          },
-          "Failed to mark import row completed",
-        );
-      } catch (err) {
-        // mark the row with an error
-        await withClient(
-          client,
-          async (client) => {
-            await markImportRowError(
-              client,
-              [importDetailsId],
-              (err as Error).message,
-            );
-          },
-          "Failed to mark import row error",
-        );
-      }
-    }
-
-    if (newProfiles.length) {
+    // Create profiles in Logto
+    if (profilesToCreate.length) {
       try {
         // TODO: add proper logging
         console.log("INVOKING LOGTO");
 
-        await createLogtoUsers(newProfiles, app.config, organizationId, jobId);
+        await createLogtoUsers(
+          profilesToCreate,
+          app.config,
+          organizationId,
+          jobId,
+        );
       } catch (err) {
         // mark the whole import job with an unrecoverable error
         await withClient(
@@ -146,44 +164,3 @@ const processClientImport = async (
     client.release();
   }
 };
-
-const createImportJobAndDetails = async (
-  client: PoolClient,
-  organizationId: string,
-  profiles: ImportProfilesBody,
-) => {
-  return await withRollback(client, async () => {
-    const jobId = await createImportJob(client, organizationId);
-    const importDetailsIdList = await createImportDetails(
-      client,
-      jobId,
-      profiles,
-    );
-    return { jobId, importDetailsIdList };
-  });
-};
-
-const createAndUpdateProfileDetails = async (
-  client: PoolClient,
-  profileId: string,
-  organizationId: string,
-  details: ImportProfilesBody[0],
-) => {
-  await withRollback(client, async () => {
-    const profileDetailId = await createProfileDetails(
-      client,
-      profileId,
-      organizationId,
-      details,
-    );
-
-    await updateProfileDetails(
-      client,
-      profileDetailId,
-      organizationId,
-      profileId,
-    );
-  });
-};
-
-export { processClientImport };
