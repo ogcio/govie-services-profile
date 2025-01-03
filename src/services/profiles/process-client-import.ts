@@ -84,8 +84,8 @@ export const processClientImport = async (
                   client,
                   existingProfileId,
                   organizationId,
-                  profile,
                 );
+                // Create profile details data
 
                 await updateProfileDetails(
                   client,
