@@ -1,11 +1,12 @@
 import { httpErrors } from "@fastify/sensible";
 import type { Pool } from "pg";
+import type { LogtoWebhookBody } from "~/schemas/webhooks/logto.js";
 
 export const processUserWebhook = async (params: {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  body: any;
+  body: LogtoWebhookBody;
   pool: Pool;
 }): Promise<{ id: string } | undefined> => {
+  console.dir(params.body, { depth: null });
   switch (params.body.event) {
     case "User.Data.Updated":
     case "User.Created":

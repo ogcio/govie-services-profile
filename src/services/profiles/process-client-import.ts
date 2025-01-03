@@ -3,7 +3,7 @@ import type { PoolClient } from "pg";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
-import { createUsersOnLogto } from "./interact-logto.js";
+import { createLogtoUsers } from "./create-logto-users.js";
 import { createProfileDetails } from "./sql/create-profile-details.js";
 import { findExistingProfile } from "./sql/find-existing-profile.js";
 import {
@@ -125,12 +125,7 @@ const processClientImport = async (
         // TODO: add proper logging
         console.log("INVOKING LOGTO");
 
-        await createUsersOnLogto(
-          newProfiles,
-          app.config,
-          organizationId,
-          jobId,
-        );
+        await createLogtoUsers(newProfiles, app.config, organizationId, jobId);
       } catch (err) {
         // mark the whole import job with an unrecoverable error
         await withClient(

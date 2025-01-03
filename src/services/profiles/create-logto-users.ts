@@ -1,8 +1,9 @@
 import { getAccessToken } from "@ogcio/api-auth";
 import type { FastifyInstance } from "fastify";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
+import { withRetry } from "~/utils/with-retry.js";
 
-export const createUsersOnLogto = async (
+export const createLogtoUsers = async (
   profiles: Pick<ImportProfilesBody[0], "email" | "first_name" | "last_name">[],
   config: FastifyInstance["config"],
   organizationId: string,
@@ -27,7 +28,6 @@ export const createUsersOnLogto = async (
   const profilePromises: Promise<{
     id: string | null;
     email: string | null;
-    error: Error | null;
   }>[] = [];
 
   for (const profile of profiles) {
@@ -46,60 +46,31 @@ export const createUsersOnLogto = async (
 
     const url = [config.LOGTO_MANAGEMENT_API_ENDPOINT, "users"].join("/");
     profilePromises.push(
-      createOnLogto(url, { ...basicOptions, body: JSON.stringify(body) }),
+      createLogtoUser(url, { ...basicOptions, body: JSON.stringify(body) }),
     );
   }
 
   return Promise.all(profilePromises);
 };
 
-const MAX_RETRIES = 3;
-const INITIAL_DELAY = 1000;
+const createLogtoUser = async (
+  url: string,
+  options: Record<string, string | number | Record<string, string>>,
+) => {
+  return withRetry(async (signal) => {
+    const response = await fetch(url, {
+      ...options,
+      signal,
+    });
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-const createOnLogto = async (url: string, options: Record<string, any>) => {
-  let lastError: Error | null = null;
-
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      const response = await fetch(url, {
-        ...options,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(
-          `Logto communication error! Status: ${response.status}`,
-        );
-      }
-
-      const body = await response.json();
-
-      return {
-        error: null,
-        id: body.id,
-        email: body.primaryEmail,
-      };
-    } catch (error) {
-      lastError = error as Error;
-      // Skip delay on last attempt
-      if (attempt < MAX_RETRIES - 1) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, INITIAL_DELAY * 2 ** attempt),
-        );
-      }
+    if (!response.ok) {
+      throw new Error(`Logto communication error! Status: ${response.status}`);
     }
-  }
 
-  console.error("Failed to create user on Logto after retries:", lastError);
-  return {
-    error: lastError,
-    id: null,
-    email: null,
-  };
+    const body = await response.json();
+    return {
+      id: body.id,
+      email: body.primaryEmail,
+    };
+  });
 };
