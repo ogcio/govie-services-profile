@@ -1,4 +1,4 @@
-export const healthCheckSchema = {
+export const HealthCheckSchema = {
   tags: ["Health"],
   hide: true,
   description:

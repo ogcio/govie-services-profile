@@ -1,6 +1,6 @@
 import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import type { FastifyInstance } from "fastify";
-import { healthCheckSchema } from "~/schemas/healthcheck.js";
+import { HealthCheckSchema } from "~/schemas/healthcheck.js";
 import type {
   FastifyReplyTypebox,
   FastifyRequestTypebox,
@@ -13,11 +13,11 @@ const plugin: FastifyPluginAsyncTypebox = async function healthCheck(
   app.get(
     "/health",
     {
-      schema: healthCheckSchema,
+      schema: HealthCheckSchema,
     },
     async (
-      _request: FastifyRequestTypebox<typeof healthCheckSchema>,
-      _reply: FastifyReplyTypebox<typeof healthCheckSchema>,
+      _request: FastifyRequestTypebox<typeof HealthCheckSchema>,
+      _reply: FastifyReplyTypebox<typeof HealthCheckSchema>,
     ) => {
       const { name, version } = await getPackageInfo();
       return { [name]: version };
@@ -26,7 +26,4 @@ const plugin: FastifyPluginAsyncTypebox = async function healthCheck(
 };
 
 export default plugin;
-
-// This makes the healthcheck not prefixed with default prefix
-// then the endpoint will be /health, without /api/v1/
 export const prefixOverride = "";

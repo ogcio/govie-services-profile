@@ -6,7 +6,6 @@ export const processUserWebhook = async (params: {
   body: LogtoWebhookBody;
   pool: Pool;
 }): Promise<{ id: string } | undefined> => {
-  console.dir(params.body, { depth: null });
   switch (params.body.event) {
     case "User.Data.Updated":
     case "User.Created":

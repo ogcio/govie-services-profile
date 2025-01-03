@@ -31,6 +31,6 @@ export const withRetry = async <T>(
     }
   }
 
-  console.error("Failed to create user on Logto after retries:", lastError);
-  throw lastError || new Error("Operation failed after retries");
+  console.error(`Operation failed after ${maxRetries} retries`, lastError);
+  throw lastError || new Error(`Operation failed after ${maxRetries} retries`);
 };

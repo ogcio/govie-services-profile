@@ -21,8 +21,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       );
       if (!isSignatureVerified) throw new Error("Signature not verified...");
       await processUserWebhook({ body: request.body, pool: fastify.pg.pool });
-
-      return { status: "ok" };
     },
   );
 };
