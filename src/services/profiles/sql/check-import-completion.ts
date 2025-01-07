@@ -1,13 +1,6 @@
 import type { PoolClient } from "pg";
 import { ImportStatus } from "~/const/profile.js";
 
-const FINAL_STATUSES = [
-  ImportStatus.COMPLETED,
-  ImportStatus.FAILED,
-  ImportStatus.CANCELLED,
-  ImportStatus.UNRECOVERABLE,
-];
-
 export const checkImportCompletion = async (
   client: PoolClient,
   jobId: string,
@@ -17,26 +10,26 @@ export const checkImportCompletion = async (
     total: number;
     completed: number;
     failed: number;
+    pending: number;
   }>(
-    `
-    WITH counts AS (
-      SELECT 
-        COUNT(*) as total,
-        COUNT(*) FILTER (WHERE d.status = ANY($1)) as completed,
-        COUNT(*) FILTER (WHERE d.status IN ('failed', 'unrecoverable')) as failed
-      FROM profile_import_details d
-      JOIN profile_imports i ON i.id = d.profile_import_id
-      WHERE i.job_id = $2
-    )
-    SELECT * FROM counts;
-    `,
-    [FINAL_STATUSES, jobId],
+    "WITH counts AS (" +
+      "  SELECT " +
+      "    COUNT(*)::INTEGER as total, " +
+      "    COUNT(*) FILTER (WHERE d.status = 'completed')::INTEGER as completed, " +
+      "    COUNT(*) FILTER (WHERE d.status = 'failed' OR d.status = 'unrecoverable')::INTEGER as failed, " +
+      "    COUNT(*) FILTER (WHERE d.status = 'pending')::INTEGER as pending " +
+      "  FROM profile_import_details d " +
+      "  JOIN profile_imports i ON i.id = d.profile_import_id " +
+      "  WHERE i.job_id = $1" +
+      ") " +
+      "SELECT * FROM counts",
+    [jobId],
   );
 
-  const { total, completed, failed } = result.rows[0];
+  const { total, completed, failed, pending } = result.rows[0];
 
-  // If all profiles are in a final state, determine overall status
-  if (total === completed) {
+  // If there are no pending profiles and all are in final state
+  if (pending === 0 && total === completed + failed) {
     return {
       isComplete: true,
       finalStatus:

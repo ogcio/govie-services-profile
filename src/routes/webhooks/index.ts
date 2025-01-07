@@ -20,7 +20,11 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         request.headers["logto-signature-sha-256"] as string,
       );
       if (!isSignatureVerified) throw new Error("Signature not verified...");
-      await processUserWebhook({ body: request.body, pool: fastify.pg.pool });
+      await processUserWebhook({
+        body: request.body,
+        pool: fastify.pg.pool,
+        logger: fastify.log,
+      });
     },
   );
 };
