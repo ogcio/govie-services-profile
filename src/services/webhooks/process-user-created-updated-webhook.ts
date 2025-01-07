@@ -1,4 +1,5 @@
 import { httpErrors } from "@fastify/sensible";
+import type { FastifyBaseLogger } from "fastify";
 import type { Pool, PoolClient } from "pg";
 import { ImportStatus } from "~/const/profile.js";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
@@ -24,6 +25,7 @@ interface WebhookResponse {
 export const processUserCreatedOrUpdatedWebhook = async (params: {
   body: LogtoUserCreatedBody;
   pool: Pool;
+  logger: FastifyBaseLogger;
 }): Promise<WebhookResponse> => {
   let client: PoolClient | null = null;
   const user = webhookBodyToUser(params.body.data);
@@ -36,6 +38,7 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
 
     client = await params.pool.connect();
 
+    // First transaction: Create profile and update status
     const result = await withRollback(client, async (transactionClient) => {
       const profileImportId = await findProfileImportByJobId(
         transactionClient,
@@ -74,11 +77,10 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
         importDetail as ImportProfilesBody[0],
       );
 
-      // Mark this profile as completed
       const importDetailsId = await transactionClient
         .query<{ id: string }>(
           `SELECT id FROM profile_import_details 
-         WHERE profile_import_id = $1 AND data->>'email' = $2`,
+           WHERE profile_import_id = $1 AND data->>'email' = $2`,
           [profileImportId, user.email],
         )
         .then((result) => result.rows[0]?.id);
@@ -95,28 +97,49 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
         ImportStatus.COMPLETED,
       );
 
-      // Check if all profiles are complete and update overall status
-      const { isComplete, finalStatus } = await checkImportCompletion(
-        transactionClient,
-        jobId,
-      );
-
-      if (isComplete) {
-        await updateProfileImportStatusByJobId(
-          transactionClient,
-          jobId,
-          finalStatus,
-        );
-      }
-
-      return profileId;
+      return { profileId, jobId };
     });
 
-    return { id: result, status: "success" };
+    // Second transaction: Check completion and update overall status
+    await withRollback(client, async (transactionClient) => {
+      params.logger.debug(
+        `[Webhook] Checking completion for job ${result.jobId}`,
+      );
+      const { isComplete, finalStatus } = await checkImportCompletion(
+        transactionClient,
+        result.jobId,
+      );
+      params.logger.debug("[Webhook] Completion check result:", {
+        isComplete,
+        finalStatus,
+      });
+
+      if (isComplete) {
+        params.logger.debug(
+          `[Webhook] Updating overall status to ${finalStatus}`,
+        );
+        await updateProfileImportStatusByJobId(
+          transactionClient,
+          result.jobId,
+          finalStatus,
+        );
+      } else {
+        params.logger.debug(
+          "[Webhook] Import not complete yet, staying in processing state",
+        );
+      }
+    });
+
+    return { id: result.profileId, status: "success" };
   } catch (error) {
+    params.logger.error("[Webhook] Error processing webhook:", error);
     // If there's an error, mark the profile as failed but don't fail the entire import
     if (client && user.jobId) {
+      // First transaction: Mark profile as failed
       await withRollback(client, async (transactionClient) => {
+        params.logger.debug(
+          `[Webhook] Marking profile ${user.email} as failed`,
+        );
         const profileImportId = await findProfileImportByJobId(
           transactionClient,
           user.jobId as string,
@@ -125,7 +148,7 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
           const importDetailsId = await transactionClient
             .query<{ id: string }>(
               `SELECT id FROM profile_import_details 
-             WHERE profile_import_id = $1 AND data->>'email' = $2`,
+               WHERE profile_import_id = $1 AND data->>'email' = $2`,
               [profileImportId, user.email],
             )
             .then((result) => result.rows[0]?.id);
@@ -136,21 +159,26 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
               [importDetailsId],
               ImportStatus.FAILED,
             );
-
-            // Check if all profiles are complete and update overall status
-            const { isComplete, finalStatus } = await checkImportCompletion(
-              transactionClient,
-              user.jobId as string,
-            );
-
-            if (isComplete) {
-              await updateProfileImportStatusByJobId(
-                transactionClient,
-                user.jobId as string,
-                finalStatus,
-              );
-            }
           }
+        }
+      });
+
+      // Second transaction: Check completion and update overall status
+      await withRollback(client, async (transactionClient) => {
+        const { isComplete, finalStatus } = await checkImportCompletion(
+          transactionClient,
+          user.jobId as string,
+        );
+
+        if (isComplete) {
+          params.logger.debug(
+            `[Webhook] Updating overall status to ${finalStatus} after error`,
+          );
+          await updateProfileImportStatusByJobId(
+            transactionClient,
+            user.jobId as string,
+            finalStatus,
+          );
         }
       });
     }

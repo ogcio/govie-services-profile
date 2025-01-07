@@ -75,6 +75,9 @@ const loadBuildingBlocksSdk = (
           },
           analytics: {
             baseUrl: process.env.ANALYTICS_URL ?? "",
+            matomoToken: process.env.ANALYTICS_MATOMO_TOKEN,
+            trackingWebsiteId: process.env.ANALYTICS_WEBSITE_ID,
+            dryRun: !!process.env.ANALYTICS_DRY_RUN,
           },
         },
         getTokenFn: getM2MTokenFn({

@@ -1,4 +1,5 @@
 import { httpErrors } from "@fastify/sensible";
+import type { FastifyBaseLogger } from "fastify";
 import type { Pool } from "pg";
 import type { LogtoUserCreatedBody } from "~/schemas/webhooks/logto-user-created.js";
 import { processUserCreatedOrUpdatedWebhook } from "./process-user-created-updated-webhook.js";
@@ -6,6 +7,7 @@ import { processUserCreatedOrUpdatedWebhook } from "./process-user-created-updat
 export const processUserWebhook = async (params: {
   body: LogtoUserCreatedBody;
   pool: Pool;
+  logger: FastifyBaseLogger;
 }): Promise<{ id: string | undefined }> => {
   switch (params.body.event) {
     case "User.Data.Updated":
