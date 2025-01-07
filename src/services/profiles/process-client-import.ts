@@ -4,6 +4,7 @@ import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
 import { createLogtoUsers } from "./create-logto-users.js";
+import type { LogtoError } from "./create-logto-users.js";
 import { createUpdateProfileDetails } from "./create-update-profile-details.js";
 import { lookupProfile } from "./lookup-profile.js";
 import {
@@ -48,6 +49,9 @@ export const processClientImport = async (
 
   for (const profile of profiles) {
     const importDetailsId = importDetailsMap.get(profile.email) as string;
+    console.log(
+      `Processing profile ${profile.email}... for importDetailsId ${importDetailsId}`,
+    );
 
     try {
       await withClient(app.pg.pool, async (client) => {
@@ -90,6 +94,9 @@ export const processClientImport = async (
       });
     } catch (err) {
       failedProfileIds.add(importDetailsId);
+      console.error(
+        `Failed to process profile ${profile.email} and importDetailsId ${importDetailsId}: ${err instanceof Error ? err.message : "Unknown error"}`,
+      );
       await withClient(app.pg.pool, async (client) => {
         return withRollback(client, async () => {
           await updateProfileImportDetails(
@@ -106,29 +113,56 @@ export const processClientImport = async (
   // 3. Create Logto users for collected profiles that haven't failed
   if (profilesToCreate.length > 0) {
     try {
-      await createLogtoUsers(
+      const results = await createLogtoUsers(
         profilesToCreate,
         app.config,
         organizationId,
         jobId,
       );
-    } catch (err) {
-      // Mark all pending profiles as failed
+
+      // Mark successful profiles as pending (for webhook)
       await withClient(app.pg.pool, async (client) => {
         return withRollback(client, async () => {
-          const pendingIds = profilesToCreate
-            .map((profile) => importDetailsMap.get(profile.email))
+          const successfulEmails = results.map((r) => r.primaryEmail);
+          const successfulIds = profilesToCreate
+            .filter((p) => successfulEmails.includes(p.email))
+            .map((p) => importDetailsMap.get(p.email))
             .filter((id): id is string => id !== undefined);
 
-          await updateProfileImportDetails(
+          await updateProfileImportDetailsStatus(
             client,
-            pendingIds,
-            err instanceof Error ? err.message : "Unknown error",
-            ImportStatus.FAILED,
+            successfulIds,
+            ImportStatus.PENDING,
           );
-          // Add these to failed profiles
-          for (const id of pendingIds) {
-            failedProfileIds.add(id);
+        });
+      });
+    } catch (err) {
+      // Mark only the failed profiles
+      await withClient(app.pg.pool, async (client) => {
+        return withRollback(client, async () => {
+          const failedEmails = profilesToCreate
+            .filter(
+              (p) => !(err as LogtoError)?.successfulEmails?.includes(p.email),
+            )
+            .map((p) => importDetailsMap.get(p.email))
+            .filter((id): id is string => id !== undefined);
+
+          if (failedEmails.length > 0) {
+            console.error(
+              `Failed to create Logto users for profiles ${failedEmails.join(
+                ", ",
+              )}: ${err instanceof Error ? err.message : "Unknown error"}`,
+            );
+            await updateProfileImportDetails(
+              client,
+              failedEmails,
+              err instanceof Error ? err.message : "Unknown error",
+              ImportStatus.FAILED,
+            );
+            // Add these to failed profiles
+            for (const id of failedEmails) {
+              failedProfileIds.add(id);
+            }
           }
         });
       });

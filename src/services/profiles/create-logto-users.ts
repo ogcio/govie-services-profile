@@ -3,6 +3,15 @@ import type { FastifyInstance } from "fastify";
 import { LogtoClient } from "~/clients/logto.js";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 
+interface LogtoUserResult {
+  id: string;
+  primaryEmail: string;
+}
+
+export interface LogtoError extends Error {
+  successfulEmails: string[];
+}
+
 const BATCH_SIZE = 10;
 const chunks = <T>(arr: T[], size: number): T[][] =>
   Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
@@ -27,10 +36,11 @@ export const createLogtoUsers = async (
   );
 
   const results = [];
+  const errors = [];
   for (const batch of chunks(profiles, BATCH_SIZE)) {
-    const batchResults = await Promise.all(
-      batch.map((profile) =>
-        client.createUser({
+    const batchPromises = batch.map(async (profile) => {
+      try {
+        const result = await client.createUser({
           primaryEmail: profile.email,
           username: [profile.first_name, profile.last_name]
             .join("_")
@@ -40,14 +50,34 @@ export const createLogtoUsers = async (
             organizationId,
             jobId,
           },
-        }),
-      ),
+        });
+        return { success: true, result };
+      } catch (error) {
+        return { success: false, error, email: profile.email };
+      }
+    });
+
+    const batchResults = await Promise.all(batchPromises);
+    results.push(
+      ...batchResults
+        .filter((r) => r.success)
+        .map((r) => r.result as LogtoUserResult),
     );
-    results.push(...batchResults);
+    errors.push(...batchResults.filter((r) => !r.success));
+
     // Add a small delay between batches to avoid rate limiting
     if (batch.length === BATCH_SIZE) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
+
+  if (errors.length > 0) {
+    const error = new Error(
+      "Some users failed to be created in Logto",
+    ) as LogtoError;
+    error.successfulEmails = results.map((r) => r.primaryEmail);
+    throw error;
+  }
+
   return results;
 };
