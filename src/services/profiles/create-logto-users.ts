@@ -4,10 +4,7 @@ import { LogtoClient } from "~/clients/logto.js";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 
 export const createLogtoUsers = async (
-  profiles: (
-    | Pick<ImportProfilesBody[0], "email" | "first_name" | "last_name">
-    | undefined
-  )[],
+  profiles: Pick<ImportProfilesBody[0], "email" | "first_name" | "last_name">[],
   config: FastifyInstance["config"],
   organizationId: string,
   jobId: string,
@@ -24,20 +21,18 @@ export const createLogtoUsers = async (
   );
 
   return await Promise.all(
-    profiles
-      .filter((profile) => profile !== undefined)
-      .map((profile) =>
-        client.createUser({
-          primaryEmail: profile.email,
-          username: [profile.first_name, profile.last_name]
-            .join("_")
-            .toLowerCase(),
-          name: [profile.first_name, profile.last_name].join(" "),
-          customData: {
-            organizationId,
-            jobId,
-          },
-        }),
-      ),
+    profiles.map((profile) =>
+      client.createUser({
+        primaryEmail: profile.email,
+        username: [profile.first_name, profile.last_name]
+          .join("_")
+          .toLowerCase(),
+        name: [profile.first_name, profile.last_name].join(" "),
+        customData: {
+          organizationId,
+          jobId,
+        },
+      }),
+    ),
   );
 };

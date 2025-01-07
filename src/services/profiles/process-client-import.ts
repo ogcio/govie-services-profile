@@ -109,7 +109,7 @@ export const processClientImport = async (
       );
       try {
         await createLogtoUsers(
-          profilesToCreate,
+          profilesToCreate.filter((profile) => profile !== undefined),
           app.config,
           organizationId,
           jobId,
