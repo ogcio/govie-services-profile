@@ -43,64 +43,67 @@ export const processClientImport = async (
 
     // 2. Try to process each profile
     app.log.debug(`About to process ${profiles.length} profiles`);
-    const profilesToCreate = await Promise.all(
-      profiles.map(async (profile) => {
-        const importDetailsId = importDetailsIdList[profiles.indexOf(profile)];
-        try {
-          // Mark the row status as processing
-          await withClient(client, async (client) => {
-            await updateProfileImportDetailsStatus(
-              client,
-              [importDetailsId],
-              ImportStatus.PROCESSING,
-            );
-          });
+    const profilesToCreate = (
+      await Promise.all(
+        profiles.map(async (profile) => {
+          const importDetailsId =
+            importDetailsIdList[profiles.indexOf(profile)];
+          try {
+            // Mark the row status as processing
+            await withClient(client, async (client) => {
+              await updateProfileImportDetailsStatus(
+                client,
+                [importDetailsId],
+                ImportStatus.PROCESSING,
+              );
+            });
 
-          const { exists, profileId } = await lookupProfile(
-            client,
-            profile.email,
-          );
+            const { exists, profileId } = await lookupProfile(
+              client,
+              profile.email,
+            );
 
-          if (!exists) return profile;
+            if (!exists) return profile;
 
-          await createUpdateProfileDetails(
-            client,
-            organizationId,
-            profileId as string,
-            profile,
-          );
+            await createUpdateProfileDetails(
+              client,
+              organizationId,
+              profileId as string,
+              profile,
+            );
 
-          // Mark the row as completed
-          await withClient(client, async (client) => {
-            await updateProfileImportDetailsStatus(
-              client,
-              [importDetailsId],
-              ImportStatus.COMPLETED,
-            );
-            await updateProfileImportStatusByJobId(
-              client,
-              jobId,
-              ImportStatus.COMPLETED,
-            );
-          });
-        } catch (err) {
-          app.log.error(err);
-          // mark the row with an error
-          await withClient(client, async (client) => {
-            await updateProfileImportDetails(
-              client,
-              [importDetailsId],
-              (err as Error).message,
-            );
-            await updateProfileImportStatusByJobId(
-              client,
-              jobId,
-              ImportStatus.FAILED,
-            );
-          });
-        }
-      }),
-    );
+            // Mark the row as completed
+            await withClient(client, async (client) => {
+              await updateProfileImportDetailsStatus(
+                client,
+                [importDetailsId],
+                ImportStatus.COMPLETED,
+              );
+              await updateProfileImportStatusByJobId(
+                client,
+                jobId,
+                ImportStatus.COMPLETED,
+              );
+            });
+          } catch (err) {
+            app.log.error(err);
+            // mark the row with an error
+            await withClient(client, async (client) => {
+              await updateProfileImportDetails(
+                client,
+                [importDetailsId],
+                (err as Error).message,
+              );
+              await updateProfileImportStatusByJobId(
+                client,
+                jobId,
+                ImportStatus.FAILED,
+              );
+            });
+          }
+        }),
+      )
+    ).filter((profile) => profile !== undefined);
 
     // 3. Create profiles in Logto
     if (profilesToCreate.length) {
@@ -109,7 +112,7 @@ export const processClientImport = async (
       );
       try {
         await createLogtoUsers(
-          profilesToCreate.filter((profile) => profile !== undefined),
+          profilesToCreate,
           app.config,
           organizationId,
           jobId,
