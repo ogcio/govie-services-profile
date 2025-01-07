@@ -3,6 +3,7 @@ import { PROFILES_TAG } from "./shared.js";
 
 export const ImportProfilesSchema = {
   tags: [PROFILES_TAG],
+  operationId: "importProfiles",
   body: Type.Array(
     Type.Object({
       address: Type.String(),

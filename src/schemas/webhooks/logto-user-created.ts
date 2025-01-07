@@ -3,6 +3,7 @@ import { WEBHOOKS_TAG } from "./logto-shared.js";
 
 export const LogtoUserCreatedSchema = {
   tags: [WEBHOOKS_TAG],
+  operationId: "logtoUserCreated",
   body: Type.Object({
     hookId: Type.String(),
     event: Type.String(),

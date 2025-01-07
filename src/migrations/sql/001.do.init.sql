@@ -1,10 +1,6 @@
 CREATE TABLE profiles (
     /* varchar because logto id is not a uuid but a nano id */
-    id varchar(12) PRIMARY KEY DEFAULT SUBSTRING(
-        gen_random_uuid ()::text,
-        0,
-        12
-    ),
+    id varchar(12) PRIMARY KEY NOT NULL,
     public_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     /* The common user (person) this profile belongs to */
@@ -49,7 +45,8 @@ CREATE TABLE profile_imports (
             'success'
         )
     ) DEFAULT 'pending',
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE profile_import_details (
@@ -67,7 +64,8 @@ CREATE TABLE profile_import_details (
         )
     ) DEFAULT 'pending',
     error_message TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Add indexes for profile lookups

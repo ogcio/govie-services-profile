@@ -72,9 +72,21 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
       );
 
       // Mark this profile as completed
+      const importDetailsId = await transactionClient
+        .query<{ id: string }>(
+          `SELECT id FROM profile_import_details 
+         WHERE profile_import_id = $1 AND data->>'email' = $2`,
+          [profileImportId, user.email],
+        )
+        .then((result) => result.rows[0]?.id);
+
+      if (!importDetailsId) {
+        throw new Error(`No import details found for email: ${user.email}`);
+      }
+
       await updateProfileImportDetailsStatus(
         transactionClient,
-        [profileImportId],
+        [importDetailsId],
         ImportStatus.COMPLETED,
       );
 
@@ -105,24 +117,34 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
           user.jobId as string,
         );
         if (profileImportId) {
-          await updateProfileImportDetailsStatus(
-            transactionClient,
-            [profileImportId],
-            ImportStatus.FAILED,
-          );
+          const importDetailsId = await transactionClient
+            .query<{ id: string }>(
+              `SELECT id FROM profile_import_details 
+             WHERE profile_import_id = $1 AND data->>'email' = $2`,
+              [profileImportId, user.email],
+            )
+            .then((result) => result.rows[0]?.id);
 
-          // Check if all profiles are complete and update overall status
-          const { isComplete, finalStatus } = await checkImportCompletion(
-            transactionClient,
-            user.jobId as string,
-          );
+          if (importDetailsId) {
+            await updateProfileImportDetailsStatus(
+              transactionClient,
+              [importDetailsId],
+              ImportStatus.FAILED,
+            );
 
-          if (isComplete) {
-            await updateProfileImportStatusByJobId(
+            // Check if all profiles are complete and update overall status
+            const { isComplete, finalStatus } = await checkImportCompletion(
               transactionClient,
               user.jobId as string,
-              finalStatus,
             );
+
+            if (isComplete) {
+              await updateProfileImportStatusByJobId(
+                transactionClient,
+                user.jobId as string,
+                finalStatus,
+              );
+            }
           }
         }
       });
