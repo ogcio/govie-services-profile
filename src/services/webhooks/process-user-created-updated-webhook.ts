@@ -1,3 +1,4 @@
+import { httpErrors } from "@fastify/sensible";
 import type { Pool, PoolClient } from "pg";
 import { ImportStatus } from "~/const/profile.js";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
@@ -41,7 +42,9 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
         jobId,
       );
       if (!profileImportId) {
-        throw new Error(`No profile import found for job ID: ${jobId}`);
+        throw httpErrors.notFound(
+          `No profile import found for job ID: ${jobId}`,
+        );
       }
 
       const importDetail = await getProfileImportDetailDataByEmail(
@@ -51,7 +54,7 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
       );
 
       if (!user.organizationId) {
-        throw new Error("Organization ID is required");
+        throw httpErrors.badRequest("Organization ID is required");
       }
 
       const profileId = await createProfile(transactionClient, {
@@ -81,7 +84,9 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
         .then((result) => result.rows[0]?.id);
 
       if (!importDetailsId) {
-        throw new Error(`No import details found for email: ${user.email}`);
+        throw httpErrors.notFound(
+          `No import details found for email: ${user.email}`,
+        );
       }
 
       await updateProfileImportDetailsStatus(
