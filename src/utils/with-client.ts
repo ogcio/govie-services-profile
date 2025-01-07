@@ -1,3 +1,4 @@
+import { httpErrors } from "@fastify/sensible";
 import type { Pool, PoolClient } from "pg";
 import { isNativeError } from "util/types";
 
@@ -10,6 +11,8 @@ export const withClient = async <T>(
   try {
     return await callback(client);
   } catch (err) {
-    throw new Error(isNativeError(err) ? err.message : errorMessage);
+    throw httpErrors.internalServerError(
+      isNativeError(err) ? err.message : errorMessage,
+    );
   }
 };

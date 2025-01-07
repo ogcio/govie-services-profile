@@ -1,3 +1,5 @@
+import { httpErrors } from "@fastify/sensible";
+
 interface RetryConfig {
   maxRetries?: number;
   initialDelay?: number;
@@ -31,5 +33,10 @@ export const withRetry = async <T>(
     }
   }
 
-  throw lastError || new Error(`Operation failed after ${maxRetries} retries`);
+  throw (
+    lastError ||
+    httpErrors.internalServerError(
+      `Operation failed after ${maxRetries} retries`,
+    )
+  );
 };
