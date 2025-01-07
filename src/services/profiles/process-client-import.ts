@@ -25,7 +25,7 @@ export const processClientImport = async (
 
   try {
     // 1. Create import job and import details
-    app.log.info("About to create job for importing profiles");
+    app.log.debug("About to create job for importing profiles");
     const { jobId, importDetailsIdList } = await withClient(
       client,
       async (client) => {
@@ -42,7 +42,7 @@ export const processClientImport = async (
     );
 
     // 2. Try to process each profile
-    app.log.info(`About to process ${profiles.length} profiles`);
+    app.log.debug(`About to process ${profiles.length} profiles`);
     const profilesToCreate = await Promise.all(
       profiles.map(async (profile) => {
         const importDetailsId = importDetailsIdList[profiles.indexOf(profile)];
@@ -104,7 +104,7 @@ export const processClientImport = async (
 
     // 3. Create profiles in Logto
     if (profilesToCreate.length) {
-      app.log.info(
+      app.log.debug(
         `About to create ${profilesToCreate.length} profiles on Logto`,
       );
       try {
