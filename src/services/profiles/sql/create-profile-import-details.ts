@@ -1,15 +1,15 @@
 import type { PoolClient } from "pg";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
-import { findImportJob } from "./find-import-job.js";
+import { findProfileImportByJobId } from "./find-profile-import-by-job-id.js";
 
-export const createImportDetails = async (
+export const createProfileImportDetails = async (
   client: PoolClient,
   jobId: string,
   profiles: ImportProfilesBody,
 ) => {
   const values = profiles.map((_, index) => `($1, $${index + 2})`).join(",");
 
-  const profileImportId = await findImportJob(client, jobId);
+  const profileImportId = await findProfileImportByJobId(client, jobId);
 
   const params = [profileImportId];
   for (const profile of profiles) {

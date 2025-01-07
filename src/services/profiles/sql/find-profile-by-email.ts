@@ -1,9 +1,6 @@
 import type { PoolClient } from "pg";
 
-export const findExistingProfile = async (
-  client: PoolClient,
-  email: string,
-) => {
+export const findProfileByEmail = async (client: PoolClient, email: string) => {
   const query = "SELECT id FROM profiles WHERE email = $1;";
   const values = [email];
 

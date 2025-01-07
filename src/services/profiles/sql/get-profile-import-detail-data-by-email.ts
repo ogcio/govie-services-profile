@@ -1,7 +1,7 @@
 import type { PoolClient } from "pg";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 
-export const getImportDataForUserEmail = async (
+export const getProfileImportDetailDataByEmail = async (
   client: PoolClient,
   profileImportId: string,
   email: string,

@@ -6,15 +6,15 @@ import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
 import { createLogtoUsers } from "./create-logto-users.js";
 import { createUpdateProfileDetails } from "./create-update-profile-details.js";
-import { findExistingProfile } from "./sql/find-existing-profile.js";
+import { findProfileByEmail } from "./sql/find-profile-by-email.js";
 import {
-  createImportDetails,
-  createImportJob,
+  createProfileImport,
+  createProfileImportDetails,
   getProfileImportStatus,
-  markImportRowError,
-  markImportRowStatus,
+  updateProfileImportDetails,
+  updateProfileImportDetailsStatus,
 } from "./sql/index.js";
-import { markImportStatus } from "./sql/mark-import-status.js";
+import { updateProfileImportStatusByJobId } from "./sql/update-profile-import-status-by-job-id.js";
 
 export const processClientImport = async (
   app: FastifyInstance,
@@ -30,8 +30,8 @@ export const processClientImport = async (
       client,
       async (client) => {
         return await withRollback(client, async () => {
-          const jobId = await createImportJob(client, organizationId);
-          const importDetailsIdList = await createImportDetails(
+          const jobId = await createProfileImport(client, organizationId);
+          const importDetailsIdList = await createProfileImportDetails(
             client,
             jobId,
             profiles,
@@ -49,7 +49,7 @@ export const processClientImport = async (
         try {
           // Mark the row status as processing
           await withClient(client, async (client) => {
-            await markImportRowStatus(
+            await updateProfileImportDetailsStatus(
               client,
               [importDetailsId],
               ImportStatus.PROCESSING,
@@ -57,7 +57,7 @@ export const processClientImport = async (
           });
 
           const existingProfileId = await withClient(client, async (client) => {
-            return await findExistingProfile(client, profile.email);
+            return await findProfileByEmail(client, profile.email);
           });
 
           if (!existingProfileId) return profile;
@@ -71,23 +71,31 @@ export const processClientImport = async (
 
           // Mark the row as completed
           await withClient(client, async (client) => {
-            await markImportRowStatus(
+            await updateProfileImportDetailsStatus(
               client,
               [importDetailsId],
               ImportStatus.COMPLETED,
             );
-            await markImportStatus(client, jobId, ImportStatus.COMPLETED);
+            await updateProfileImportStatusByJobId(
+              client,
+              jobId,
+              ImportStatus.COMPLETED,
+            );
           });
         } catch (err) {
           app.log.error(err);
           // mark the row with an error
           await withClient(client, async (client) => {
-            await markImportRowError(
+            await updateProfileImportDetails(
               client,
               [importDetailsId],
               (err as Error).message,
             );
-            await markImportStatus(client, jobId, ImportStatus.FAILED);
+            await updateProfileImportStatusByJobId(
+              client,
+              jobId,
+              ImportStatus.FAILED,
+            );
           });
         }
       }),
@@ -109,13 +117,17 @@ export const processClientImport = async (
         app.log.error(err);
         // mark the whole import job with an unrecoverable error
         await withClient(client, async (client) => {
-          await markImportRowError(
+          await updateProfileImportDetails(
             client,
             importDetailsIdList,
             ((err as LogtoError).body as LogtoErrorBody).message,
             ImportStatus.UNRECOVERABLE,
           );
-          await markImportStatus(client, jobId, ImportStatus.UNRECOVERABLE);
+          await updateProfileImportStatusByJobId(
+            client,
+            jobId,
+            ImportStatus.UNRECOVERABLE,
+          );
         });
       }
     }

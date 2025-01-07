@@ -2,7 +2,7 @@ import type { PoolClient } from "pg";
 import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
 import {
-  createProfileDetailData,
+  createProfileDataForProfileDetail,
   createProfileDetails,
   updateProfileDetails,
 } from "./sql/index.js";
@@ -21,7 +21,7 @@ export const createUpdateProfileDetails = async (
         organizationId,
       );
 
-      await createProfileDetailData(client, profileDetailId, data);
+      await createProfileDataForProfileDetail(client, profileDetailId, data);
 
       await updateProfileDetails(
         client,

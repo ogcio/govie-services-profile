@@ -3,8 +3,8 @@ import type { LogtoUserCreatedBody } from "~/schemas/webhooks/logto-user-created
 import { createUpdateProfileDetails } from "~/services/profiles/create-update-profile-details.js";
 import {
   createProfile,
-  findImportJob,
-  getImportDataForUserEmail,
+  findProfileImportByJobId,
+  getProfileImportDetailDataByEmail,
 } from "~/services/profiles/sql/index.js";
 import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
@@ -26,9 +26,9 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
   try {
     const importedUserRow = await withClient(client, async (client) => {
       return await withRollback(client, async () => {
-        const profileImportId = await findImportJob(client, jobId);
+        const profileImportId = await findProfileImportByJobId(client, jobId);
 
-        return await getImportDataForUserEmail(
+        return await getProfileImportDetailDataByEmail(
           client,
           profileImportId,
           user.email,

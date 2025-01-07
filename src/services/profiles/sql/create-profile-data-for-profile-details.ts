@@ -1,22 +1,7 @@
 import type { PoolClient } from "pg";
+import { isISODate } from "~/utils/is-iso-date.js";
 
-const isISODate = (value: string): boolean => {
-  const date = new Date(value);
-  return (
-    date instanceof Date && !Number.isNaN(date.getTime()) && value.includes("-")
-  );
-};
-
-const getValueType = (
-  value: unknown,
-): "string" | "number" | "boolean" | "date" => {
-  if (typeof value === "number") return "number";
-  if (typeof value === "boolean") return "boolean";
-  if (typeof value === "string" && isISODate(value)) return "date";
-  return "string";
-};
-
-export const createProfileDetailData = async (
+export const createProfileDataForProfileDetail = async (
   client: PoolClient,
   profileDetailId: string,
   data: Record<string, string | number>,
@@ -31,6 +16,14 @@ export const createProfileDetailData = async (
     .join(",");
 
   const params = [profileDetailId];
+  const getValueType = (
+    value: unknown,
+  ): "string" | "number" | "boolean" | "date" => {
+    if (typeof value === "number") return "number";
+    if (typeof value === "boolean") return "boolean";
+    if (typeof value === "string" && isISODate(value)) return "date";
+    return "string";
+  };
   for (const [key, value] of entries) {
     params.push(
       key, // name

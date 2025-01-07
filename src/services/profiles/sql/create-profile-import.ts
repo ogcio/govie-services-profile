@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import type { PoolClient } from "pg";
 
-export const createImportJob = async (
+export const createProfileImport = async (
   client: PoolClient,
   organisationId: string,
 ) => {

@@ -1,6 +1,6 @@
 import type { PoolClient } from "pg";
 
-export const markImportStatus = async (
+export const updateProfileImportStatusByJobId = async (
   client: PoolClient,
   jobId: string,
   status = "failed",
