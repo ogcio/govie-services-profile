@@ -1,12 +1,16 @@
 import type { Pool, PoolClient } from "pg";
+import { ImportStatus } from "~/const/profile.js";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 import type { LogtoUserCreatedBody } from "~/schemas/webhooks/logto-user-created.js";
 import { createUpdateProfileDetails } from "~/services/profiles/create-update-profile-details.js";
+import { checkImportCompletion } from "~/services/profiles/sql/check-import-completion.js";
 import {
   createProfile,
   findProfileImportByJobId,
   getProfileImportDetailDataByEmail,
+  updateProfileImportDetailsStatus,
 } from "~/services/profiles/sql/index.js";
+import { updateProfileImportStatusByJobId } from "~/services/profiles/sql/update-profile-import-status-by-job-id.js";
 import { withRollback } from "~/utils/with-rollback.js";
 import { webhookBodyToUser } from "./webhook-body-to-user.js";
 
@@ -21,8 +25,8 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
   pool: Pool;
 }): Promise<WebhookResponse> => {
   let client: PoolClient | null = null;
+  const user = webhookBodyToUser(params.body.data);
   try {
-    const user = webhookBodyToUser(params.body.data);
     const jobId = user.jobId ?? null;
 
     if (!jobId) {
@@ -67,11 +71,63 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
         importDetail as ImportProfilesBody[0],
       );
 
+      // Mark this profile as completed
+      await updateProfileImportDetailsStatus(
+        transactionClient,
+        [profileImportId],
+        ImportStatus.COMPLETED,
+      );
+
+      // Check if all profiles are complete and update overall status
+      const { isComplete, finalStatus } = await checkImportCompletion(
+        transactionClient,
+        jobId,
+      );
+
+      if (isComplete) {
+        await updateProfileImportStatusByJobId(
+          transactionClient,
+          jobId,
+          finalStatus,
+        );
+      }
+
       return profileId;
     });
 
     return { id: result, status: "success" };
   } catch (error) {
+    // If there's an error, mark the profile as failed but don't fail the entire import
+    if (client && user.jobId) {
+      await withRollback(client, async (transactionClient) => {
+        const profileImportId = await findProfileImportByJobId(
+          transactionClient,
+          user.jobId as string,
+        );
+        if (profileImportId) {
+          await updateProfileImportDetailsStatus(
+            transactionClient,
+            [profileImportId],
+            ImportStatus.FAILED,
+          );
+
+          // Check if all profiles are complete and update overall status
+          const { isComplete, finalStatus } = await checkImportCompletion(
+            transactionClient,
+            user.jobId as string,
+          );
+
+          if (isComplete) {
+            await updateProfileImportStatusByJobId(
+              transactionClient,
+              user.jobId as string,
+              finalStatus,
+            );
+          }
+        }
+      });
+    }
+
     return {
       id: undefined,
       error: error instanceof Error ? error.message : "Unknown error occurred",
