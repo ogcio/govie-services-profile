@@ -79,6 +79,7 @@ export const processClientImport = async (
             await markImportStatus(client, jobId, ImportStatus.COMPLETED);
           });
         } catch (err) {
+          app.log.error(err);
           // mark the row with an error
           await withClient(client, async (client) => {
             await markImportRowError(
@@ -105,6 +106,7 @@ export const processClientImport = async (
           jobId,
         );
       } catch (err) {
+        app.log.error(err);
         // mark the whole import job with an unrecoverable error
         await withClient(client, async (client) => {
           await markImportRowError(

@@ -27,7 +27,7 @@ CREATE TABLE profile_data (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     profile_details_id UUID NOT NULL REFERENCES profile_details (id),
     name VARCHAR(255) NOT NULL,
-    value_type VARCHAR(50) NOT NULL CHECK (
+    value_type VARCHAR(12) NOT NULL CHECK (
         value_type IN ('string', 'number', 'boolean', 'date')
     ),
     value VARCHAR(255),
@@ -38,7 +38,7 @@ CREATE TABLE profile_imports (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     job_id VARCHAR(255) NOT NULL,
     organisation_id varchar(255),
-    status VARCHAR(50) NOT NULL CHECK (
+    status VARCHAR(24) NOT NULL CHECK (
         status IN (
             'pending',
             'processing',
@@ -56,7 +56,7 @@ CREATE TABLE profile_import_details (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     profile_import_id UUID NOT NULL REFERENCES profile_imports (id),
     data JSONB NOT NULL,
-    status VARCHAR(50) NOT NULL CHECK (
+    status VARCHAR(24) NOT NULL CHECK (
         status IN (
             'pending',
             'processing',
