@@ -1,10 +1,13 @@
+import { httpErrors } from "@fastify/sensible";
 import type { PoolClient } from "pg";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 
-export class ProfileImportDetailNotFoundError extends Error {
+export class ProfileImportDetailNotFoundError extends httpErrors.HttpError {
   constructor(message: string) {
     super(message);
     this.name = "ProfileImportDetailNotFoundError";
+    this.status = 404;
+    this.statusCode = 404;
   }
 }
 
@@ -14,10 +17,10 @@ export const getProfileImportDetailDataByEmail = async (
   email: string,
 ): Promise<ImportProfilesBody[0]> => {
   if (!profileImportId) {
-    throw new Error("Profile import ID is required");
+    throw httpErrors.badRequest("Profile import ID is required");
   }
   if (!email) {
-    throw new Error("Email is required");
+    throw httpErrors.badRequest("Email is required");
   }
 
   const result = await client.query<{ profile: ImportProfilesBody[0] }>(

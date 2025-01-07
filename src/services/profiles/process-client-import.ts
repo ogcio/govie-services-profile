@@ -21,7 +21,7 @@ export const processClientImport = async (
   app: FastifyInstance,
   profiles: ImportProfilesBody,
   organizationId: string,
-) => {
+): Promise<string> => {
   // 1. Create import job and import details
   const { jobId, importDetailsMap } = await withClient(
     app.pg.pool,

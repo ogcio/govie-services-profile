@@ -20,7 +20,7 @@ export async function initializeServer() {
 
   server.register(fp(buildServer));
   await server.ready();
-  await server.swagger();
+  server.swagger();
 
   closeWithGrace(
     { delay: server.config.FASTIFY_CLOSE_GRACE_DELAY },
