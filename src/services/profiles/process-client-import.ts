@@ -21,125 +21,138 @@ export const processClientImport = async (
   profiles: ImportProfilesBody,
   organizationId: string,
 ) => {
-  const client = await app.pg.pool.connect();
-
-  try {
-    // 1. Create import job and import details
-    app.log.debug("About to create job for importing profiles");
-    const { jobId, importDetailsIdList } = await withClient(
-      client,
-      async (client) => {
-        return await withRollback(client, async () => {
-          const jobId = await createProfileImport(client, organizationId);
-          const importDetailsIdList = await createProfileImportDetails(
-            client,
-            jobId,
-            profiles,
-          );
-          return { jobId, importDetailsIdList };
-        });
-      },
-    );
-
-    // 2. Try to process each profile
-    app.log.debug(`About to process ${profiles.length} profiles`);
-    const profilesToCreate = (
-      await Promise.all(
-        profiles.map(async (profile) => {
-          const importDetailsId =
-            importDetailsIdList[profiles.indexOf(profile)];
-          try {
-            // Mark the row status as processing
-            await withClient(client, async (client) => {
-              await updateProfileImportDetailsStatus(
-                client,
-                [importDetailsId],
-                ImportStatus.PROCESSING,
-              );
-            });
-
-            const { exists, profileId } = await lookupProfile(
-              client,
-              profile.email,
-            );
-
-            if (!exists) return profile;
-
-            await createUpdateProfileDetails(
-              client,
-              organizationId,
-              profileId as string,
-              profile,
-            );
-
-            // Mark the row as completed
-            await withClient(client, async (client) => {
-              await updateProfileImportDetailsStatus(
-                client,
-                [importDetailsId],
-                ImportStatus.COMPLETED,
-              );
-              await updateProfileImportStatusByJobId(
-                client,
-                jobId,
-                ImportStatus.COMPLETED,
-              );
-            });
-          } catch (err) {
-            app.log.error(err);
-            // mark the row with an error
-            await withClient(client, async (client) => {
-              await updateProfileImportDetails(
-                client,
-                [importDetailsId],
-                (err as Error).message,
-              );
-              await updateProfileImportStatusByJobId(
-                client,
-                jobId,
-                ImportStatus.FAILED,
-              );
-            });
-          }
-        }),
-      )
-    ).filter((profile) => profile !== undefined);
-
-    // 3. Create profiles in Logto
-    if (profilesToCreate.length) {
-      app.log.debug(
-        `About to create ${profilesToCreate.length} profiles on Logto`,
-      );
-      try {
-        await createLogtoUsers(
-          profilesToCreate,
-          app.config,
-          organizationId,
+  // 1. Create import job and import details
+  app.log.debug("About to create job for importing profiles");
+  const { jobId, importDetailsMap } = await withClient(
+    app.pg.pool,
+    async (client) => {
+      return withRollback(client, async () => {
+        const jobId = await createProfileImport(client, organizationId);
+        const importDetailsIdList = await createProfileImportDetails(
+          client,
           jobId,
+          profiles,
         );
-      } catch (err) {
-        app.log.error(err);
-        // mark the whole import job with an unrecoverable error
-        await withClient(client, async (client) => {
-          await updateProfileImportDetails(
-            client,
-            importDetailsIdList,
-            ((err as LogtoError).body as LogtoErrorBody).message,
-            ImportStatus.UNRECOVERABLE,
-          );
-          await updateProfileImportStatusByJobId(
-            client,
-            jobId,
-            ImportStatus.UNRECOVERABLE,
-          );
-        });
-      }
+        const importDetailsMap = new Map(
+          profiles.map((profile, index) => [
+            profile.email,
+            importDetailsIdList[index],
+          ]),
+        );
+        return { jobId, importDetailsMap };
+      });
+    },
+  );
+
+  // 2. Process profiles sequentially to maintain consistent state
+  app.log.debug(`About to process ${profiles.length} profiles`);
+  const profilesToCreate: ImportProfilesBody = [];
+
+  for (const profile of profiles) {
+    const importDetailsId = importDetailsMap.get(profile.email);
+    if (!importDetailsId) {
+      app.log.error(`No import details ID found for profile ${profile.email}`);
+      continue;
     }
 
-    return await withClient(client, async (client) => {
-      return await getProfileImportStatus(client, jobId);
-    });
-  } finally {
-    client.release();
+    try {
+      await withClient(app.pg.pool, async (client) => {
+        return withRollback(client, async () => {
+          await updateProfileImportDetailsStatus(
+            client,
+            [importDetailsId],
+            ImportStatus.PROCESSING,
+          );
+
+          const { exists, profileId } = await lookupProfile(
+            client,
+            profile.email,
+          );
+
+          if (!exists) {
+            profilesToCreate.push(profile);
+            await updateProfileImportDetailsStatus(
+              client,
+              [importDetailsId],
+              ImportStatus.PENDING,
+            );
+            return;
+          }
+
+          await createUpdateProfileDetails(
+            client,
+            organizationId,
+            profileId as string,
+            profile,
+          );
+
+          await updateProfileImportDetailsStatus(
+            client,
+            [importDetailsId],
+            ImportStatus.COMPLETED,
+          );
+        });
+      });
+    } catch (err) {
+      app.log.error(`Error processing profile ${profile.email}:`, err);
+      await withClient(app.pg.pool, async (client) => {
+        return withRollback(client, async () => {
+          await updateProfileImportDetails(
+            client,
+            [importDetailsId],
+            err instanceof Error ? err.message : "Unknown error",
+            ImportStatus.FAILED,
+          );
+        });
+      });
+    }
   }
+
+  // 3. Create profiles in Logto and update final status
+  let finalStatus = ImportStatus.COMPLETED;
+
+  if (profilesToCreate.length) {
+    app.log.debug(
+      `About to create ${profilesToCreate.length} profiles on Logto`,
+    );
+    try {
+      await createLogtoUsers(
+        profilesToCreate,
+        app.config,
+        organizationId,
+        jobId,
+      );
+    } catch (err) {
+      app.log.error("Error creating Logto users:", err);
+      finalStatus = ImportStatus.UNRECOVERABLE;
+
+      const errorMessage =
+        err instanceof Error
+          ? ((err as LogtoError).body as LogtoErrorBody)?.message || err.message
+          : "Unknown error creating Logto users";
+
+      await withClient(app.pg.pool, async (client) => {
+        return withRollback(client, async () => {
+          await updateProfileImportDetails(
+            client,
+            Array.from(importDetailsMap.values()),
+            errorMessage,
+            ImportStatus.UNRECOVERABLE,
+          );
+        });
+      });
+    }
+  }
+
+  // 4. Update final job status
+  await withClient(app.pg.pool, async (client) => {
+    return withRollback(client, async () => {
+      await updateProfileImportStatusByJobId(client, jobId, finalStatus);
+    });
+  });
+
+  // 5. Return final status
+  return await withClient(app.pg.pool, async (client) => {
+    return getProfileImportStatus(client, jobId);
+  });
 };

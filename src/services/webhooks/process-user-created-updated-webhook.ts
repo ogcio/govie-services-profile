@@ -1,4 +1,5 @@
-import type { Pool } from "pg";
+import type { Pool, PoolClient } from "pg";
+import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 import type { LogtoUserCreatedBody } from "~/schemas/webhooks/logto-user-created.js";
 import { createUpdateProfileDetails } from "~/services/profiles/create-update-profile-details.js";
 import {
@@ -6,67 +7,79 @@ import {
   findProfileImportByJobId,
   getProfileImportDetailDataByEmail,
 } from "~/services/profiles/sql/index.js";
-import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
 import { webhookBodyToUser } from "./webhook-body-to-user.js";
+
+interface WebhookResponse {
+  id: string | undefined;
+  error?: string;
+  status: "success" | "error";
+}
 
 export const processUserCreatedOrUpdatedWebhook = async (params: {
   body: LogtoUserCreatedBody;
   pool: Pool;
-}): Promise<{ id: string | undefined }> => {
-  const client = await params.pool.connect();
-  const user = webhookBodyToUser(params.body.data);
-  const jobId = user.jobId ?? null;
-
-  console.dir(user, { depth: null });
-
-  // TODO: fix when coming from OIDC provider
-  if (!jobId) return { id: user.id };
-
+}): Promise<WebhookResponse> => {
+  let client: PoolClient | null = null;
   try {
-    const importedUserRow = await withClient(client, async (client) => {
-      return await withRollback(client, async () => {
-        const profileImportId = await findProfileImportByJobId(client, jobId);
+    const user = webhookBodyToUser(params.body.data);
+    const jobId = user.jobId ?? null;
 
-        return await getProfileImportDetailDataByEmail(
-          client,
-          profileImportId,
-          user.email,
-        );
+    if (!jobId) {
+      return { id: user.id, status: "success" };
+    }
+
+    client = await params.pool.connect();
+
+    const result = await withRollback(client, async (transactionClient) => {
+      const profileImportId = await findProfileImportByJobId(
+        transactionClient,
+        jobId,
+      );
+      if (!profileImportId) {
+        throw new Error(`No profile import found for job ID: ${jobId}`);
+      }
+
+      const importDetail = await getProfileImportDetailDataByEmail(
+        transactionClient,
+        profileImportId,
+        user.email,
+      );
+
+      if (!user.organizationId) {
+        throw new Error("Organization ID is required");
+      }
+
+      const profileId = await createProfile(transactionClient, {
+        id: user.id,
+        email: user.email,
+        public_name: [importDetail.first_name, importDetail.last_name].join(
+          " ",
+        ),
+        primary_user_id: user.primaryUserId,
+        safe_level: 0,
       });
+
+      await createUpdateProfileDetails(
+        transactionClient,
+        user.organizationId,
+        profileId,
+        importDetail as ImportProfilesBody[0],
+      );
+
+      return profileId;
     });
 
-    const profileId = await withClient(client, async (client) => {
-      return await withRollback(client, async () => {
-        return await createProfile(client, {
-          id: user.id,
-          email: user.email,
-          public_name: [
-            importedUserRow.first_name,
-            importedUserRow.last_name,
-          ].join(" "),
-          primary_user_id: user.primaryUserId,
-          safe_level: 0,
-        });
-      });
-    });
-
-    await createUpdateProfileDetails(
-      client,
-      user.organizationId ?? "",
-      profileId,
-      importedUserRow,
-    );
-
-    return { id: profileId };
+    return { id: result, status: "success" };
   } catch (error) {
-    // TODO: delete the user on logto if something fails on our side
-    // mark the row as error
-    // mark the import as failed
-    console.error(error);
-    return { id: undefined };
+    return {
+      id: undefined,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+      status: "error",
+    };
   } finally {
-    // mark the row as success
-    client.release();
+    if (client) {
+      await client.release();
+    }
   }
 };

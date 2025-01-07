@@ -1,11 +1,12 @@
-import type { PoolClient } from "pg";
+import type { Pool, PoolClient } from "pg";
 import { isNativeError } from "util/types";
 
 export const withClient = async <T>(
-  client: PoolClient,
+  pool: Pool,
   callback: (client: PoolClient) => Promise<T>,
   errorMessage = "Database operation failed",
 ): Promise<T> => {
+  const client = await pool.connect();
   try {
     return await callback(client);
   } catch (err) {

@@ -69,3 +69,11 @@ CREATE TABLE profile_import_details (
     error_message TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Add indexes for profile lookups
+CREATE INDEX idx_profiles_email ON profiles(email);
+CREATE INDEX idx_profile_data_lookup ON profile_data(value, value_type, name) WHERE value_type = 'string' AND name = 'email';
+CREATE INDEX idx_profile_details_latest ON profile_details(profile_id) WHERE is_latest = true;
+
+-- Add index for job lookups
+CREATE INDEX idx_profile_imports_job_id ON profile_imports(job_id);
