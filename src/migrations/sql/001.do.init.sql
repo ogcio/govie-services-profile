@@ -28,21 +28,10 @@ CREATE TABLE profile_data (
     profile_details_id UUID NOT NULL REFERENCES profile_details (id),
     name VARCHAR(255) NOT NULL,
     value_type VARCHAR(50) NOT NULL CHECK (
-        value_type IN ('string', 'number')
+        value_type IN ('string', 'number', 'boolean', 'date')
     ),
-    value_string VARCHAR(255),
-    value_number NUMERIC,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT check_value_type CHECK (
-        (
-            value_type = 'string'
-            AND value_string IS NOT NULL
-        )
-        OR (
-            value_type = 'number'
-            AND value_number IS NOT NULL
-        )
-    )
+    value VARCHAR(255),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE profile_imports (

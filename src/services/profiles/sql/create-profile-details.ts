@@ -9,7 +9,7 @@ export const createProfileDetails = async (
         profile_id,
         organisation_id,
         is_latest
-    ) VALUES ($1, $2, $3, $4) RETURNING id;`;
+    ) VALUES ($1, $2, $3) RETURNING id;`;
 
   const values = [profileId, organizationId, true];
 

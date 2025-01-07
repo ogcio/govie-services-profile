@@ -17,21 +17,21 @@ export const webhookBodyToUser = (bodyData: {
     return {
       id: bodyData.id as string,
       details: {
-        first_name: identity.rawData.firstName ?? identity.rawData.givenName,
-        last_name: identity.rawData.lastName ?? identity.rawData.surname,
+        firstName: identity.rawData.firstName ?? identity.rawData.givenName,
+        lastName: identity.rawData.lastName ?? identity.rawData.surname,
         email: identity.email,
       },
       email: identity.email,
-      primary_user_id: bodyData.id,
-      created_at: getCurrentUTCDate(),
+      primaryUserId: bodyData.id,
+      createdAt: getCurrentUTCDate(),
     };
   }
 
   return {
     id: bodyData.id as string,
     email: bodyData.primaryEmail,
-    primary_user_id: bodyData.id,
-    created_at: getCurrentUTCDate(),
+    primaryUserId: bodyData.id,
+    createdAt: getCurrentUTCDate(),
     organizationId: bodyData.customData?.organizationId,
     jobId: bodyData.customData?.jobId,
   };

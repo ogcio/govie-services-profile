@@ -31,7 +31,7 @@ export const createProfile = async (
   `;
 
   const values = [
-    profile.email,
+    profile.id,
     profile.public_name,
     profile.email,
     profile.primary_user_id,

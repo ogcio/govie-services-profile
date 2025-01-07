@@ -13,11 +13,13 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       schema: ImportProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof ImportProfilesSchema>) => {
-      await processClientImport(
+      const importStatus = await processClientImport(
         fastify,
         request.body,
         request.query.organizationId,
       );
+
+      return { status: importStatus };
     },
   );
 };
