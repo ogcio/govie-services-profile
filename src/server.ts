@@ -23,7 +23,7 @@ export default async function buildServer(
     autoHooks: true,
     cascadeHooks: true,
     // ignore the files that starts with shared or utils
-    ignorePattern: /^.*(shared|utils)\-?(.+)?\.ts$/,
+    ignorePattern: /^.*(shared|utils)\-?(.+)?\.(?:ts|js)$/,
     options: { ...options },
   });
 }
