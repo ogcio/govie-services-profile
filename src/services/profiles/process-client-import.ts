@@ -6,7 +6,7 @@ import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
 import { createLogtoUsers } from "./create-logto-users.js";
 import { createUpdateProfileDetails } from "./create-update-profile-details.js";
-import { findProfileByEmail } from "./sql/find-profile-by-email.js";
+import { lookupProfile } from "./lookup-profile.js";
 import {
   createProfileImport,
   createProfileImportDetails,
@@ -56,16 +56,17 @@ export const processClientImport = async (
             );
           });
 
-          const existingProfileId = await withClient(client, async (client) => {
-            return await findProfileByEmail(client, profile.email);
-          });
+          const { exists, profileId } = await lookupProfile(
+            client,
+            profile.email,
+          );
 
-          if (!existingProfileId) return profile;
+          if (!exists) return profile;
 
           await createUpdateProfileDetails(
             client,
             organizationId,
-            existingProfileId,
+            profileId as string,
             profile,
           );
 
