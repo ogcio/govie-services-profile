@@ -9,7 +9,7 @@ services:
     ports:
       - ${POSTGRES_PORT:-5432}:5432
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - ./apps/profile-api/init.sql:/docker-entrypoint-initdb.d/01_init.sql
       - profile-db:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready", "-U", "postgres" ]
