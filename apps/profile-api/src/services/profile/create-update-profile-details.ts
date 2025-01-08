@@ -11,7 +11,7 @@ export class ProfileDetailsError implements HttpError {
   status = 500;
   statusCode = 500;
   expose = true;
-  name = "ProfileDetailsError";
+  name = "ProfileDetails";
   message = "error working on profile details";
 
   constructor(message?: string) {
