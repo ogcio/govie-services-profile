@@ -20,9 +20,6 @@ importers:
       '@types/node':
         specifier: 22.10.5
         version: 22.10.5
-      '@types/pg':
-        specifier: ^8.11.10
-        version: 8.11.10
       '@vitest/coverage-v8':
         specifier: ^2.1.8
         version: 2.1.8(vitest@2.1.8(@types/node@22.10.5)(sass@1.83.1))
@@ -178,6 +175,9 @@ importers:
       '@types/http-errors':
         specifier: ^2.0.4
         version: 2.0.4
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.11.10
       fastify-cli:
         specifier: ^7.1.0
         version: 7.3.0
