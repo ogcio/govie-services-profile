@@ -1,4 +1,4 @@
-import { httpErrors } from "@fastify/sensible";
+import type { HttpError } from "@fastify/sensible";
 import type { PoolClient } from "pg";
 import { withRollback } from "~/utils/with-rollback.js";
 import {
@@ -7,12 +7,15 @@ import {
   updateProfileDetails,
 } from "./sql/index.js";
 
-export class ProfileDetailsError extends httpErrors.HttpError {
-  constructor(message: string) {
-    super(message);
-    this.name = "ProfileDetailsError";
-    this.statusCode = 500;
-    this.status = 500;
+export class ProfileDetailsError implements HttpError {
+  status = 500;
+  statusCode = 500;
+  expose = true;
+  name = "ProfileDetailsError";
+  message = "error working on profile details";
+
+  constructor(message?: string) {
+    this.name = message ?? this.name;
   }
 }
 
