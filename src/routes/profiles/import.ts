@@ -8,25 +8,27 @@ import { processClientImport } from "~/services/profiles/process-client-import.j
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   fastify.post(
-    "/import",
+    "/",
     {
       // preValidation: (req, res) =>
       //   app.checkPermissions(req, res, [Permissions.Admin.Write]),
       schema: ImportProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof ImportProfilesSchema>) => {
-      const importStatus = await processClientImport(
-        fastify,
-        request.body,
-        request.query.organizationId,
-      );
+      const importStatus = await processClientImport({
+        profiles: request.body,
+        organizationId: request.query.organizationId,
+        logger: request.log,
+        config: fastify.config,
+        pool: fastify.pg.pool,
+      });
 
       return { status: importStatus };
     },
   );
 
   fastify.get(
-    "/import",
+    "/",
     {
       preValidation: (req, res) =>
         fastify.checkPermissions(req, res, [Permissions.User.Read]),
@@ -38,4 +40,4 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
 };
 
 export default plugin;
-export const autoPrefix = "/api/v1/profiles";
+export const autoPrefix = "/api/v1/profiles-import";

@@ -4,7 +4,7 @@ export const updateProfileImportDetailsStatus = async (
   client: PoolClient,
   importDetailsIdList: string[],
   status: string,
-) => {
+): Promise<void> => {
   const placeholders = importDetailsIdList
     .map((_, index) => `$${index + 2}`)
     .join(",");

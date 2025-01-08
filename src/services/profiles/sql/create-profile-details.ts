@@ -1,10 +1,11 @@
 import type { PoolClient } from "pg";
+import { ProfileDetailsError } from "../create-update-profile-details.js";
 
 export const createProfileDetails = async (
   client: PoolClient,
   profileId: string,
   organizationId: string,
-) => {
+): Promise<string> => {
   const query = `INSERT INTO profile_details(
         profile_id,
         organisation_id,
@@ -14,5 +15,12 @@ export const createProfileDetails = async (
   const values = [profileId, organizationId, true];
 
   const result = await client.query<{ id: string }>(query, values);
-  return result.rows[0]?.id;
+
+  if (!result.rows[0]?.id) {
+    throw new ProfileDetailsError(
+      `Unable to insert profile detail with profile_id ${profileId} and organisation id ${organizationId}`,
+    );
+  }
+
+  return result.rows[0].id;
 };

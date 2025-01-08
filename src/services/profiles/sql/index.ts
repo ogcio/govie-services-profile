@@ -1,7 +1,6 @@
 export * from "./create-profile-import-details.js";
 export * from "./create-profile-import.js";
 export * from "./create-profile-details.js";
-export * from "./find-profile-by-email.js";
 export * from "./find-profile-import-by-job-id.js";
 export * from "./get-profile-import-detail-data-by-email.js";
 export * from "./update-profile-import-details.js";
@@ -10,5 +9,4 @@ export * from "./update-profile-details.js";
 export * from "./create-profile.js";
 export * from "./create-profile-data-for-profile-details.js";
 export * from "./get-profile-import-status.js";
-export * from "./find-profile-data-by-email.js";
 export * from "./check-import-completion.js";

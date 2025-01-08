@@ -5,7 +5,7 @@ export const createProfileDataForProfileDetail = async (
   client: PoolClient,
   profileDetailId: string,
   data: Record<string, string | number>,
-) => {
+): Promise<void> => {
   const entries = Object.entries(data);
 
   const values = entries

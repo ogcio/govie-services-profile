@@ -1,5 +1,7 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyBaseLogger } from "fastify";
+import type { Pool } from "pg";
 import { ImportStatus } from "~/const/profile.js";
+import type { EnvConfig } from "~/plugins/external/env.js";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
@@ -17,32 +19,32 @@ import {
 } from "./sql/index.js";
 import { updateProfileImportStatusByJobId } from "./sql/update-profile-import-status-by-job-id.js";
 
-export const processClientImport = async (
-  app: FastifyInstance,
-  profiles: ImportProfilesBody,
-  organizationId: string,
-): Promise<string> => {
+export const processClientImport = async (params: {
+  pool: Pool;
+  logger: FastifyBaseLogger;
+  profiles: ImportProfilesBody;
+  organizationId: string;
+  config: EnvConfig;
+}): Promise<string> => {
+  const { config, pool, logger, profiles, organizationId } = params;
   // 1. Create import job and import details
-  const { jobId, importDetailsMap } = await withClient(
-    app.pg.pool,
-    async (client) => {
-      return withRollback(client, async () => {
-        const jobId = await createProfileImport(client, organizationId);
-        const importDetailsIdList = await createProfileImportDetails(
-          client,
-          jobId,
-          profiles,
-        );
-        const importDetailsMap = new Map(
-          profiles.map((profile, index) => [
-            profile.email,
-            importDetailsIdList[index],
-          ]),
-        );
-        return { jobId, importDetailsMap };
-      });
-    },
-  );
+  const { jobId, importDetailsMap } = await withClient(pool, async (client) => {
+    return withRollback(client, async () => {
+      const jobId = await createProfileImport(client, organizationId);
+      const importDetailsIdList = await createProfileImportDetails(
+        client,
+        jobId,
+        profiles,
+      );
+      const importDetailsMap = new Map(
+        profiles.map((profile, index) => [
+          profile.email,
+          importDetailsIdList[index],
+        ]),
+      );
+      return { jobId, importDetailsMap };
+    });
+  });
 
   // 2. Process profiles
   const failedProfileIds = new Set<string>();
@@ -50,12 +52,12 @@ export const processClientImport = async (
 
   for (const profile of profiles) {
     const importDetailsId = importDetailsMap.get(profile.email) as string;
-    app.log.debug(
+    logger.debug(
       `Processing profile ${profile.email}... for importDetailsId ${importDetailsId}`,
     );
 
     try {
-      await withClient(app.pg.pool, async (client) => {
+      await withClient(pool, async (client) => {
         return withRollback(client, async () => {
           await updateProfileImportDetailsStatus(
             client,
@@ -95,18 +97,16 @@ export const processClientImport = async (
       });
     } catch (err) {
       failedProfileIds.add(importDetailsId);
-      app.log.error(
+      logger.error(
         `Failed to process profile ${profile.email} and importDetailsId ${importDetailsId}: ${err instanceof Error ? err.message : "Unknown error"}`,
       );
-      await withClient(app.pg.pool, async (client) => {
-        return withRollback(client, async () => {
-          await updateProfileImportDetails(
-            client,
-            [importDetailsId],
-            err instanceof Error ? err.message : "Unknown error",
-            ImportStatus.FAILED,
-          );
-        });
+      await withClient(pool, async (client) => {
+        return updateProfileImportDetails(
+          client,
+          [importDetailsId],
+          err instanceof Error ? err.message : "Unknown error",
+          ImportStatus.FAILED,
+        );
       });
     }
   }
@@ -116,30 +116,28 @@ export const processClientImport = async (
     try {
       const results = await createLogtoUsers(
         profilesToCreate,
-        app.config,
+        config,
         organizationId,
         jobId,
       );
 
       // Mark successful profiles as pending (for webhook)
-      await withClient(app.pg.pool, async (client) => {
-        return withRollback(client, async () => {
-          const successfulEmails = results.map((r) => r.primaryEmail);
-          const successfulIds = profilesToCreate
-            .filter((p) => successfulEmails.includes(p.email))
-            .map((p) => importDetailsMap.get(p.email))
-            .filter((id): id is string => id !== undefined);
+      await withClient(pool, async (client) => {
+        const successfulEmails = results.map((r) => r.primaryEmail);
+        const successfulIds = profilesToCreate
+          .filter((p) => successfulEmails.includes(p.email))
+          .map((p) => importDetailsMap.get(p.email))
+          .filter((id): id is string => id !== undefined);
 
-          await updateProfileImportDetailsStatus(
-            client,
-            successfulIds,
-            ImportStatus.PENDING,
-          );
-        });
+        await updateProfileImportDetailsStatus(
+          client,
+          successfulIds,
+          ImportStatus.PENDING,
+        );
       });
     } catch (err) {
       // Update both failed and successful profiles in a single transaction
-      await withClient(app.pg.pool, async (client) => {
+      await withClient(pool, async (client) => {
         return withRollback(client, async () => {
           // Get successful and failed profiles
           const successfulEmails = (err as LogtoError)?.successfulEmails || [];
@@ -150,7 +148,7 @@ export const processClientImport = async (
 
           // Update failed profiles
           if (failedEmails.length > 0) {
-            app.log.error(
+            logger.error(
               `Failed to create Logto users for profiles ${failedEmails.join(
                 ", ",
               )}: ${err instanceof Error ? err.message : "Unknown error"}`,
@@ -182,10 +180,10 @@ export const processClientImport = async (
           }
         });
       });
-      await withClient(app.pg.pool, async (client) => {
+      await withClient(pool, async (client) => {
         withRollback(client, async () => {
           // Check completion and update overall status
-          app.log.debug(
+          logger.debug(
             `[Process-Import] Checking completion after error for job ${jobId}`,
           );
           const { isComplete, finalStatus } = await checkImportCompletion(
@@ -193,18 +191,18 @@ export const processClientImport = async (
             jobId,
           );
 
-          app.log.debug("[Process-Import] Completion check result:", {
+          logger.debug("[Process-Import] Completion check result:", {
             isComplete,
             finalStatus,
           });
 
           if (isComplete) {
-            app.log.debug(
+            logger.debug(
               `[Process-Import] Updating overall status to ${finalStatus} after error`,
             );
             await updateProfileImportStatusByJobId(client, jobId, finalStatus);
           } else {
-            app.log.debug(
+            logger.debug(
               `[Process-Import] Import is not complete yet. Current status: ${finalStatus}`,
             );
           }
@@ -214,7 +212,7 @@ export const processClientImport = async (
   }
 
   // 4. Return current status
-  return await withClient(app.pg.pool, async (client) => {
+  return await withClient(pool, async (client) => {
     return getProfileImportStatus(client, jobId);
   });
 };

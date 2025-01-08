@@ -10,7 +10,7 @@ export const getProfileImportStatus = async (
     [jobId],
   );
 
-  if (result.rows.length === 0 || !result.rows[0]?.status) {
+  if (!result.rows[0]?.status) {
     throw httpErrors.notFound(
       `Status for profile_import with id ${jobId} not found`,
     );

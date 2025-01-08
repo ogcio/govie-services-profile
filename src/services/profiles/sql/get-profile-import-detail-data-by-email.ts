@@ -15,7 +15,7 @@ export const getProfileImportDetailDataByEmail = async (
   client: PoolClient,
   profileImportId: string,
   email: string,
-): Promise<ImportProfilesBody[0]> => {
+): Promise<ImportProfilesBody[number]> => {
   if (!profileImportId) {
     throw httpErrors.badRequest("Profile import ID is required");
   }

@@ -9,6 +9,7 @@ interface EnvDbConfig {
 }
 
 interface EnvConfig extends EnvDbConfig {
+  HOST_URL: string;
   PORT: number;
   FASTIFY_CLOSE_GRACE_DELAY: number;
   LOG_LEVEL: string;
@@ -18,6 +19,17 @@ interface EnvConfig extends EnvDbConfig {
   LOGTO_MANAGEMENT_API_CLIENT_ID: string;
   LOGTO_MANAGEMENT_API_CLIENT_SECRET: string;
   LOGTO_MANAGEMENT_API_ENDPOINT: string;
+  LOGTO_MANAGEMENT_API_RESOURCE_URL: string;
+  ANALYTICS_URL: string | undefined;
+  ANALYTICS_WEBSITE_ID: string | undefined;
+  ANALYTICS_MATOMO_TOKEN: string | undefined;
+  ANALYTICS_DRY_RUN: boolean;
+  SCHEDULER_BACKEND_URL: string;
+  LOGTO_M2M_SCHEDULER_APP_ID: string;
+  LOGTO_M2M_SCHEDULER_APP_SECRET: string;
+  LOGTO_M2M_ANALYTICS_APP_SECRET: string;
+  LOGTO_M2M_ANALYTICS_APP_ID: string;
+  LOGTO_M2M_ANALYTICS_SCOPES: string;
 }
 
 declare module "fastify" {
@@ -29,6 +41,7 @@ declare module "fastify" {
 const schema = {
   type: "object",
   required: [
+    "HOST_URL",
     "PORT",
     "POSTGRES_USER",
     "POSTGRES_PASSWORD",
@@ -41,8 +54,16 @@ const schema = {
     "LOGTO_MANAGEMENT_API_CLIENT_ID",
     "LOGTO_MANAGEMENT_API_CLIENT_SECRET",
     "LOGTO_MANAGEMENT_API_ENDPOINT",
+    "LOGTO_MANAGEMENT_API_RESOURCE_URL",
+    "SCHEDULER_BACKEND_URL",
+    "LOGTO_M2M_SCHEDULER_APP_ID",
+    "LOGTO_M2M_SCHEDULER_APP_SECRET",
+    "LOGTO_M2M_ANALYTICS_APP_SECRET",
+    "LOGTO_M2M_ANALYTICS_APP_ID",
+    "LOGTO_M2M_ANALYTICS_SCOPES",
   ],
   properties: {
+    HOST_URL: { type: "string" },
     PORT: { type: "number" },
     FASTIFY_CLOSE_GRACE_DELAY: { type: "number", default: 500 },
     LOG_LEVEL: { type: "string", default: "debug" },
@@ -57,6 +78,17 @@ const schema = {
     LOGTO_MANAGEMENT_API_CLIENT_ID: { type: "string" },
     LOGTO_MANAGEMENT_API_CLIENT_SECRET: { type: "string" },
     LOGTO_MANAGEMENT_API_ENDPOINT: { type: "string" },
+    LOGTO_MANAGEMENT_API_RESOURCE_URL: { type: "string" },
+    ANALYTICS_URL: { type: "string" },
+    ANALYTICS_WEBSITE_ID: { type: "string" },
+    ANALYTICS_MATOMO_TOKEN: { type: "string" },
+    ANALYTICS_DRY_RUN: { type: "boolean", default: true },
+    SCHEDULER_BACKEND_URL: { type: "string" },
+    LOGTO_M2M_SCHEDULER_APP_ID: { type: "string" },
+    LOGTO_M2M_SCHEDULER_APP_SECRET: { type: "string" },
+    LOGTO_M2M_ANALYTICS_APP_SECRET: { type: "string" },
+    LOGTO_M2M_ANALYTICS_APP_ID: { type: "string" },
+    LOGTO_M2M_ANALYTICS_SCOPES: { type: "string" },
   },
 };
 
