@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "FASTIFY_AUTOLOAD_TYPESCRIPT=1 node --watch --import tsx src/index.ts",
-    "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp -R src/public dist/public",
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json && tsc-alias -p tsconfig.prod.json && cp -R src/public dist/public",
     "check:formatting": "biome format",
     "fix:formatting": "biome format --write",
     "check:linting": "biome lint",
@@ -22,10 +22,10 @@
   "dependencies": {
     "@fastify/autoload": "^6.0.3",
     "@fastify/env": "^5.0.1",
+    "@fastify/multipart": "^9.0.1",
     "@fastify/postgres": "^6.0.1",
     "@fastify/sensible": "^6.0.2",
     "@fastify/swagger": "^9.4.0",
-    "@fastify/multipart": "^9.0.1",
     "@fastify/swagger-ui": "^5.2.0",
     "@fastify/type-provider-typebox": "^5.1.0",
     "@fastify/under-pressure": "^9.0.2",
@@ -46,7 +46,7 @@
     "@testcontainers/postgresql": "^10.16.0",
     "@types/http-errors": "^2.0.4",
     "@types/pg": "^8.11.10",
-    "fastify-cli": "^7.1.0"
+    "tsc-alias": "^1.8.10"
   },
   "engines": {
     "node": ">=22.0.0"

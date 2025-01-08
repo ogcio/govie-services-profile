@@ -1,6 +1,7 @@
 {
   "name": "govie-services-profile",
   "version": "0.0.1",
+  "type": "module",
   "description": "",
   "engines": {
     "node": ">=22.0.0"
