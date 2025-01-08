@@ -44,6 +44,9 @@ importers:
 
   apps/profile:
     dependencies:
+      '@logto/next':
+        specifier: 3.5.0
+        version: 3.5.0(next@14.2.5(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.83.1))
       '@logto/node':
         specifier: 2.5.5
         version: 2.5.5

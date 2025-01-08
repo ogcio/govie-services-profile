@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@logto/node": "2.5.5",
+    "@logto/next": "3.5.0",
     "@ogcio/building-blocks-sdk": "^0.1.15",
     "@ogcio/nextjs-auth": "3.5.0",
     "@ogcio/life-events-ds": "^0.1.2",

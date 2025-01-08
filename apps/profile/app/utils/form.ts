@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 export type Error = {
   messageKey: string;
   field: string;
-  errorValue: string;
+  errorValue?: string;
 };
 
 export const errorTranslationKeys = {
@@ -157,6 +157,6 @@ export async function getErrorsQuery(userId: string, slug: string) {
   "use server";
 
   return {
-    rows: [] as {field:string, messageKey: string}[],
+    rows: [] as {field:string, messageKey: string, errorValue: string}[],
   };
 }

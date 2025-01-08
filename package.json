@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
     "check:formatting": "pnpm -r check:formatting",
     "fix:formatting": "pnpm -r fix:formatting",
     "check:linting": "pnpm -r check:linting",
