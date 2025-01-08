@@ -33,7 +33,9 @@ export const checkImportCompletion = async (
     return {
       isComplete: true,
       finalStatus:
-        failed === total ? ImportStatus.FAILED : ImportStatus.COMPLETED,
+        failed > 0 && failed === total
+          ? ImportStatus.FAILED
+          : ImportStatus.COMPLETED,
     };
   }
 

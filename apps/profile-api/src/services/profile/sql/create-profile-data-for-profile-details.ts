@@ -4,9 +4,13 @@ import { isISODate } from "~/utils/is-iso-date.js";
 export const createProfileDataForProfileDetail = async (
   client: PoolClient,
   profileDetailId: string,
-  data: Record<string, string | number>,
+  data: Record<string, string | number | boolean | Date>,
 ): Promise<void> => {
   const entries = Object.entries(data);
+
+  if (entries.length === 0) {
+    return;
+  }
 
   const values = entries
     .map((_, index) => {

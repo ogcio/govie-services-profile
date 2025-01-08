@@ -4,15 +4,15 @@ import type { Pool, PoolClient } from "pg";
 import { ImportStatus } from "~/const/profile.js";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 import type { LogtoUserCreatedBody } from "~/schemas/webhooks/logto-user-created.js";
-import { createUpdateProfileDetails } from "~/services/profiles/create-update-profile-details.js";
-import { checkImportCompletion } from "~/services/profiles/sql/check-import-completion.js";
+import { createUpdateProfileDetails } from "~/services/profile/create-update-profile-details.js";
+import { checkImportCompletion } from "~/services/profile/sql/check-import-completion.js";
 import {
   createProfile,
   findProfileImportByJobId,
   getProfileImportDetailDataByEmail,
   updateProfileImportDetailsStatus,
-} from "~/services/profiles/sql/index.js";
-import { updateProfileImportStatusByJobId } from "~/services/profiles/sql/update-profile-import-status-by-job-id.js";
+} from "~/services/profile/sql/index.js";
+import { updateProfileImportStatusByJobId } from "~/services/profile/sql/update-profile-import-status-by-job-id.js";
 import { withRollback } from "~/utils/with-rollback.js";
 import { webhookBodyToUser } from "./webhook-body-to-user.js";
 

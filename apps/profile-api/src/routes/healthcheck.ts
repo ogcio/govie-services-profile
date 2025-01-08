@@ -26,4 +26,4 @@ const plugin: FastifyPluginAsyncTypebox = async function healthCheck(
 };
 
 export default plugin;
-export const prefixOverride = "";
+export const autoPrefix = "";

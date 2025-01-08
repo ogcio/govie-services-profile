@@ -209,6 +209,15 @@ export const processClientImport = async (params: {
         });
       });
     }
+  } else {
+    // Set the status to completed if there are no profiles to create
+    await withClient(pool, async (client) => {
+      return updateProfileImportStatusByJobId(
+        client,
+        jobId,
+        ImportStatus.COMPLETED,
+      );
+    });
   }
 
   // 4. Return current status

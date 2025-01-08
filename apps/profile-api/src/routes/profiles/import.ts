@@ -4,7 +4,7 @@ import type { FastifyInstance } from "fastify";
 import { Permissions } from "~/const/permissions.js";
 import { ImportProfilesSchema } from "~/schemas/profiles/import.js";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
-import { processClientImport } from "~/services/profiles/process-client-import.js";
+import { processClientImport } from "~/services/profile/process-client-import.js";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   fastify.post(

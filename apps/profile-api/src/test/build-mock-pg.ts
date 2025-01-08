@@ -1,3 +1,4 @@
+import { release } from "os";
 import type { Client } from "pg";
 
 interface ExecutedQuery {
@@ -26,9 +27,11 @@ export const buildMockPg = (preparedResponses: Record<string, unknown>[][]) => {
   const pg = {
     query: queryFn,
     getExecutedQueries: () => executedQueries,
+    release: () => release,
   };
 
   return pg as unknown as Client & {
     getExecutedQueries: () => ExecutedQuery[];
+    release: () => void;
   };
 };
