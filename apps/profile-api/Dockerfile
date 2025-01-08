@@ -26,12 +26,10 @@ ENV NODE_ENV=production
 ENV LOG_LEVEL=INFO
 ENV PORT=$PORT
 
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/node_modules ./node_modules
-
-COPY --from=builder /app/apps/profile-api/dist ./apps/profile-api/dist
-COPY --from=builder /app/apps/profile-api/node_modules ./apps/profile-api/node_modules
-COPY --from=builder /app/apps/profile-api/package*.json ./apps/profile-api/
+COPY --from=builder --chown=node:node /app/package.json ./
+COPY --from=builder --chown=node:node /app/apps/profile-api/dist ./apps/profile-api/dist
+COPY --from=builder --chown=node:node /app/apps/profile-api/package*.json ./apps/profile-api/
+COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 
 RUN pnpm prune --prod
 
@@ -43,6 +41,9 @@ ENV LOG_LEVEL=trace
 COPY --from=assembler /app /app
 
 EXPOSE ${PORT}
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1
 
 WORKDIR /app/apps/profile-api
 

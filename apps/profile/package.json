@@ -1,0 +1,50 @@
+{
+  "name": "@govie-services/profile",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon",
+    "build": "next build",
+    "check:formatting": "biome format",
+    "fix:formatting": "biome format --write",
+    "check:linting": "biome lint",
+    "fix:linting": "biome lint --write",
+    "start": "next start -p 3003",
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "test:local": "echo \"Error: no test specified\" && exit 0",
+    "test:e2e": "playwright test",
+    "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
+    "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
+    "test:nf": "mkdir -p test_reports && mkdir -p test_reports/perf && mkdir -p test_reports/a11y && VARS=/opt/azure-agent/.cache/puppeteer/chrome/*/chrome-linux64/chrome && CHROME_VERSION=$(echo $VARS | cut --delimiter \" \" --fields 1) && export CHROME_PATH=$CHROME_VERSION && node nonFunctionalTests/main.mjs",
+    "test:nf:local": "mkdir -p test_reports && mkdir -p test_reports/perf && mkdir -p test_reports/a11y && node nonFunctionalTests/main.mjs"
+  },
+  "nodemonConfig": {
+    "watch": [
+       "./**/*"
+    ],
+    "ext": "ts,tsx,json",
+    "exec": "next dev -p 3003"
+  },
+  "dependencies": {
+    "@ogcio/building-blocks-sdk": "^0.1.15",
+    "@ogcio/nextjs-auth": "3.5.0",
+    "@ogcio/life-events-ds": "^0.1.2",
+    "dayjs": "^1.11.13",
+    "next": "14.2.5",
+    "next-intl": "^3.17.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sass": "^1.83.1"
+  },
+  "devDependencies": {
+    "@axe-core/puppeteer": "^4.10.0",
+    "@playwright/test": "^1.49.0",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "allure-playwright": "^3.0.0-beta.7",
+    "axe-html-reporter": "^2.2.11",
+    "chrome-launcher": "^1.1.2",
+    "fs": "0.0.1-security",
+    "lighthouse": "^12.2.1",
+    "puppeteer": "^23.6.0"
+  }
+}

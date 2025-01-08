@@ -1,2 +1,2 @@
-pnpm --filter profile-api check:formatting
-pnpm --filter profile-api check:linting
+pnpm -r check:formatting
+pnpm -r check:linting
