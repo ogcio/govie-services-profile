@@ -1,22 +1,21 @@
 FROM node:22-alpine AS base-deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat pnpm
+# Add non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -G nodejs
 
 FROM base-deps AS deps
+WORKDIR /app
 
-WORKDIR /app/src
-
-COPY ./package*.json /app/
-COPY ./tsconfig*.json /app/
-COPY ./src/ /app/src/
-
-RUN npm ci
-
+COPY package.json pnpm-lock.yaml ./
+COPY apps/profile-api/package*.json ./apps/profile-api/
+RUN pnpm i --frozen-lockfile
 
 FROM deps AS builder
+WORKDIR /app
 
-RUN npm run build
-
+COPY apps/profile-api/src ./apps/profile-api/src
+RUN pnpm --filter profile-api build
 
 FROM base-deps AS assembler
 WORKDIR /app
@@ -27,10 +26,14 @@ ENV NODE_ENV=production
 ENV LOG_LEVEL=INFO
 ENV PORT=$PORT
 
-COPY --from=builder /app/ /app/
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
 
-RUN npm prune --omit=dev
-RUN rm -rf src
+COPY --from=builder /app/apps/profile-api/dist ./apps/profile-api/dist
+COPY --from=builder /app/apps/profile-api/node_modules ./apps/profile-api/node_modules
+COPY --from=builder /app/apps/profile-api/package*.json ./apps/profile-api/
+
+RUN pnpm prune --prod
 
 FROM base-deps AS runner
 
@@ -41,6 +44,6 @@ COPY --from=assembler /app /app
 
 EXPOSE ${PORT}
 
-WORKDIR /app/
+WORKDIR /app/apps/profile-api
 
 CMD [ "node", "dist/", "index.js" ]

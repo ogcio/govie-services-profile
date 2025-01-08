@@ -20,15 +20,6 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
-      nodemon:
-        specifier: ^3.1.9
-        version: 3.1.9
-      tsx:
-        specifier: ^4.19.2
-        version: 4.19.2
-      typescript:
-        specifier: ^5.7.2
-        version: 5.7.2
 
   apps/profile-api:
     dependencies:
@@ -95,12 +86,21 @@ importers:
       fastify-raw-body:
         specifier: ^5.0.0
         version: 5.0.0
+      nodemon:
+        specifier: ^3.1.9
+        version: 3.1.9
       pg:
         specifier: ^8.13.1
         version: 8.13.1
       postgrator:
         specifier: ^8.0.0
         version: 8.0.0
+      tsx:
+        specifier: ^4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: ^5.7.2
+        version: 5.7.2
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.9.4
