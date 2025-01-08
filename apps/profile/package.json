@@ -15,7 +15,8 @@
     "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:nf": "mkdir -p test_reports && mkdir -p test_reports/perf && mkdir -p test_reports/a11y && VARS=/opt/azure-agent/.cache/puppeteer/chrome/*/chrome-linux64/chrome && CHROME_VERSION=$(echo $VARS | cut --delimiter \" \" --fields 1) && export CHROME_PATH=$CHROME_VERSION && node nonFunctionalTests/main.mjs",
-    "test:nf:local": "mkdir -p test_reports && mkdir -p test_reports/perf && mkdir -p test_reports/a11y && node nonFunctionalTests/main.mjs"
+    "test:nf:local": "mkdir -p test_reports && mkdir -p test_reports/perf && mkdir -p test_reports/a11y && node nonFunctionalTests/main.mjs",
+    "preinstall": "npx only-allow pnpm"
   },
   "nodemonConfig": {
     "watch": [
@@ -25,6 +26,7 @@
     "exec": "next dev -p 3003"
   },
   "dependencies": {
+    "@logto/node": "2.5.5",
     "@ogcio/building-blocks-sdk": "^0.1.15",
     "@ogcio/nextjs-auth": "3.5.0",
     "@ogcio/life-events-ds": "^0.1.2",

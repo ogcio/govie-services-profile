@@ -16,7 +16,8 @@
     "db:create": "tsx --env-file=.env ./src/migrations/scripts/create-database.ts",
     "db:drop": "tsx --env-file=.env ./src/migrations/scripts/drop-database.ts",
     "db:migrate": "tsx --env-file=.env ./src/migrations/scripts/migrate.ts",
-    "db:rollback": "tsx --env-file=.env ./src/migrations/scripts/migrate.ts -- version=0"
+    "db:rollback": "tsx --env-file=.env ./src/migrations/scripts/migrate.ts -- version=0",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "@fastify/autoload": "^6.0.3",

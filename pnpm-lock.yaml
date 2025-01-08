@@ -44,9 +44,12 @@ importers:
 
   apps/profile:
     dependencies:
+      '@logto/node':
+        specifier: 2.5.5
+        version: 2.5.5
       '@ogcio/building-blocks-sdk':
         specifier: ^0.1.15
-        version: 0.1.15(typescript@5.7.2)
+        version: 0.1.15(@logto/node@2.5.5)(typescript@5.7.2)
       '@ogcio/life-events-ds':
         specifier: ^0.1.2
         version: 0.1.2
@@ -137,7 +140,7 @@ importers:
         version: 5.1.1
       '@ogcio/building-blocks-sdk':
         specifier: ^0.1.14
-        version: 0.1.15(typescript@5.7.2)
+        version: 0.1.15(@logto/node@2.5.5)(typescript@5.7.2)
       '@ogcio/fastify-error-handler':
         specifier: ^5.1.0
         version: 5.1.0
@@ -869,8 +872,8 @@ packages:
     peerDependencies:
       next: '>=12'
 
-  '@logto/node@2.5.8':
-    resolution: {integrity: sha512-QNVWIZf6sLAbF6rDT/wAG64S4IH5OQYk38fJvJYuIuMRHhUDf2VD+ENZ5BBwX3sOHFf6OM4rJVt2vWVJ8kTVow==}
+  '@logto/node@2.5.5':
+    resolution: {integrity: sha512-dWKcqYj304Mj98I67MPO6z0XCCr59KLyIBRJ6Rbd13Imrxes58idN2u2M7pmGmqnU6Ssp+K7S0qkaNyd0epb9A==}
 
   '@lukeed/ms@2.0.2':
     resolution: {integrity: sha512-9I2Zn6+NJLfaGoz9jN3lpwDgAYvfGeNYdbAIjJOqzs4Tpc+VU3Jqq4IofSUBKajiDS8k9fZIg18/z13mpk1bsA==}
@@ -4462,10 +4465,10 @@ snapshots:
   '@logto/next@3.5.0(next@14.2.5(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.83.1))':
     dependencies:
       '@edge-runtime/cookies': 4.1.1
-      '@logto/node': 2.5.8
+      '@logto/node': 2.5.5
       next: 14.2.5(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.83.1)
 
-  '@logto/node@2.5.8':
+  '@logto/node@2.5.5':
     dependencies:
       '@logto/client': 2.8.1
       '@silverhand/essentials': 2.9.2
@@ -4518,7 +4521,7 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@ogcio/building-blocks-sdk@0.1.15(typescript@5.7.2)':
+  '@ogcio/building-blocks-sdk@0.1.15(@logto/node@2.5.5)(typescript@5.7.2)':
     dependencies:
       '@ogcio/analytics-sdk': 0.1.0-beta.8
       '@sinclair/typebox': 0.34.13
@@ -4529,6 +4532,8 @@ snapshots:
       openapi-typescript-helpers: 0.0.15
       safe-stable-stringify: 2.5.0
       yaml: 2.7.0
+    optionalDependencies:
+      '@logto/node': 2.5.5
     transitivePeerDependencies:
       - encoding
       - typescript
