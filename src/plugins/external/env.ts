@@ -18,6 +18,14 @@ interface EnvConfig extends EnvDbConfig {
   LOGTO_MANAGEMENT_API_CLIENT_ID: string;
   LOGTO_MANAGEMENT_API_CLIENT_SECRET: string;
   LOGTO_MANAGEMENT_API_ENDPOINT: string;
+  LOGTO_MANAGEMENT_API_RESOURCE_URL: string;
+  ANALYTICS_URL: string | undefined;
+  ANALYTICS_WEBSITE_ID: string | undefined;
+  ANALYTICS_MATOMO_TOKEN: string | undefined;
+  ANALYTICS_DRY_RUN: boolean;
+  SCHEDULER_BACKEND_URL: string;
+  LOGTO_M2M_SCHEDULER_APP_ID: string;
+  LOGTO_M2M_SCHEDULER_APP_SECRET: string;
 }
 
 declare module "fastify" {
@@ -41,6 +49,10 @@ const schema = {
     "LOGTO_MANAGEMENT_API_CLIENT_ID",
     "LOGTO_MANAGEMENT_API_CLIENT_SECRET",
     "LOGTO_MANAGEMENT_API_ENDPOINT",
+    "LOGTO_MANAGEMENT_API_RESOURCE_URL",
+    "SCHEDULER_BACKEND_URL",
+    "LOGTO_M2M_SCHEDULER_APP_ID",
+    "LOGTO_M2M_SCHEDULER_APP_SECRET",
   ],
   properties: {
     PORT: { type: "number" },
@@ -57,6 +69,14 @@ const schema = {
     LOGTO_MANAGEMENT_API_CLIENT_ID: { type: "string" },
     LOGTO_MANAGEMENT_API_CLIENT_SECRET: { type: "string" },
     LOGTO_MANAGEMENT_API_ENDPOINT: { type: "string" },
+    LOGTO_MANAGEMENT_API_RESOURCE_URL: { type: "string" },
+    ANALYTICS_URL: { type: "string" },
+    ANALYTICS_WEBSITE_ID: { type: "string" },
+    ANALYTICS_MATOMO_TOKEN: { type: "string" },
+    ANALYTICS_DRY_RUN: { type: "boolean", default: true },
+    SCHEDULER_BACKEND_URL: { type: "string" },
+    LOGTO_M2M_SCHEDULER_APP_ID: { type: "string" },
+    LOGTO_M2M_SCHEDULER_APP_SECRET: { type: "string" },
   },
 };
 

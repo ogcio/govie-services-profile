@@ -1,6 +1,10 @@
 import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 import fp from "fastify-plugin";
-import { getAnalyticsSdk } from "~/utils/authentication-factory.js";
+import {
+  ensureOrganizationIdIsSet,
+  getAnalyticsSdk,
+  isOrganizationIdSet,
+} from "~/utils/authentication-factory.js";
 
 const operationIdToNotTrack: Record<string, boolean> = { healthcheck: true };
 
@@ -9,8 +13,16 @@ export default fp(
     server.addHook("onRequest", async (request) => {
       const operationId = request.routeOptions.schema?.operationId;
 
-      if (operationId && !operationIdToNotTrack[operationId]) {
-        const sdk = await getAnalyticsSdk(request.log);
+      if (
+        operationId &&
+        !operationIdToNotTrack[operationId] &&
+        isOrganizationIdSet(request)
+      ) {
+        const sdk = await getAnalyticsSdk(
+          server.config,
+          request.log,
+          ensureOrganizationIdIsSet(request),
+        );
         sdk.track.event({
           event: {
             action: request.method.toUpperCase(),

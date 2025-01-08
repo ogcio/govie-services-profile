@@ -29,7 +29,7 @@
     "@fastify/swagger-ui": "^5.2.0",
     "@fastify/type-provider-typebox": "^5.1.0",
     "@fastify/under-pressure": "^9.0.2",
-    "@ogcio/api-auth": "^4.29.1",
+    "@ogcio/api-auth": "^5.1.1",
     "@ogcio/building-blocks-sdk": "^0.1.14",
     "@ogcio/fastify-error-handler": "^5.1.0",
     "@ogcio/fastify-logging-wrapper": "^5.1.0",

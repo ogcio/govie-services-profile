@@ -1,6 +1,6 @@
 import { getAccessToken } from "@ogcio/api-auth";
-import type { FastifyInstance } from "fastify";
 import { LogtoClient } from "~/clients/logto.js";
+import type { EnvConfig } from "~/plugins/external/env.js";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 
 interface LogtoUserResult {
@@ -20,14 +20,14 @@ const chunks = <T>(arr: T[], size: number): T[][] =>
 
 export const createLogtoUsers = async (
   profiles: Pick<ImportProfilesBody[0], "email" | "first_name" | "last_name">[],
-  config: FastifyInstance["config"],
+  config: EnvConfig,
   organizationId: string,
   jobId: string,
 ): Promise<LogtoUserResult[]> => {
   const client = new LogtoClient(
     config.LOGTO_MANAGEMENT_API_ENDPOINT,
     await getAccessToken({
-      resource: "https://default.logto.app/api",
+      resource: config.LOGTO_MANAGEMENT_API_RESOURCE_URL,
       scopes: ["all"],
       applicationId: config.LOGTO_MANAGEMENT_API_CLIENT_ID,
       applicationSecret: config.LOGTO_MANAGEMENT_API_CLIENT_SECRET,
