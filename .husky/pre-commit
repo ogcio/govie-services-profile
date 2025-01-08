@@ -1,2 +1,2 @@
-npm run check:formatting
-npm run check:linting
+pnpm --filter profile-api check:formatting
+pnpm --filter profile-api check:linting
