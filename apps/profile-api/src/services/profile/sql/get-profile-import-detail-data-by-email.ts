@@ -1,13 +1,16 @@
-import { httpErrors } from "@fastify/sensible";
+import { type HttpError, httpErrors } from "@fastify/sensible";
 import type { PoolClient } from "pg";
 import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
 
-export class ProfileImportDetailNotFoundError extends httpErrors.HttpError {
-  constructor(message: string) {
-    super(message);
-    this.name = "ProfileImportDetailNotFoundError";
-    this.status = 404;
-    this.statusCode = 404;
+export class ProfileImportDetailNotFoundError implements HttpError {
+  status = 404;
+  statusCode = 404;
+  expose = true;
+  name = "ProfileImportDetailNotFound";
+  message = "profile import detail not found";
+
+  constructor(message?: string) {
+    this.name = message ?? this.name;
   }
 }
 
