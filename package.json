@@ -14,7 +14,7 @@
     "check:linting": "pnpm -r check:linting",
     "fix:linting": "pnpm -r fix:linting",
     "test": "pnpm -r test",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "preinstall": "npx only-allow pnpm"
   },
   "keywords": [],
