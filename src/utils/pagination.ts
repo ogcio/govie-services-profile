@@ -239,8 +239,9 @@ const sanitizePagination = (
 
 const getUrlDataForPagination = (
   request: FastifyRequest,
+  hostUrl: string,
 ): PaginationDetails => {
-  const originalUrl = new URL(request.originalUrl, process.env.HOST_URL);
+  const originalUrl = new URL(request.originalUrl, hostUrl);
   let limit = undefined;
   let offset = undefined;
   if (originalUrl.searchParams.has("limit")) {

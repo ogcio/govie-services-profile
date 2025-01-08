@@ -9,6 +9,7 @@ interface EnvDbConfig {
 }
 
 interface EnvConfig extends EnvDbConfig {
+  HOST_URL: string;
   PORT: number;
   FASTIFY_CLOSE_GRACE_DELAY: number;
   LOG_LEVEL: string;
@@ -26,6 +27,9 @@ interface EnvConfig extends EnvDbConfig {
   SCHEDULER_BACKEND_URL: string;
   LOGTO_M2M_SCHEDULER_APP_ID: string;
   LOGTO_M2M_SCHEDULER_APP_SECRET: string;
+  LOGTO_M2M_ANALYTICS_APP_SECRET: string;
+  LOGTO_M2M_ANALYTICS_APP_ID: string;
+  LOGTO_M2M_ANALYTICS_SCOPES: string;
 }
 
 declare module "fastify" {
@@ -37,6 +41,7 @@ declare module "fastify" {
 const schema = {
   type: "object",
   required: [
+    "HOST_URL",
     "PORT",
     "POSTGRES_USER",
     "POSTGRES_PASSWORD",
@@ -53,8 +58,12 @@ const schema = {
     "SCHEDULER_BACKEND_URL",
     "LOGTO_M2M_SCHEDULER_APP_ID",
     "LOGTO_M2M_SCHEDULER_APP_SECRET",
+    "LOGTO_M2M_ANALYTICS_APP_SECRET",
+    "LOGTO_M2M_ANALYTICS_APP_ID",
+    "LOGTO_M2M_ANALYTICS_SCOPES",
   ],
   properties: {
+    HOST_URL: { type: "string" },
     PORT: { type: "number" },
     FASTIFY_CLOSE_GRACE_DELAY: { type: "number", default: 500 },
     LOG_LEVEL: { type: "string", default: "debug" },
@@ -77,6 +86,9 @@ const schema = {
     SCHEDULER_BACKEND_URL: { type: "string" },
     LOGTO_M2M_SCHEDULER_APP_ID: { type: "string" },
     LOGTO_M2M_SCHEDULER_APP_SECRET: { type: "string" },
+    LOGTO_M2M_ANALYTICS_APP_SECRET: { type: "string" },
+    LOGTO_M2M_ANALYTICS_APP_ID: { type: "string" },
+    LOGTO_M2M_ANALYTICS_SCOPES: { type: "string" },
   },
 };
 

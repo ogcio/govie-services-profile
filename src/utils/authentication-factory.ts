@@ -74,13 +74,12 @@ const loadBuildingBlocksSdk = (
           },
           analytics: {
             getOrganizationTokenParams: {
-              applicationId: process.env.LOGTO_M2M_ANALYTICS_APP_ID ?? "",
-              applicationSecret:
-                process.env.LOGTO_M2M_ANALYTICS_APP_SECRET ?? "",
-              logtoOidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT ?? "",
+              applicationId: config.LOGTO_M2M_ANALYTICS_APP_ID ?? "",
+              applicationSecret: config.LOGTO_M2M_ANALYTICS_APP_SECRET ?? "",
+              logtoOidcEndpoint: config.LOGTO_OIDC_ENDPOINT,
               organizationId,
-              scopes: process.env.LOGTO_M2M_ANALYTICS_SCOPES
-                ? process.env.LOGTO_M2M_ANALYTICS_SCOPES.split(",")
+              scopes: config.LOGTO_M2M_ANALYTICS_SCOPES
+                ? config.LOGTO_M2M_ANALYTICS_SCOPES.split(",")
                 : undefined,
             },
           },
