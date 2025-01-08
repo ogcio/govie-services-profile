@@ -11,7 +11,7 @@
     "fix:formatting": "pnpm -r fix:formatting",
     "check:linting": "pnpm -r check:linting",
     "fix:linting": "pnpm -r fix:linting",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "pnpm -r test",
     "prepare": "husky"
   },
   "keywords": [],
