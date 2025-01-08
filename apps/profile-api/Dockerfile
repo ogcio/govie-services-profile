@@ -7,7 +7,7 @@ RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -G nodejs
 FROM base-deps AS deps
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml /app/
+COPY package.json pnpm-*.yaml /app/
 COPY apps/profile-api/package*.json /app/apps/profile-api/
 
 RUN pnpm i --frozen-lockfile
@@ -15,9 +15,10 @@ RUN pnpm i --frozen-lockfile
 FROM deps AS builder
 WORKDIR /app
 
-COPY apps/profile-api /app/apps/profile-api
-COPY apps/profile-api/node_modules /app/apps/profile-api/node_modules
-COPY node_modules /app/node_modules
+COPY --from=deps --chown=node:node /app/apps/profile-api/node_modules /app/apps/profile-api/node_modules
+COPY --from=deps --chown=node:node /app/node_modules /app/node_modules
+COPY apps/profile-api/src /app/apps/profile-api/src
+COPY apps/profile-api/tsconfig* /app/apps/profile-api/
 
 RUN pnpm --filter "@govie-services/profile-api" run build
 
@@ -46,9 +47,6 @@ ENV LOG_LEVEL=trace
 COPY --from=assembler /app /app
 
 EXPOSE ${PORT}
-
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1
 
 WORKDIR /app/apps/profile-api
 
