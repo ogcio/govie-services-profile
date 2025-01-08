@@ -3,7 +3,7 @@ import type { PoolClient } from "pg";
 export const findProfileImportByJobId = async (
   client: PoolClient,
   jobId: string,
-) => {
+): Promise<string | undefined> => {
   const result = await client.query<{ id: string }>(
     "SELECT id FROM profile_imports WHERE job_id = $1;",
     [jobId],

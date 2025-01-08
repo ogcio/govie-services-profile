@@ -23,7 +23,7 @@ export const createLogtoUsers = async (
   config: FastifyInstance["config"],
   organizationId: string,
   jobId: string,
-) => {
+): Promise<LogtoUserResult[]> => {
   const client = new LogtoClient(
     config.LOGTO_MANAGEMENT_API_ENDPOINT,
     await getAccessToken({

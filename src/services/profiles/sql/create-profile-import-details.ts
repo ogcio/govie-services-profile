@@ -6,7 +6,7 @@ export const createProfileImportDetails = async (
   client: PoolClient,
   jobId: string,
   profiles: ImportProfilesBody,
-) => {
+): Promise<string[]> => {
   const values = profiles.map((_, index) => `($1, $${index + 2})`).join(",");
 
   const profileImportId = await findProfileImportByJobId(client, jobId);

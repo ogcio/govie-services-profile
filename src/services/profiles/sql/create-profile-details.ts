@@ -5,7 +5,7 @@ export const createProfileDetails = async (
   client: PoolClient,
   profileId: string,
   organizationId: string,
-) => {
+): Promise<string> => {
   const query = `INSERT INTO profile_details(
         profile_id,
         organisation_id,

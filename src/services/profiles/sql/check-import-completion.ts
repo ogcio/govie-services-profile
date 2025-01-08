@@ -4,7 +4,7 @@ import { ImportStatus } from "~/const/profile.js";
 export const checkImportCompletion = async (
   client: PoolClient,
   jobId: string,
-) => {
+): Promise<{ isComplete: boolean; finalStatus: ImportStatus }> => {
   // Get total count and count of profiles in final states
   const result = await client.query<{
     total: number;

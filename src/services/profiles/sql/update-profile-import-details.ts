@@ -5,7 +5,7 @@ export const updateProfileImportDetails = async (
   importDetailsIdList: string[],
   error: string,
   status = "failed",
-) => {
+): Promise<void> => {
   const placeholders = importDetailsIdList
     .map((_, index) => `$${index + 3}`)
     .join(",");

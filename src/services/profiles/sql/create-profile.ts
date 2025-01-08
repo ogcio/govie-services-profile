@@ -1,10 +1,11 @@
+import { httpErrors } from "@fastify/sensible";
 import type { PoolClient } from "pg";
 import type { ProfileTable } from "~/types/profile.js";
 
 export const createProfile = async (
   client: PoolClient,
   profile: ProfileTable,
-) => {
+): Promise<string> => {
   const query = `
     INSERT INTO profiles (
       id,
@@ -34,5 +35,9 @@ export const createProfile = async (
   ];
 
   const result = await client.query<{ id: string }>(query, values);
+  if (!result.rows[0]?.id) {
+    throw httpErrors.internalServerError("Cannot insert profile!");
+  }
+
   return result.rows[0]?.id;
 };

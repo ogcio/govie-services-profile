@@ -5,7 +5,7 @@ export const updateProfileDetails = async (
   profileDetailId: string,
   organizationId: string,
   profileId: string,
-) => {
+): Promise<void> => {
   const query =
     "UPDATE profile_details SET is_latest = false WHERE id <> $1 AND organisation_id = $2 AND profile_id = $3;";
 
