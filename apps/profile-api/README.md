@@ -1,3 +1,3 @@
-# Life Events Profile API
-This API is used to manage user profiles for Life Events.
+# Gov-IE - Profile API
+This application is used to manage user profiles for Gov-IE.
 
