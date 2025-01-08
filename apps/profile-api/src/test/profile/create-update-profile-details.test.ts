@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   ProfileDetailsError,
   createUpdateProfileDetails,
-} from "../../../services/profile/create-update-profile-details.js";
-import { buildMockPg } from "../../build-mock-pg.js";
+} from "../../services/profile/create-update-profile-details.js";
+import { buildMockPg } from "../build-mock-pg.js";
 
 describe("createUpdateProfileDetails", () => {
   const testData = {
@@ -79,8 +79,7 @@ describe("createUpdateProfileDetails", () => {
     ).catch((e) => e);
 
     expect(error).toBeInstanceOf(ProfileDetailsError);
-    expect(error.message).toContain("Failed to create/update profile details");
-    expect(error.message).toContain("Unknown error");
+    expect(error.message).toContain("error working on profile details");
   });
 
   it("should use transaction rollback on failure", async () => {
