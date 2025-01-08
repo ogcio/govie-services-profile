@@ -29,9 +29,6 @@ export const createUpdateProfileDetails = async (
         profileId,
         organizationId,
       );
-      if (!profileDetailId) {
-        throw new ProfileDetailsError("Failed to create profile details");
-      }
 
       await createProfileDataForProfileDetail(client, profileDetailId, data);
 
