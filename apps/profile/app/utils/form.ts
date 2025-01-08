@@ -157,6 +157,6 @@ export async function getErrorsQuery(userId: string, slug: string) {
   "use server";
 
   return {
-    errors: [],
+    rows: [] as {field:string, messageKey: string}[],
   };
 }
