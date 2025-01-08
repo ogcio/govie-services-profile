@@ -12,7 +12,6 @@
     "fix:formatting": "biome format --write",
     "check:linting": "biome lint",
     "fix:linting": "biome lint --write",
-    "prepare": "husky || true",
     "test": "NODE_OPTIONS='--import tsx' vitest run --reporter junit --reporter default --coverage --outputFile=results.xml",
     "db:create": "tsx --env-file=.env ./src/migrations/scripts/create-database.ts",
     "db:drop": "tsx --env-file=.env ./src/migrations/scripts/drop-database.ts",
@@ -45,11 +44,14 @@
     "postgrator": "^8.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@testcontainers/postgresql": "^10.16.0",
     "@types/http-errors": "^2.0.4",
     "@types/node": "^22.10.2",
     "@types/pg": "^8.11.10",
-    "fastify-cli": "^7.1.0"
+    "@vitest/coverage-v8": "^2.1.8",
+    "fastify-cli": "^7.1.0",
+    "vitest": "^2.1.8"
   },
   "engines": {
     "node": ">=22.0.0"

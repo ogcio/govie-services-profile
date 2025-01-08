@@ -7,7 +7,8 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["dist", "node_modules", "src/**/*.json", "db/**/*"]
+    "include": ["apps/profile-api/**/*"],
+    "ignore": [".*/**/*", "node_modules/**/*"]
   },
   "formatter": {
     "enabled": true,
