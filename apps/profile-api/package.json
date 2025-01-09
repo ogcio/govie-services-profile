@@ -12,6 +12,7 @@
     "fix:formatting": "biome format --write",
     "check:linting": "biome lint",
     "fix:linting": "biome lint --write",
+    "test:local": "NODE_OPTIONS='--import tsx' vitest",
     "test": "NODE_OPTIONS='--import tsx' vitest run --reporter junit --reporter default --coverage --outputFile=results.xml",
     "db:create": "tsx --env-file=.env ./src/migrations/scripts/create-database.ts",
     "db:drop": "tsx --env-file=.env ./src/migrations/scripts/drop-database.ts",

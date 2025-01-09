@@ -9,6 +9,7 @@ import { checkImportCompletion } from "~/services/profile/sql/check-import-compl
 import {
   createProfile,
   findProfileImportByJobId,
+  findProfileImportDetailByEmail,
   getProfileImportDetailDataByEmail,
   updateProfileImportDetailsStatus,
 } from "~/services/profile/sql/index.js";
@@ -29,6 +30,7 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
 }): Promise<WebhookResponse> => {
   let client: PoolClient | null = null;
   const user = webhookBodyToUser(params.body.data);
+
   try {
     const jobId = user.jobId ?? null;
 
@@ -40,6 +42,10 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
 
     // First transaction: Create profile and update status
     const result = await withRollback(client, async (transactionClient) => {
+      if (!user.organizationId) {
+        throw httpErrors.badRequest("Organization ID is required");
+      }
+
       const profileImportId = await findProfileImportByJobId(
         transactionClient,
         jobId,
@@ -55,10 +61,6 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
         profileImportId,
         user.email,
       );
-
-      if (!user.organizationId) {
-        throw httpErrors.badRequest("Organization ID is required");
-      }
 
       const profileId = await createProfile(transactionClient, {
         id: user.id,
@@ -77,19 +79,11 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
         importDetail as ImportProfilesBody[0],
       );
 
-      const importDetailsId = await transactionClient
-        .query<{ id: string }>(
-          `SELECT id FROM profile_import_details 
-           WHERE profile_import_id = $1 AND data->>'email' = $2`,
-          [profileImportId, user.email],
-        )
-        .then((result) => result.rows[0]?.id);
-
-      if (!importDetailsId) {
-        throw httpErrors.notFound(
-          `No import details found for email: ${user.email}`,
-        );
-      }
+      const importDetailsId = await findProfileImportDetailByEmail(
+        transactionClient,
+        profileImportId,
+        user.email,
+      );
 
       await updateProfileImportDetailsStatus(
         transactionClient,
@@ -145,21 +139,16 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
           user.jobId as string,
         );
         if (profileImportId) {
-          const importDetailsId = await transactionClient
-            .query<{ id: string }>(
-              `SELECT id FROM profile_import_details 
-               WHERE profile_import_id = $1 AND data->>'email' = $2`,
-              [profileImportId, user.email],
-            )
-            .then((result) => result.rows[0]?.id);
-
-          if (importDetailsId) {
-            await updateProfileImportDetailsStatus(
-              transactionClient,
-              [importDetailsId],
-              ImportStatus.FAILED,
-            );
-          }
+          const importDetailsId = await findProfileImportDetailByEmail(
+            transactionClient,
+            profileImportId,
+            user.email,
+          );
+          await updateProfileImportDetailsStatus(
+            transactionClient,
+            [importDetailsId],
+            ImportStatus.FAILED,
+          );
         }
       });
 

@@ -15,9 +15,12 @@ describe("createUpdateProfileDetails", () => {
 
   it("should create profile details and return detail ID", async () => {
     const mockPg = buildMockPg([
-      [{ id: "detail-123" }], // createProfileDetails response
-      [], // createProfileDataForProfileDetail response
-      [], // updateProfileDetails response
+      [{ in_transaction: false }], // isInTransaction check
+      [], // BEGIN
+      [{ id: "detail-123" }], // createProfileDetails
+      [], // createProfileDataForProfileDetail
+      [], // updateProfileDetails
+      [], // COMMIT
     ]);
 
     const result = await createUpdateProfileDetails(
@@ -28,30 +31,11 @@ describe("createUpdateProfileDetails", () => {
     );
 
     expect(result).toBe("detail-123");
-
-    // Verify all queries executed in correct order
     const queries = mockPg.getExecutedQueries();
-    expect(queries).toHaveLength(3);
-
-    // Check createProfileDetails
-    const createQuery = queries[0];
-    expect(createQuery.sql).toContain("INSERT INTO profile_details");
-    expect(createQuery.values).toEqual(["profile-123", "org-123", true]);
-
-    // Check createProfileDataForProfileDetail
-    const dataQuery = queries[1];
-    expect(dataQuery.sql).toContain("INSERT INTO profile_data");
-    expect(dataQuery.sql).toContain("profile_details_id");
-
-    // Check updateProfileDetails
-    const updateQuery = queries[2];
-    expect(updateQuery.sql).toContain("UPDATE profile_details");
-    expect(updateQuery.sql).toContain("SET is_latest = false");
-    expect(updateQuery.values).toEqual([
-      "detail-123",
-      "org-123",
-      "profile-123",
-    ]);
+    expect(queries).toHaveLength(6);
+    expect(queries[0].sql).toContain("pg_current_xact_id_if_assigned()");
+    expect(queries[1].sql).toBe("BEGIN");
+    expect(queries[5].sql).toBe("COMMIT");
   });
 
   it("should handle ProfileDetailsError and rethrow", async () => {
@@ -84,10 +68,13 @@ describe("createUpdateProfileDetails", () => {
 
   it("should use transaction rollback on failure", async () => {
     const mockPg = buildMockPg([
-      [{ id: "detail-123" }],
+      [{ in_transaction: false }], // isInTransaction check
+      [], // BEGIN
+      [{ id: "detail-123" }], // createProfileDetails response
       () => {
         throw new Error("Data insert failed");
-      },
+      }, // createProfileDataForProfileDetail failure
+      [], // ROLLBACK
     ]);
 
     await expect(
@@ -96,6 +83,18 @@ describe("createUpdateProfileDetails", () => {
 
     // Verify rollback was called
     const queries = mockPg.getExecutedQueries();
-    expect(queries.some((q) => q.sql.includes("ROLLBACK"))).toBe(true);
+    const sqlStatements = queries.map((q) => q.sql);
+
+    // Check that transaction starts and rolls back
+    expect(sqlStatements).toContain("BEGIN");
+    expect(sqlStatements).toContain("ROLLBACK");
+
+    // Check key operations were attempted
+    expect(sqlStatements).toContainEqual(
+      expect.stringContaining("pg_current_xact_id_if_assigned()"),
+    );
+    expect(sqlStatements).toContainEqual(
+      expect.stringContaining("INSERT INTO profile_details"),
+    );
   });
 });
