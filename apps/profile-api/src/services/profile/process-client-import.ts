@@ -31,9 +31,7 @@ export const processClientImport = async (params: {
   // 1. Create import job and import details
   const { jobId, importDetailsMap } = await withClient(pool, async (client) => {
     return withRollback(client, async () => {
-      console.log("Creating profile import job...");
       const jobId = await createProfileImport(client, organizationId);
-      console.log("Created profile import job:", jobId);
       const importDetailsIdList = await createProfileImportDetails(
         client,
         jobId,
@@ -45,7 +43,6 @@ export const processClientImport = async (params: {
           importDetailsIdList[index],
         ]),
       );
-      console.log("Created profile import details:", importDetailsMap);
       return { jobId, importDetailsMap };
     });
   });
