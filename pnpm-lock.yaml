@@ -99,9 +99,6 @@ importers:
       chrome-launcher:
         specifier: ^1.1.2
         version: 1.1.2
-      fs:
-        specifier: 0.0.1-security
-        version: 0.0.1-security
       lighthouse:
         specifier: ^12.2.1
         version: 12.3.0
@@ -2114,9 +2111,6 @@ packages:
 
   fs-constants@1.0.0:
     resolution: {integrity: sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==}
-
-  fs@0.0.1-security:
-    resolution: {integrity: sha512-3XY9e1pP0CVEUCdj5BmfIZxRBTSDycnbqhIOGec9QYtmVH2fbLpj86CFWkrNOkt/Fvty4KZG5lTglL9j/gJ87w==}
 
   fsevents@2.3.2:
     resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
@@ -5869,8 +5863,6 @@ snapshots:
   forwarded@0.2.0: {}
 
   fs-constants@1.0.0: {}
-
-  fs@0.0.1-security: {}
 
   fsevents@2.3.2:
     optional: true

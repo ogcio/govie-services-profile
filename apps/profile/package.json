@@ -46,7 +46,6 @@
     "allure-playwright": "^3.0.0-beta.7",
     "axe-html-reporter": "^2.2.11",
     "chrome-launcher": "^1.1.2",
-    "fs": "0.0.1-security",
     "lighthouse": "^12.2.1",
     "puppeteer": "^23.6.0"
   }
