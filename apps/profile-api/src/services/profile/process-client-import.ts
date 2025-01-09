@@ -27,10 +27,13 @@ export const processClientImport = async (params: {
   config: EnvConfig;
 }): Promise<string> => {
   const { config, pool, logger, profiles, organizationId } = params;
+
   // 1. Create import job and import details
   const { jobId, importDetailsMap } = await withClient(pool, async (client) => {
     return withRollback(client, async () => {
+      console.log("Creating profile import job...");
       const jobId = await createProfileImport(client, organizationId);
+      console.log("Created profile import job:", jobId);
       const importDetailsIdList = await createProfileImportDetails(
         client,
         jobId,
@@ -42,6 +45,7 @@ export const processClientImport = async (params: {
           importDetailsIdList[index],
         ]),
       );
+      console.log("Created profile import details:", importDetailsMap);
       return { jobId, importDetailsMap };
     });
   });
@@ -49,7 +53,6 @@ export const processClientImport = async (params: {
   // 2. Process profiles
   const failedProfileIds = new Set<string>();
   const profilesToCreate: ImportProfilesBody = [];
-
   for (const profile of profiles) {
     const importDetailsId = importDetailsMap.get(profile.email) as string;
     logger.debug(

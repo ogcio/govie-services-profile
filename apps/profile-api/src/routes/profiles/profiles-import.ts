@@ -10,11 +10,15 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   fastify.post(
     "/",
     {
-      // preValidation: (req, res) =>
-      //   app.checkPermissions(req, res, [Permissions.Admin.Write]),
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [Permissions.User.Write]),
       schema: ImportProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof ImportProfilesSchema>) => {
+      if (request.body.length === 0) {
+        throw httpErrors.badRequest("Profiles array cannot be empty");
+      }
+
       const importStatus = await processClientImport({
         profiles: request.body,
         organizationId: request.query.organizationId,
