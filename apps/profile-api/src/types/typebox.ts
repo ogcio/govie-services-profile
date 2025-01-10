@@ -30,5 +30,25 @@ const TypeboxBooleanEnumParser = Type.Transform(
   .Decode((stringValue) => Boolean(stringValue))
   .Encode((boolVal) => (boolVal ? "true" : "false"));
 
+const NullableStringType = (options?: {
+  description?: string;
+  [x: string]: string | boolean | undefined | string[];
+}) =>
+  Type.Union([Type.Null(), Type.String()], {
+    default: null,
+    ...(options ?? {}),
+  });
+
+const NullableOptionalStringType = (options?: {
+  description?: string;
+  [x: string]: string | boolean | undefined | string[];
+}) => Type.Optional(NullableStringType(options));
+
 export type { AcceptedQueryBooleanValues };
-export { TypeboxStringEnum, TypeboxBooleanEnum, TypeboxBooleanEnumParser };
+export {
+  TypeboxStringEnum,
+  TypeboxBooleanEnum,
+  TypeboxBooleanEnumParser,
+  NullableStringType,
+  NullableOptionalStringType,
+};

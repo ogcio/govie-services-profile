@@ -6,10 +6,8 @@ import {
   PAGINATION_MIN_OFFSET,
   PAGINATION_OFFSET_DEFAULT,
 } from "~/const/pagination.js";
-import type {
-  PaginationDetails,
-  PaginationParams,
-} from "~/types/pagination.js";
+import type { PaginationParams } from "~/schemas/pagination.js";
+import type { PaginationDetails } from "~/types/pagination.js";
 
 const getPaginationLinks = (
   inputDetails: PaginationDetails,

@@ -1,5 +1,5 @@
 import { type Static, Type } from "@sinclair/typebox";
-import { PaginationLinksSchema } from "./pagination.js";
+import { PaginationLinksSchema } from "~/schemas/pagination.js";
 
 const ResponseMetadataSchema = Type.Optional(
   Type.Object({

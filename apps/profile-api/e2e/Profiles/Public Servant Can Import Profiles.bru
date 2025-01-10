@@ -5,13 +5,13 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/v1/profiles-import?organizationId=the-mock-org
+  url: {{baseUrl}}/api/v1/profiles/import-profiles?organizationId=first-testing
   body: json
   auth: none
 }
 
 query {
-  organizationId: the-mock-org
+  organizationId: first-testing
 }
 
 headers {
@@ -24,8 +24,8 @@ body:json {
     {
       "address": "street",
       "city": "rome",
-      "first_name": "Maxo",
-      "last_name": "Mino",
+      "first_name": "Max",
+      "last_name": "Mina",
       "email": "max.mina@email.com",
       "phone": "33365611100",
       "date_of_birth": "1980-01-02"
@@ -34,7 +34,7 @@ body:json {
       "address": "road",
       "city": "florence",
       "first_name": "John",
-      "last_name": "Belusho",
+      "last_name": "Brown",
       "email": "john.brown@email.com",
       "phone": "3330844111",
       "date_of_birth": "1960-10-02"

@@ -1,11 +1,11 @@
 meta {
-  name: Public Servant Can List Profiles
+  name: Public Servant Can Find A Profile
   type: http
   seq: 3
 }
 
 get {
-  url: {{baseUrl}}/api/v1/profiles
+  url: {{baseUrl}}/api/v1/profiles/find-profile?lastName=Belusho
   body: none
   auth: bearer
 }
