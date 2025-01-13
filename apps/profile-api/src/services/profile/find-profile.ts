@@ -1,27 +1,12 @@
 import type { Pool } from "pg";
+import type { ProfileWithData } from "~/types/profile.js";
 import { withClient } from "~/utils/with-client.js";
-
-type FindProfileReturnType = {
-  id: string;
-  public_name: string;
-  email: string;
-  primary_user_id: string;
-  created_at: Date;
-  updated_at: Date;
-  details: Record<
-    string,
-    {
-      value: string;
-      type: string;
-    }
-  >;
-};
 
 export const findProfile = async (params: {
   pool: Pool;
   organizationId: string;
   query: Record<string, string>;
-}): Promise<FindProfileReturnType> => {
+}): Promise<ProfileWithData> => {
   const { email, firstName, lastName, phone } = params.query;
 
   return withClient(params.pool, async (client) => {
@@ -83,21 +68,14 @@ export const findProfile = async (params: {
       : "";
 
     // Query using indexes for performance
-    const { rows } = await client.query<{
-      id: string;
-      public_name: string;
-      email: string;
-      primary_user_id: string;
-      created_at: Date;
-      updated_at: Date;
-      details: Record<string, { value: string; type: string }>;
-    }>(
+    const { rows } = await client.query<ProfileWithData>(
       `
           SELECT DISTINCT
             p.id,
             p.public_name,
             p.email,
             p.primary_user_id,
+            p.safe_level,
             p.created_at,
             p.updated_at,
             (

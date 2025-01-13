@@ -86,6 +86,8 @@ export const UpdateProfileSchema = {
     profileId: Type.String({
       description: "ID of the profile to update",
     }),
+  }),
+  querystring: Type.Object({
     organizationId: Type.String({
       description: "Organization ID owning the profile",
     }),

@@ -1,15 +1,13 @@
-import type { Pool } from "pg";
-import type { ProfilesIndexResponse } from "~/schemas/profiles/index.js";
-import { withClient } from "~/utils/with-client.js";
+import type { PoolClient } from "pg";
+import type { ProfileWithData } from "~/types/profile.js";
 
-export const selectProfilesWithData = (
-  pool: Pool,
+export const selectProfilesWithData = async (
+  client: PoolClient,
   organizationId: string,
   profileIds: string[],
-) =>
-  withClient(pool, async (client) => {
-    const result = await client.query<ProfilesIndexResponse>(
-      `
+) => {
+  const result = await client.query<ProfileWithData>(
+    `
         SELECT 
           p.id,
           p.public_name,
@@ -35,8 +33,8 @@ export const selectProfilesWithData = (
         AND p.deleted_at IS NULL
         ORDER BY p.created_at DESC
         `,
-      [organizationId, profileIds],
-    );
+    [organizationId, profileIds],
+  );
 
-    return result.rows;
-  });
+  return result.rows;
+};

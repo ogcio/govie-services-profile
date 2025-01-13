@@ -3,9 +3,19 @@ type ProfileTable = {
   public_name: string;
   email: string;
   primary_user_id: string;
-  safe_level: number;
-  created_at?: Date;
-  updated_at?: Date;
+  safe_level?: number;
+  created_at?: string;
+  updated_at?: string;
 };
 
-export type { ProfileTable };
+type ProfileWithData = ProfileTable & {
+  details: Record<
+    string,
+    {
+      value: string;
+      type: string;
+    }
+  >;
+};
+
+export type { ProfileTable, ProfileWithData };

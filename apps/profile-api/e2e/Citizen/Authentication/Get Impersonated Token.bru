@@ -19,7 +19,7 @@ body:form-urlencoded {
   grant_type: urn:ietf:params:oauth:grant-type:token-exchange
   scope: profile:user.self:read profile:user.self:write
   resource: {{process.env.PROFILE_API_RESOURCE_INDICATOR}}
-  client_id: {{process.env.BRUNO_PROFILE_API_APP_ID}}
+  client_id: {{process.env.BRUNO_PROFILE_APP_ID}}
   subject_token: {{subjectToken}}
   subject_token_type: urn:ietf:params:oauth:token-type:access_token
 }

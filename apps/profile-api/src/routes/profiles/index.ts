@@ -12,11 +12,11 @@ import {
 } from "~/schemas/profiles/index.js";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
 import { findProfile } from "~/services/profile/find-profile.js";
+import { getProfile } from "~/services/profile/get-profile.js";
 import { listProfiles } from "~/services/profile/list-profiles.js";
+import { patchProfile } from "~/services/profile/patch-profile.js";
 import { processClientImport } from "~/services/profile/process-client-import.js";
-import { findProfileWithData } from "~/services/profile/sql/find-profile-with-data.js";
-import { selectProfilesWithData } from "~/services/profile/sql/select-profiles-with-data.js";
-import { updateProfile } from "~/services/profile/update-profile.js";
+import { selectProfiles } from "~/services/profile/select-profiles.js";
 import { formatAPIResponse } from "~/utils/format-api-response.js";
 import { sanitizePagination } from "~/utils/pagination.js";
 import { withOrganizationId } from "~/utils/with-organization-id.js";
@@ -54,15 +54,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   fastify.post(
     "/import-profiles",
     {
-      preValidation: (req, res) =>
-        fastify.checkPermissions(req, res, [Permissions.User.Write]),
+      // preValidation: (req, res) =>
+      //   fastify.checkPermissions(req, res, [Permissions.User.Write]),
       schema: ImportProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof ImportProfilesSchema>) => {
-      if (request.body.length === 0) {
-        throw httpErrors.badRequest("Profiles array cannot be empty");
-      }
-
+      console.dir(request.userData, { depth: null });
       const importStatus = await processClientImport({
         profiles: request.body,
         organizationId: withOrganizationId(request),
@@ -83,14 +80,11 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       schema: SelectProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof SelectProfilesSchema>) => {
-      const organizationId = withOrganizationId(request);
-      const profileIds = request.query.ids.split(",");
-
-      const profiles = await selectProfilesWithData(
+      const profiles = await selectProfiles({
         pool,
-        organizationId,
-        profileIds,
-      );
+        organizationId: withOrganizationId(request),
+        profileIds: request.query.ids.split(","),
+      });
 
       return formatAPIResponse({
         data: profiles,
@@ -130,27 +124,32 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
     async (request: FastifyRequestTypebox<typeof GetProfileSchema>) => {
       const organizationId =
         request.userData?.organizationId ?? request.query.organizationId;
-      const { profileId } = request.params;
-
       if (!organizationId) {
         throw httpErrors.forbidden("Organization id is not set");
       }
 
-      return findProfileWithData(pool, organizationId, profileId);
+      return getProfile({
+        pool,
+        organizationId,
+        profileId: request.params.profileId,
+      });
     },
   );
 
   fastify.put(
-    "/:profileId/:organizationId",
+    "/:profileId",
     {
       preValidation: (req, res) =>
         fastify.checkPermissions(req, res, [Permissions.UserSelf.Write]),
       schema: UpdateProfileSchema,
     },
     async (request: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
-      const { profileId, organizationId } = request.params;
-
-      return updateProfile(pool, profileId, organizationId, request.body);
+      return patchProfile({
+        pool,
+        profileId: request.params.profileId,
+        organizationId: request.query.organizationId,
+        data: request.body,
+      });
     },
   );
 };

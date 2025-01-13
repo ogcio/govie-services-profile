@@ -1,15 +1,13 @@
 import type { PoolClient } from "pg";
 
-export interface ProfileLookupResult {
-  exists: boolean;
-  profileId: string | undefined;
-  profileDetailId: string | undefined;
-}
-
 export const lookupProfile = async (
   client: PoolClient,
   email: string,
-): Promise<ProfileLookupResult> => {
+): Promise<{
+  exists: boolean;
+  profileId: string | undefined;
+  profileDetailId: string | undefined;
+}> => {
   // We have these indexes to use:
   // - idx_profiles_email ON profiles(email)
   // - idx_profile_data_lookup ON profile_data(value, value_type, name) WHERE value_type = 'string' AND name = 'email'

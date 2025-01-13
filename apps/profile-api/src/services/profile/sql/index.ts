@@ -11,3 +11,4 @@ export * from "./create-profile-data-for-profile-details.js";
 export * from "./get-profile-import-status.js";
 export * from "./check-import-completion.js";
 export * from "./find-profile-import-detail-by-email.js";
+export * from "./update-profile.js";

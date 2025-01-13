@@ -1,16 +1,14 @@
 import { httpErrors } from "@fastify/sensible";
-import type { Pool } from "pg";
-import type { ProfilesIndexResponse } from "~/schemas/profiles/index.js";
-import { withClient } from "~/utils/with-client.js";
+import type { PoolClient } from "pg";
+import type { ProfileWithData } from "~/types/profile.js";
 
-export const findProfileWithData = (
-  pool: Pool,
+export const findProfileWithData = async (
+  client: PoolClient,
   organizationId: string,
   profileId: string,
-) =>
-  withClient(pool, async (client) => {
-    const result = await client.query<ProfilesIndexResponse>(
-      `
+) => {
+  const result = await client.query<ProfileWithData>(
+    `
         SELECT 
         p.id,
         p.public_name,
@@ -35,12 +33,12 @@ export const findProfileWithData = (
         WHERE p.id = $2
         AND p.deleted_at IS NULL
         `,
-      [organizationId, profileId],
-    );
+    [organizationId, profileId],
+  );
 
-    if (!result.rows[0]) {
-      throw httpErrors.notFound(`Profile with ID ${profileId} not found`);
-    }
+  if (!result.rows[0]) {
+    throw httpErrors.notFound(`Profile with ID ${profileId} not found`);
+  }
 
-    return result.rows[0];
-  });
+  return result.rows[0];
+};
