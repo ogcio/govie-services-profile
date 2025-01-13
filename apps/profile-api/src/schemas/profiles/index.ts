@@ -96,6 +96,34 @@ export const ProfilePerOrganisationSchema = Type.Composite([
   }),
   Type.Omit(OrganisationSettingSchema, ["id", "userId"]),
 ]);
+
 export type ProfilePerOrganisation = Static<
   typeof ProfilePerOrganisationSchema
+>;
+
+export const GetProfileSchema = {
+  tags: [PROFILES_TAG],
+  operationId: "getProfile",
+  params: Type.Object({
+    profileId: Type.String({
+      description: "ID of the profile to retrieve",
+    }),
+  }),
+};
+
+export type GetProfileParams = Static<typeof GetProfileSchema.params>;
+
+export const SelectProfilesSchema = {
+  tags: [PROFILES_TAG],
+  operationId: "selectProfiles",
+  querystring: Type.Object({
+    ids: Type.String({
+      description: "Comma-separated list of profile IDs",
+      pattern: "^[a-zA-Z0-9-]+(,[a-zA-Z0-9-]+)*$",
+    }),
+  }),
+};
+
+export type SelectProfilesQueryParams = Static<
+  typeof SelectProfilesSchema.querystring
 >;

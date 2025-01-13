@@ -15,10 +15,6 @@ export const ImportProfilesSchema = {
       date_of_birth: Type.String({ format: "date" }),
     }),
   ),
-  querystring: Type.Object({ organizationId: Type.String() }),
 };
 
 export type ImportProfilesBody = Static<typeof ImportProfilesSchema.body>;
-export type ImportProfilesQueryParams = Static<
-  typeof ImportProfilesSchema.querystring
->;

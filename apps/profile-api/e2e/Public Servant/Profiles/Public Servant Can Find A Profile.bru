@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/v1/profiles/find-profile?lastName=Belusho
+  url: {{baseUrl}}/api/v1/profiles/find-profile?lastName={{lastName}}
   body: none
   auth: bearer
 }
@@ -14,13 +14,16 @@ auth:bearer {
   token: {{accessToken}}
 }
 
+query {
+  lastName: {{profileLastName}}
+}
+
 vars:post-response {
-  userId: res.body.data && res.body.data[0] ?  res.body.data[0].id : undefined
+  profileId: res.body.data ?  res.body.data.id : undefined
 }
 
 assert {
   res.status: eq 200
   res.body.data: isDefined
-  res.body.data[0]: isDefined
-  res.body.data[0].id: isDefined
+  res.body.data.id: isDefined
 }

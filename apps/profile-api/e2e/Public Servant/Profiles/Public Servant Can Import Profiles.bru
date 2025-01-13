@@ -5,13 +5,9 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/v1/profiles/import-profiles?organizationId=first-testing
+  url: {{baseUrl}}/api/v1/profiles/import-profiles
   body: json
   auth: bearer
-}
-
-query {
-  organizationId: first-testing
 }
 
 auth:bearer {

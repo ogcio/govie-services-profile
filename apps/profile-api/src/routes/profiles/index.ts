@@ -3,12 +3,18 @@ import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import type { FastifyInstance } from "fastify";
 import { Permissions } from "~/const/permissions.js";
 import { FindProfileSchema } from "~/schemas/profiles/find-profile.js";
-import { ImportProfilesSchema } from "~/schemas/profiles/import.js";
-import { ProfilesIndexSchema } from "~/schemas/profiles/index.js";
+import { ImportProfilesSchema } from "~/schemas/profiles/import-profiles.js";
+import {
+  GetProfileSchema,
+  ProfilesIndexSchema,
+  SelectProfilesSchema,
+} from "~/schemas/profiles/index.js";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
 import { findProfile } from "~/services/profile/find-profile.js";
 import { listProfiles } from "~/services/profile/list-profiles.js";
 import { processClientImport } from "~/services/profile/process-client-import.js";
+import { findProfileWithData } from "~/services/profile/sql/find-profile-with-data.js";
+import { selectProfilesWithData } from "~/services/profile/sql/select-profiles-with-data.js";
 import { formatAPIResponse } from "~/utils/format-api-response.js";
 import { sanitizePagination } from "~/utils/pagination.js";
 import { withOrganizationId } from "~/utils/with-organization-id.js";
@@ -47,7 +53,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
     "/import-profiles",
     {
       preValidation: (req, res) =>
-        fastify.checkPermissions(req, res, [Permissions.User.Read]),
+        fastify.checkPermissions(req, res, [Permissions.User.Write]),
       schema: ImportProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof ImportProfilesSchema>) => {
@@ -57,7 +63,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
 
       const importStatus = await processClientImport({
         profiles: request.body,
-        organizationId: request.query.organizationId,
+        organizationId: withOrganizationId(request),
         logger: request.log,
         config,
         pool,
@@ -79,6 +85,47 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         pool,
         organizationId: withOrganizationId(request),
         query: request.query,
+      });
+    },
+  );
+
+  fastify.get(
+    "/:profileId",
+    {
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [Permissions.User.Read]),
+      schema: GetProfileSchema,
+    },
+    async (request: FastifyRequestTypebox<typeof GetProfileSchema>) => {
+      const organizationId = withOrganizationId(request);
+      const { profileId } = request.params;
+
+      return findProfileWithData(pool, organizationId, profileId);
+    },
+  );
+
+  fastify.get(
+    "/select-profiles",
+    {
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [Permissions.User.Read]),
+      schema: SelectProfilesSchema,
+    },
+    async (request: FastifyRequestTypebox<typeof SelectProfilesSchema>) => {
+      const organizationId = withOrganizationId(request);
+      const profileIds = request.query.ids.split(",");
+
+      const profiles = await selectProfilesWithData(
+        pool,
+        organizationId,
+        profileIds,
+      );
+
+      return formatAPIResponse({
+        data: profiles,
+        config,
+        request,
+        totalCount: profiles.length,
       });
     },
   );

@@ -1,11 +1,27 @@
 import type { Pool } from "pg";
 import { withClient } from "~/utils/with-client.js";
 
+type FindProfileReturnType = {
+  id: string;
+  public_name: string;
+  email: string;
+  primary_user_id: string;
+  created_at: Date;
+  updated_at: Date;
+  details: Record<
+    string,
+    {
+      value: string;
+      type: string;
+    }
+  >;
+};
+
 export const findProfile = async (params: {
   pool: Pool;
   organizationId: string;
   query: Record<string, string>;
-}) => {
+}): Promise<FindProfileReturnType> => {
   const { email, firstName, lastName, phone } = params.query;
 
   return withClient(params.pool, async (client) => {
