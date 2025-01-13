@@ -5,17 +5,13 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/v1/profiles/select?ids={{profileId}}
+  url: {{baseUrl}}/api/v1/profiles/select-profiles?ids={{profileId}},{{anotherProfileId}}
   body: none
   auth: bearer
 }
 
 auth:bearer {
   token: {{accessToken}}
-}
-
-query {
-  ids: {{profileId}}
 }
 
 vars:post-response {

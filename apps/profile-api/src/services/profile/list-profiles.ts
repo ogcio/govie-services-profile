@@ -1,7 +1,7 @@
 import { httpErrors } from "@fastify/sensible";
 import type { Pool } from "pg";
 import type { PaginationParams } from "~/schemas/pagination.js";
-import type { ProfilePerOrganisation } from "~/schemas/profiles/index.js";
+import type { ProfilesIndexResponse } from "~/schemas/profiles/index.js";
 import { buildlistProfilesQueries } from "./sql/list-profiles.js";
 
 export const listProfiles = async (params: {
@@ -10,7 +10,7 @@ export const listProfiles = async (params: {
   pagination: Required<PaginationParams>;
   search?: string | undefined;
   activeOnly?: boolean;
-}): Promise<{ data: ProfilePerOrganisation[]; total: number }> => {
+}): Promise<{ data: ProfilesIndexResponse[]; total: number }> => {
   const client = await params.pool.connect();
   try {
     const queries = buildlistProfilesQueries(params);
@@ -19,7 +19,7 @@ export const listProfiles = async (params: {
       queries.count.query,
       queries.count.values,
     );
-    const response = client.query<ProfilePerOrganisation>(
+    const response = client.query<ProfilesIndexResponse>(
       queries.data.query,
       queries.data.values,
     );

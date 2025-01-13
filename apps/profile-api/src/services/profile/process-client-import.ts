@@ -2,7 +2,7 @@ import type { FastifyBaseLogger } from "fastify";
 import type { Pool } from "pg";
 import { ImportStatus } from "~/const/profile.js";
 import type { EnvConfig } from "~/plugins/external/env.js";
-import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
+import type { ImportProfilesBody } from "~/schemas/profiles/import-profiles.js";
 import { withClient } from "~/utils/with-client.js";
 import { withRollback } from "~/utils/with-rollback.js";
 import { createLogtoUsers } from "./create-logto-users.js";

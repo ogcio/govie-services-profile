@@ -1,5 +1,5 @@
 import type { PoolClient } from "pg";
-import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
+import type { ImportProfilesBody } from "~/schemas/profiles/import-profiles.js";
 import { findProfileImportByJobId } from "./find-profile-import-by-job-id.js";
 
 export const createProfileImportDetails = async (

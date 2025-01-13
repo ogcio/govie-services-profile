@@ -7,7 +7,7 @@ meta {
 put {
   url: {{baseUrl}}/api/v1/profiles/:profileId/:organizationId
   body: json
-  auth: none
+  auth: bearer
 }
 
 params:path {
@@ -15,9 +15,8 @@ params:path {
   organizationId: first-testing
 }
 
-headers {
-  Content-Type: application/json
-  Authorization: Bearer {{citizenToken}}
+auth:bearer {
+  token: {{citizenAccessToken}}
 }
 
 body {

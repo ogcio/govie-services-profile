@@ -1,5 +1,5 @@
 meta {
-  name: Get Public Servant Token
+  name: Get Citizen Token
   type: http
   seq: 1
 }
@@ -22,11 +22,11 @@ body:form-urlencoded {
 }
 
 vars:pre-request {
-  scopes: profile:user:read profile:user:write
+  scopes: profile:user.self:*
 }
 
 vars:post-response {
-  accessToken: res.body.access_token
+  citizenToken: res.body.access_token
 }
 
 assert {

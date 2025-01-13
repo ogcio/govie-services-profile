@@ -1,7 +1,7 @@
 import { getAccessToken } from "@ogcio/api-auth";
 import { LogtoClient } from "~/clients/logto.js";
 import type { EnvConfig } from "~/plugins/external/env.js";
-import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
+import type { ImportProfilesBody } from "~/schemas/profiles/import-profiles.js";
 
 interface LogtoUserResult {
   id: string;

@@ -1,6 +1,6 @@
 import { httpErrors } from "@fastify/sensible";
 import type { Pool } from "pg";
-import type { ProfilePerOrganisation } from "~/schemas/profiles/index.js";
+import type { ProfilesIndexResponse } from "~/schemas/profiles/index.js";
 import { withClient } from "~/utils/with-client.js";
 
 export const findProfileWithData = (
@@ -9,7 +9,7 @@ export const findProfileWithData = (
   profileId: string,
 ) =>
   withClient(pool, async (client) => {
-    const result = await client.query<ProfilePerOrganisation>(
+    const result = await client.query<ProfilesIndexResponse>(
       `
         SELECT 
         p.id,

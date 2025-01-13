@@ -2,7 +2,7 @@ import { httpErrors } from "@fastify/sensible";
 import type { FastifyBaseLogger } from "fastify";
 import type { Pool, PoolClient } from "pg";
 import { ImportStatus } from "~/const/profile.js";
-import type { ImportProfilesBody } from "~/schemas/profiles/import.js";
+import type { ImportProfilesBody } from "~/schemas/profiles/import-profiles.js";
 import type { LogtoUserCreatedBody } from "~/schemas/webhooks/logto-user-created.js";
 import { createUpdateProfileDetails } from "~/services/profile/create-update-profile-details.js";
 import { checkImportCompletion } from "~/services/profile/sql/check-import-completion.js";

@@ -8,6 +8,7 @@ import {
   GetProfileSchema,
   ProfilesIndexSchema,
   SelectProfilesSchema,
+  UpdateProfileSchema,
 } from "~/schemas/profiles/index.js";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
 import { findProfile } from "~/services/profile/find-profile.js";
@@ -15,6 +16,7 @@ import { listProfiles } from "~/services/profile/list-profiles.js";
 import { processClientImport } from "~/services/profile/process-client-import.js";
 import { findProfileWithData } from "~/services/profile/sql/find-profile-with-data.js";
 import { selectProfilesWithData } from "~/services/profile/sql/select-profiles-with-data.js";
+import { updateProfile } from "~/services/profile/update-profile.js";
 import { formatAPIResponse } from "~/utils/format-api-response.js";
 import { sanitizePagination } from "~/utils/pagination.js";
 import { withOrganizationId } from "~/utils/with-organization-id.js";
@@ -74,37 +76,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   );
 
   fastify.get(
-    "/find-profile",
-    {
-      preValidation: (req, res) =>
-        fastify.checkPermissions(req, res, [Permissions.User.Read]),
-      schema: FindProfileSchema,
-    },
-    async (request: FastifyRequestTypebox<typeof FindProfileSchema>) => {
-      return findProfile({
-        pool,
-        organizationId: withOrganizationId(request),
-        query: request.query,
-      });
-    },
-  );
-
-  fastify.get(
-    "/:profileId",
-    {
-      preValidation: (req, res) =>
-        fastify.checkPermissions(req, res, [Permissions.User.Read]),
-      schema: GetProfileSchema,
-    },
-    async (request: FastifyRequestTypebox<typeof GetProfileSchema>) => {
-      const organizationId = withOrganizationId(request);
-      const { profileId } = request.params;
-
-      return findProfileWithData(pool, organizationId, profileId);
-    },
-  );
-
-  fastify.get(
     "/select-profiles",
     {
       preValidation: (req, res) =>
@@ -127,6 +98,59 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         request,
         totalCount: profiles.length,
       });
+    },
+  );
+
+  fastify.get(
+    "/find-profile",
+    {
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [Permissions.User.Read]),
+      schema: FindProfileSchema,
+    },
+    async (request: FastifyRequestTypebox<typeof FindProfileSchema>) => {
+      return findProfile({
+        pool,
+        organizationId: withOrganizationId(request),
+        query: request.query,
+      });
+    },
+  );
+
+  fastify.get(
+    "/:profileId",
+    {
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [
+          Permissions.User.Read,
+          Permissions.UserSelf.Read,
+        ]),
+      schema: GetProfileSchema,
+    },
+    async (request: FastifyRequestTypebox<typeof GetProfileSchema>) => {
+      const organizationId =
+        request.userData?.organizationId ?? request.query.organizationId;
+      const { profileId } = request.params;
+
+      if (!organizationId) {
+        throw httpErrors.forbidden("Organization id is not set");
+      }
+
+      return findProfileWithData(pool, organizationId, profileId);
+    },
+  );
+
+  fastify.put(
+    "/:profileId/:organizationId",
+    {
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [Permissions.UserSelf.Write]),
+      schema: UpdateProfileSchema,
+    },
+    async (request: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
+      const { profileId, organizationId } = request.params;
+
+      return updateProfile(pool, profileId, organizationId, request.body);
     },
   );
 };

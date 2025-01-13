@@ -24,82 +24,30 @@ export type ProfilesIndexQueryParams = Static<
 >;
 
 export const ProfileDetailsSchema = Type.Object({
-  publicIdentityId: NullableStringType({
-    description: "PPSN of the imported user",
-  }),
-  firstName: NullableStringType({
-    description: "First name of the imported user",
-  }),
-  lastName: NullableStringType({
-    description: "Last name of the imported user",
-  }),
-  birthDate: NullableStringType({
-    description: "Birth date of the imported user",
-  }),
-  address: Type.Union(
-    [
-      Type.Object({
-        city: NullableStringType(),
-        zipCode: NullableStringType(),
-        street: NullableStringType(),
-        country: NullableStringType(),
-        region: NullableStringType(),
-      }),
-      Type.Null(),
-    ],
-    { default: null, description: "Address of the imported user" },
-  ),
+  city: NullableStringType(),
+  email: NullableStringType(),
+  address: NullableStringType(),
+  phone: NullableStringType(),
+  first_name: NullableStringType(),
+  last_name: NullableStringType(),
+  date_of_birth: NullableStringType(),
 });
+
 export type ProfileDetails = Static<typeof ProfileDetailsSchema>;
 
-export const OrganisationSettingSchema = Type.Object({
-  id: Type.String({
-    format: "uuid",
-    description: "Unique id of the organisation setting",
-  }),
-  userId: Type.String({
-    format: "uuid",
-    description: "Unique id of the related user",
-  }),
-  userProfileId: Type.Union([Type.Null(), Type.String()], {
-    default: null,
-    description: "Profile profile id, if available",
-  }),
-  phoneNumber: NullableStringType({
-    description: "Phone number of the user",
-  }),
-  emailAddress: NullableStringType({
-    description: "Email address of the user",
-  }),
-  organisationId: Type.String({
-    description: "Unique id of the related organisation",
-  }),
-  details: Type.Optional(ProfileDetailsSchema),
-});
-export type OrganisationSetting = Static<typeof OrganisationSettingSchema>;
-
-export const ProfilePerOrganisationSchema = Type.Composite([
+export const ProfilesIndexResponseSchema = Type.Composite([
   Type.Object({
-    organisationSettingId: Type.String({
-      format: "uuid",
-      description: "Unique id of the organisation setting",
-    }),
-    firstName: NullableStringType({ description: "First name of the user" }),
-    lastName: NullableStringType({ description: "Last name of the user" }),
-    birthDate: NullableStringType({ description: "Birth date of the user" }),
-    lang: NullableStringType({ description: "Preferred language of the user" }),
-    ppsn: NullableStringType({ description: "PPSN of the user" }),
-    id: Type.String({
-      format: "uuid",
-      description: "Unique id of the related user",
-    }),
+    id: Type.String(),
+    public_name: Type.String(),
+    email: Type.String(),
+    primary_user_id: Type.String(),
+    created_at: Type.String({ format: "date-time" }),
+    updated_at: Type.String({ format: "date-time" }),
+    details: ProfileDetailsSchema,
   }),
-  Type.Omit(OrganisationSettingSchema, ["id", "userId"]),
 ]);
 
-export type ProfilePerOrganisation = Static<
-  typeof ProfilePerOrganisationSchema
->;
+export type ProfilesIndexResponse = Static<typeof ProfilesIndexResponseSchema>;
 
 export const GetProfileSchema = {
   tags: [PROFILES_TAG],
@@ -108,6 +56,9 @@ export const GetProfileSchema = {
     profileId: Type.String({
       description: "ID of the profile to retrieve",
     }),
+  }),
+  querystring: Type.Object({
+    organizationId: Type.Optional(Type.String()),
   }),
 };
 
@@ -127,3 +78,32 @@ export const SelectProfilesSchema = {
 export type SelectProfilesQueryParams = Static<
   typeof SelectProfilesSchema.querystring
 >;
+
+export const UpdateProfileSchema = {
+  tags: [PROFILES_TAG],
+  operationId: "updateProfile",
+  params: Type.Object({
+    profileId: Type.String({
+      description: "ID of the profile to update",
+    }),
+    organizationId: Type.String({
+      description: "Organization ID owning the profile",
+    }),
+  }),
+  body: Type.Object(
+    {
+      public_name: Type.Optional(Type.String()),
+      email: Type.Optional(Type.String({ format: "email" })),
+      phone: Type.Optional(Type.String()),
+      address: Type.Optional(Type.String()),
+      city: Type.Optional(Type.String()),
+      first_name: Type.Optional(Type.String()),
+      last_name: Type.Optional(Type.String()),
+      date_of_birth: Type.Optional(Type.String({ format: "date" })),
+    },
+    { additionalProperties: false },
+  ),
+};
+
+export type UpdateProfileParams = Static<typeof UpdateProfileSchema.params>;
+export type UpdateProfileBody = Static<typeof UpdateProfileSchema.body>;
