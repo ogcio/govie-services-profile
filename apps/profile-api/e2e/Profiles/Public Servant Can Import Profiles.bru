@@ -7,16 +7,19 @@ meta {
 post {
   url: {{baseUrl}}/api/v1/profiles/import-profiles?organizationId=first-testing
   body: json
-  auth: none
+  auth: bearer
 }
 
 query {
   organizationId: first-testing
 }
 
+auth:bearer {
+  token: {{accessToken}}
+}
+
 headers {
   Content-Type: application/json
-  Authorization: Bearer {{publicServantToken}}
 }
 
 body:json {
