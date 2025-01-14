@@ -1,4 +1,4 @@
-import { type Static, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { PaginationParamsSchema } from "~/schemas/pagination.js";
 import { HttpError } from "~/types/http-error.js";
 import { getGenericResponseSchema } from "~/utils/index.js";
@@ -25,7 +25,3 @@ export const ProfilesIndexSchema = {
     "5xx": HttpError,
   },
 };
-
-export type ProfilesIndexQueryParams = Static<
-  typeof ProfilesIndexSchema.querystring
->;

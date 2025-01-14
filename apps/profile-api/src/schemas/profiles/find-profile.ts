@@ -1,4 +1,4 @@
-import { type Static, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { HttpError } from "~/types/index.js";
 import { getGenericResponseSchema } from "~/utils/index.js";
 import { ProfileWithDataSchema } from "./model.js";
@@ -43,7 +43,3 @@ export const FindProfileSchema = {
     "5xx": HttpError,
   },
 };
-
-export type FindProfileQueryParams = Static<
-  typeof FindProfileSchema.querystring
->;

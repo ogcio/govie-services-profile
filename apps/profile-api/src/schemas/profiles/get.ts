@@ -1,4 +1,4 @@
-import { type Static, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { HttpError } from "~/types/index.js";
 import { getGenericResponseSchema } from "~/utils/index.js";
 import { ProfileWithDataSchema } from "./index.js";
@@ -21,5 +21,3 @@ export const GetProfileSchema = {
     "5xx": HttpError,
   },
 };
-
-export type GetProfileParams = Static<typeof GetProfileSchema.params>;

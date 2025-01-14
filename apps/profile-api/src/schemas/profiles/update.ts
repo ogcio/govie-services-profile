@@ -36,5 +36,4 @@ export const UpdateProfileSchema = {
   },
 };
 
-export type UpdateProfileParams = Static<typeof UpdateProfileSchema.params>;
 export type UpdateProfileBody = Static<typeof UpdateProfileSchema.body>;
