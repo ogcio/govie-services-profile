@@ -1,4 +1,6 @@
 import { type Static, Type } from "@sinclair/typebox";
+import { ImportStatus } from "~/const/index.js";
+import { HttpError } from "~/types/index.js";
 import { PROFILES_TAG } from "./shared.js";
 
 export const ImportProfilesSchema = {
@@ -16,6 +18,13 @@ export const ImportProfilesSchema = {
     }),
     { minItems: 1 },
   ),
+  response: {
+    200: Type.Object({
+      status: Type.Enum(ImportStatus),
+    }),
+    "4xx": HttpError,
+    "5xx": HttpError,
+  },
 };
 
 export type ImportProfilesBody = Static<typeof ImportProfilesSchema.body>;

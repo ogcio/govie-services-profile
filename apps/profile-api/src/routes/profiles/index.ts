@@ -145,7 +145,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
     {
       preValidation: (req, res) =>
         fastify.checkPermissions(req, res, [Permissions.UserSelf.Write]),
-      schema: UpdateProfileSchema,
+      schema: {
+        operationId: "updateProfilePut",
+        ...UpdateProfileSchema,
+      },
     },
     async (request: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
       return patchProfile({
@@ -162,7 +165,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
     {
       preValidation: (req, res) =>
         fastify.checkPermissions(req, res, [Permissions.UserSelf.Write]),
-      schema: UpdateProfileSchema,
+      schema: {
+        operationId: "updateProfilePatch",
+        ...UpdateProfileSchema,
+      },
     },
     async (request: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
       return patchProfile({

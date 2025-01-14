@@ -5,7 +5,7 @@ const ProfileDataItemSchema = Type.Object({
   type: Type.String(),
 });
 
-const ProfileDataSchema = Type.Object({
+export const ProfileDataSchema = Type.Object({
   city: Type.Optional(ProfileDataItemSchema),
   email: Type.Optional(ProfileDataItemSchema),
   address: Type.Optional(ProfileDataItemSchema),

@@ -5,11 +5,6 @@ import { getGenericResponseSchema } from "~/utils/index.js";
 import { ProfileWithDataListSchema } from "./model.js";
 import { PROFILES_TAG } from "./shared.js";
 
-export const ProfilesIndexResponseSchema = getGenericResponseSchema(
-  ProfileWithDataListSchema,
-);
-export type ProfilesIndexResponse = Static<typeof ProfilesIndexResponseSchema>;
-
 export const ProfilesIndexSchema = {
   tags: [PROFILES_TAG],
   operationId: "indexProfiles",
@@ -25,7 +20,7 @@ export const ProfilesIndexSchema = {
     PaginationParamsSchema,
   ]),
   response: {
-    200: ProfilesIndexResponseSchema,
+    200: getGenericResponseSchema(ProfileWithDataListSchema),
     "4xx": HttpError,
     "5xx": HttpError,
   },
