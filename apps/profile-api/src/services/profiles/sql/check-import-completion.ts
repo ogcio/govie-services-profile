@@ -1,5 +1,5 @@
 import type { PoolClient } from "pg";
-import { ImportStatus } from "~/const/profile.js";
+import { ImportStatus } from "~/const/index.js";
 
 export const checkImportCompletion = async (
   client: PoolClient,

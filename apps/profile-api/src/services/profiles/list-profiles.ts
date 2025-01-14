@@ -4,8 +4,8 @@ import type {
   ProfileWithData,
   ProfileWithDataList,
 } from "~/schemas/profiles/index.js";
-import { withClient } from "~/utils/with-client.js";
-import { buildlistProfilesQueries } from "./sql/list-profiles.js";
+import { withClient } from "~/utils/index.js";
+import { buildlistProfilesQueries } from "./sql/index.js";
 
 export const listProfiles = async (params: {
   pool: Pool;

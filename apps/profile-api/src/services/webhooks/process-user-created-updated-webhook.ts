@@ -1,22 +1,21 @@
 import { httpErrors } from "@fastify/sensible";
 import type { FastifyBaseLogger } from "fastify";
 import type { Pool } from "pg";
-import { ImportStatus } from "~/const/profile.js";
-import type { ImportProfilesBody } from "~/schemas/profiles/import-profiles.js";
-import type { LogtoUserCreatedBody } from "~/schemas/webhooks/logto-user-created.js";
-import { createUpdateProfileDetails } from "~/services/profiles/create-update-profile-details.js";
-import { checkImportCompletion } from "~/services/profiles/sql/check-import-completion.js";
+import { ImportStatus } from "~/const/index.js";
+import type { ImportProfilesBody } from "~/schemas/profiles/index.js";
+import type { LogtoUserCreatedBody } from "~/schemas/webhooks/index.js";
+import { createUpdateProfileDetails } from "~/services/profiles/index.js";
 import {
+  checkImportCompletion,
   createProfile,
   findProfileImportByJobId,
   findProfileImportDetailByEmail,
   getProfileImportDetailDataByEmail,
   updateProfileImportDetailsStatus,
+  updateProfileImportStatusByJobId,
 } from "~/services/profiles/sql/index.js";
-import { updateProfileImportStatusByJobId } from "~/services/profiles/sql/update-profile-import-status-by-job-id.js";
-import { withClient } from "~/utils/with-client.js";
-import { withRollback } from "~/utils/with-rollback.js";
-import { webhookBodyToUser } from "./webhook-body-to-user.js";
+import { withClient, withRollback } from "~/utils/index.js";
+import { webhookBodyToUser } from "./index.js";
 
 interface WebhookResponse {
   id: string | undefined;

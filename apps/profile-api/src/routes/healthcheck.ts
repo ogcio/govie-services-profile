@@ -5,7 +5,7 @@ import type {
   FastifyReplyTypebox,
   FastifyRequestTypebox,
 } from "~/schemas/shared.js";
-import { getPackageInfo } from "~/utils/get-package-info.js";
+import { getPackageInfo } from "~/utils/index.js";
 
 const plugin: FastifyPluginAsyncTypebox = async function healthCheck(
   app: FastifyInstance,

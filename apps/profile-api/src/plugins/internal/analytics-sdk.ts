@@ -4,7 +4,7 @@ import {
   ensureOrganizationIdIsSet,
   getAnalyticsSdk,
   isOrganizationIdSet,
-} from "~/utils/authentication-factory.js";
+} from "~/utils/index.js";
 
 const operationIdToNotTrack: Record<string, boolean> = { healthcheck: true };
 

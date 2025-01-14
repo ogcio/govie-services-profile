@@ -1,6 +1,6 @@
 import type { HttpError } from "@fastify/sensible";
 import type { PoolClient } from "pg";
-import { withRollback } from "~/utils/with-rollback.js";
+import { withRollback } from "~/utils/index.js";
 import {
   createProfileDataForProfileDetail,
   createProfileDetails,

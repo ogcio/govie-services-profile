@@ -1,5 +1,5 @@
 import { type Static, Type } from "@sinclair/typebox";
-import { HttpError } from "~/types/http-error.js";
+import { HttpError } from "~/types/index.js";
 
 const ExecuteJobResponseSchema = Type.Null();
 export type ExecuteJobResponse = Static<typeof ExecuteJobResponseSchema>;

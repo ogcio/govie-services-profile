@@ -1,4 +1,4 @@
-import { withRetry } from "~/utils/with-retry.js";
+import { withRetry } from "~/utils/index.js";
 
 export type LogtoErrorBody = {
   message: string;

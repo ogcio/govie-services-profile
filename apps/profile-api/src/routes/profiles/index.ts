@@ -1,11 +1,11 @@
 import { httpErrors } from "@fastify/sensible";
 import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import type { FastifyInstance } from "fastify";
-import { Permissions } from "~/const/permissions.js";
-import { FindProfileSchema } from "~/schemas/profiles/find-profile.js";
-import { ImportProfilesSchema } from "~/schemas/profiles/import-profiles.js";
+import { Permissions } from "~/const/index.js";
 import {
+  FindProfileSchema,
   GetProfileSchema,
+  ImportProfilesSchema,
   type ProfileWithData,
   ProfilesIndexSchema,
   SelectProfilesSchema,
@@ -141,6 +141,23 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   );
 
   fastify.put(
+    "/:profileId",
+    {
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [Permissions.UserSelf.Write]),
+      schema: UpdateProfileSchema,
+    },
+    async (request: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
+      return patchProfile({
+        pool,
+        profileId: request.params.profileId,
+        organizationId: request.query.organizationId,
+        data: request.body,
+      });
+    },
+  );
+
+  fastify.patch(
     "/:profileId",
     {
       preValidation: (req, res) =>

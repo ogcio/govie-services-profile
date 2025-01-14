@@ -1,23 +1,24 @@
 import type { FastifyBaseLogger } from "fastify";
 import type { Pool } from "pg";
-import { ImportStatus } from "~/const/profile.js";
+import { ImportStatus } from "~/const/index.js";
 import type { EnvConfig } from "~/plugins/external/env.js";
-import type { ImportProfilesBody } from "~/schemas/profiles/import-profiles.js";
-import { withClient } from "~/utils/with-client.js";
-import { withRollback } from "~/utils/with-rollback.js";
-import { createLogtoUsers } from "./create-logto-users.js";
-import type { LogtoError } from "./create-logto-users.js";
-import { createUpdateProfileDetails } from "./create-update-profile-details.js";
-import { lookupProfile } from "./lookup-profile.js";
+import type { ImportProfilesBody } from "~/schemas/profiles/index.js";
+import { withClient, withRollback } from "~/utils/index.js";
+import {
+  type LogtoError,
+  createLogtoUsers,
+  createUpdateProfileDetails,
+} from "./index.js";
 import {
   checkImportCompletion,
   createProfileImport,
   createProfileImportDetails,
   getProfileImportStatus,
+  lookupProfile,
   updateProfileImportDetails,
   updateProfileImportDetailsStatus,
+  updateProfileImportStatusByJobId,
 } from "./sql/index.js";
-import { updateProfileImportStatusByJobId } from "./sql/update-profile-import-status-by-job-id.js";
 
 export const processClientImport = async (params: {
   pool: Pool;

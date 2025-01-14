@@ -4,10 +4,9 @@ import type {
   ProfileWithData,
   UpdateProfileBody,
 } from "~/schemas/profiles/index.js";
-import { withClient } from "~/utils/with-client.js";
-import { createUpdateProfileDetails } from "./create-update-profile-details.js";
-import { findProfileWithData } from "./sql/find-profile-with-data.js";
-import { updateProfile } from "./sql/index.js";
+import { withClient } from "~/utils/index.js";
+import { createUpdateProfileDetails } from "./index.js";
+import { findProfileWithData, updateProfile } from "./sql/index.js";
 
 export const patchProfile = async (params: {
   pool: Pool;

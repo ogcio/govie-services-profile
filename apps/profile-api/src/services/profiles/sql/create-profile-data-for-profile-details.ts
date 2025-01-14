@@ -1,5 +1,5 @@
 import type { PoolClient } from "pg";
-import { isISODate } from "~/utils/is-iso-date.js";
+import { isISODate } from "~/utils/index.js";
 
 export const createProfileDataForProfileDetail = async (
   client: PoolClient,

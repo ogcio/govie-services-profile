@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lookupProfile } from "../../services/profiles/lookup-profile.js";
+import { lookupProfile } from "../../services/profiles/sql/lookup-profile.js";
 import { buildMockPg } from "../build-mock-pg.js";
 
 describe("lookupProfile", () => {

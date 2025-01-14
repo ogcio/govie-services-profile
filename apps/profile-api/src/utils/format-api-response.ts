@@ -1,8 +1,7 @@
 import type { FastifyRequest } from "fastify";
 import type { EnvConfig } from "~/plugins/external/env.js";
-import type { GenericResponse } from "~/types/generic-response.js";
-import type { PaginationDetails } from "~/types/pagination.js";
-import { getPaginationLinks, getUrlDataForPagination } from "./pagination.js";
+import type { GenericResponse, PaginationDetails } from "~/types/index.js";
+import { getPaginationLinks, getUrlDataForPagination } from "./index.js";
 
 export const formatAPIResponse = <T>(params: {
   data: T[];

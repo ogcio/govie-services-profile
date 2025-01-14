@@ -1,7 +1,7 @@
 import type { Pool } from "pg";
 import type { ProfileWithDataList } from "~/schemas/profiles/index.js";
-import { withClient } from "~/utils/with-client.js";
-import { selectProfilesWithData } from "./sql/select-profiles-with-data.js";
+import { withClient } from "~/utils/index.js";
+import { selectProfilesWithData } from "./sql/index.js";
 
 export const selectProfiles = async (params: {
   pool: Pool;

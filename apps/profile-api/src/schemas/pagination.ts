@@ -3,7 +3,7 @@ import {
   PAGINATION_LIMIT_DEFAULT,
   PAGINATION_MAX_LIMIT,
   PAGINATION_MIN_OFFSET,
-} from "~/const/pagination.js";
+} from "~/const/index.js";
 import { getPaginationLinkSchema } from "~/utils/get-pagination-link-schema.js";
 
 export const PaginationParamsSchema = Type.Object({

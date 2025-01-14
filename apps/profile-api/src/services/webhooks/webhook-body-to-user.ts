@@ -1,5 +1,5 @@
-import { MY_GOV_ID_IDENTITY } from "~/const/logto.js";
-import { getCurrentUTCDate } from "~/utils/get-current-utc-date.js";
+import { MY_GOV_ID_IDENTITY } from "~/const/index.js";
+import { getCurrentUTCDate } from "~/utils/index.js";
 
 export const webhookBodyToUser = (bodyData: {
   identities: Record<
