@@ -14,5 +14,7 @@ export const withClient = async <T>(
     throw httpErrors.internalServerError(
       isNativeError(err) ? err.message : errorMessage,
     );
+  } finally {
+    client.release();
   }
 };
