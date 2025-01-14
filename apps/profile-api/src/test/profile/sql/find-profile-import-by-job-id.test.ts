@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { findProfileImportByJobId } from "../../../services/profile/sql/find-profile-import-by-job-id.js";
+import { findProfileImportByJobId } from "../../../services/profiles/sql/find-profile-import-by-job-id.js";
 import { buildMockPg } from "../../build-mock-pg.js";
 
 describe("findProfileImportByJobId", () => {

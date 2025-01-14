@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   ProfileDetailsError,
   createUpdateProfileDetails,
-} from "../../services/profile/create-update-profile-details.js";
+} from "../../services/profiles/create-update-profile-details.js";
 import { buildMockPg } from "../build-mock-pg.js";
 
 describe("createUpdateProfileDetails", () => {

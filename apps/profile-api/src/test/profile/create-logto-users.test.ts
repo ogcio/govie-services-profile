@@ -1,7 +1,7 @@
 import { getAccessToken } from "@ogcio/api-auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LogtoClient } from "../../clients/logto.js";
-import { createLogtoUsers } from "../../services/profile/create-logto-users.js";
+import { createLogtoUsers } from "../../services/profiles/create-logto-users.js";
 
 // Mock dependencies
 vi.mock("@ogcio/api-auth", () => ({

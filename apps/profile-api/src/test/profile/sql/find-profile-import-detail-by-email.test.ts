@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { findProfileImportDetailByEmail } from "../../../services/profile/sql/find-profile-import-detail-by-email.js";
+import { findProfileImportDetailByEmail } from "../../../services/profiles/sql/find-profile-import-detail-by-email.js";
 import { buildMockPg } from "../../build-mock-pg.js";
 
 describe("findProfileImportDetailByEmail", () => {

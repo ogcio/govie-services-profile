@@ -3,7 +3,7 @@ import type { FastifyInstance } from "fastify";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
 import type { LogtoUserCreatedSchema } from "~/schemas/webhooks/logto-user-created.js";
 import { processUserWebhook } from "~/services/webhooks/users.js";
-import { verifySignature } from "~/utils/verify-signature.js";
+import { verifySignature } from "~/utils/index.js";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   fastify.post(

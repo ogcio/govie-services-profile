@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ImportStatus } from "../../../const/profile.js";
-import { getProfileImportStatus } from "../../../services/profile/sql/get-profile-import-status.js";
+import { getProfileImportStatus } from "../../../services/profiles/sql/get-profile-import-status.js";
 import { buildMockPg } from "../../build-mock-pg.js";
 
 describe("getProfileImportStatus", () => {

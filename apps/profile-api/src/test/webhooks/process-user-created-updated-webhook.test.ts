@@ -3,13 +3,13 @@ import type { Pool } from "pg";
 import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import { ImportStatus } from "../../const/profile.js";
 import type { LogtoUserCreatedBody } from "../../schemas/webhooks/logto-user-created.js";
-import { createUpdateProfileDetails } from "../../services/profile/create-update-profile-details.js";
+import { createUpdateProfileDetails } from "../../services/profiles/create-update-profile-details.js";
 import {
   checkImportCompletion,
   createProfile,
   findProfileImportByJobId,
   getProfileImportDetailDataByEmail,
-} from "../../services/profile/sql/index.js";
+} from "../../services/profiles/sql/index.js";
 import { processUserCreatedOrUpdatedWebhook } from "../../services/webhooks/process-user-created-updated-webhook.js";
 import { webhookBodyToUser } from "../../services/webhooks/webhook-body-to-user.js";
 import { buildMockPg } from "../build-mock-pg.js";

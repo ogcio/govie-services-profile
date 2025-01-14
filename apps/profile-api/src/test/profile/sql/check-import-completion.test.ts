@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ImportStatus } from "../../../const/profile.js";
-import { checkImportCompletion } from "../../../services/profile/sql/check-import-completion.js";
+import { checkImportCompletion } from "../../../services/profiles/sql/check-import-completion.js";
 import { buildMockPg } from "../../build-mock-pg.js";
 
 describe("checkImportCompletion", () => {

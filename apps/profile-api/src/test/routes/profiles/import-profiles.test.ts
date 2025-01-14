@@ -13,7 +13,7 @@ import {
   createProfileImport,
   createProfileImportDetails,
   getProfileImportStatus,
-} from "../../../services/profile/sql/index.js";
+} from "../../../services/profiles/sql/index.js";
 import { build } from "../../test-server-builder.js";
 
 vi.mock("../../../services/profile/sql/index.js", () => ({

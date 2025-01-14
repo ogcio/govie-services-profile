@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createProfileImport } from "../../../services/profile/sql/create-profile-import.js";
+import { createProfileImport } from "../../../services/profiles/sql/create-profile-import.js";
 import { buildMockPg } from "../../build-mock-pg.js";
 
 describe("createProfileImport", () => {

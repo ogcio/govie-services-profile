@@ -12,15 +12,19 @@ import {
   UpdateProfileSchema,
 } from "~/schemas/profiles/index.js";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
-import { findProfile } from "~/services/profile/find-profile.js";
-import { getProfile } from "~/services/profile/get-profile.js";
-import { listProfiles } from "~/services/profile/list-profiles.js";
-import { patchProfile } from "~/services/profile/patch-profile.js";
-import { processClientImport } from "~/services/profile/process-client-import.js";
-import { selectProfiles } from "~/services/profile/select-profiles.js";
-import { formatAPIResponse } from "~/utils/format-api-response.js";
-import { sanitizePagination } from "~/utils/pagination.js";
-import { withOrganizationId } from "~/utils/with-organization-id.js";
+import {
+  findProfile,
+  getProfile,
+  listProfiles,
+  patchProfile,
+  processClientImport,
+  selectProfiles,
+} from "~/services/profiles/index.js";
+import {
+  formatAPIResponse,
+  sanitizePagination,
+  withOrganizationId,
+} from "~/utils/index.js";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   const {
@@ -60,7 +64,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       schema: ImportProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof ImportProfilesSchema>) => {
-      console.dir(request.userData, { depth: null });
       const importStatus = await processClientImport({
         profiles: request.body,
         organizationId: withOrganizationId(request),

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   ProfileImportDetailNotFoundError,
   getProfileImportDetailDataByEmail,
-} from "../../../services/profile/sql/get-profile-import-detail-data-by-email.js";
+} from "../../../services/profiles/sql/get-profile-import-detail-data-by-email.js";
 import { buildMockPg } from "../../build-mock-pg.js";
 
 describe("getProfileImportDetailDataByEmail", () => {
