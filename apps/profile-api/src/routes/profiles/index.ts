@@ -15,9 +15,9 @@ import type { FastifyRequestTypebox } from "~/schemas/shared.js";
 import {
   findProfile,
   getProfile,
+  importProfiles,
   listProfiles,
   patchProfile,
-  processClientImport,
   selectProfiles,
 } from "~/services/profiles/index.js";
 import {
@@ -64,7 +64,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       schema: ImportProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof ImportProfilesSchema>) => {
-      const importStatus = await processClientImport({
+      const importStatus = await importProfiles({
         profiles: request.body,
         organizationId: withOrganizationId(request),
         logger: request.log,

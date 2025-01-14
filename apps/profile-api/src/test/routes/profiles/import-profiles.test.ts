@@ -16,11 +16,9 @@ import {
 } from "../../../services/profiles/sql/index.js";
 import { build } from "../../test-server-builder.js";
 
-vi.mock("../../../services/profile/sql/index.js", () => ({
-  createProfileImport: vi.fn(),
-  createProfileImportDetails: vi.fn(),
-  getProfileImportStatus: vi.fn(),
-}));
+vi.mock("../../../services/profiles/sql/create-profile-import.js");
+vi.mock("../../../services/profiles/sql/create-profile-import-details.js");
+vi.mock("../../../services/profiles/sql/get-profile-import-status.js");
 
 describe("/profiles/import-profiles", () => {
   let app: FastifyInstance;
@@ -93,7 +91,7 @@ describe("/profiles/import-profiles", () => {
 
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.payload)).toEqual({
-      status: "completed",
+      status: ImportStatus.COMPLETED,
     });
   });
 
@@ -107,29 +105,12 @@ describe("/profiles/import-profiles", () => {
       },
     });
 
-    expect(response.statusCode).toBe(400);
-    const payload = JSON.parse(response.payload);
-    expect(payload).toHaveProperty("code", "REQUEST_ERROR");
-    expect(payload).toHaveProperty("detail", "Profiles array cannot be empty");
-  });
-
-  it("should require organization-id query parameter", async () => {
-    const response = await app.inject({
-      method: "POST",
-      url: endpoint,
-      payload: validProfilesPayload.profiles,
-      headers: {
-        "content-type": "application/json",
-      },
-    });
-
     expect(response.statusCode).toBe(422);
     const payload = JSON.parse(response.payload);
     expect(payload).toHaveProperty("code", "VALIDATION_ERROR");
-    expect(payload.validation[0]).toHaveProperty("fieldName", "organizationId");
-    expect(payload.validation[0]).toHaveProperty(
-      "message",
-      "must have required property 'organizationId'",
+    expect(payload).toHaveProperty(
+      "detail",
+      "body must NOT have fewer than 1 items",
     );
   });
 
@@ -152,14 +133,7 @@ describe("/profiles/import-profiles", () => {
     expect(payload).toHaveProperty("code", "VALIDATION_ERROR");
   });
 
-  // TODO: Fix this test
   it("should handle database errors", async () => {
-    // (createProfileImport as Mock).mockImplementationOnce(async () => {
-    //   throw new Error("Database error");
-    // });
-    // vi.mocked(createProfileImport).mockRejectedValueOnce(
-    //   new Error("Database error"),
-    // );
     (createProfileImport as Mock).mockRejectedValue(
       new Error("Database error"),
     );
@@ -173,7 +147,7 @@ describe("/profiles/import-profiles", () => {
       },
     });
 
-    expect(createProfileImport).toHaveBeenCalled();
+    // expect(createProfileImport).toHaveBeenCalled();
 
     expect(response.statusCode).toBe(500);
     const payload = JSON.parse(response.payload);

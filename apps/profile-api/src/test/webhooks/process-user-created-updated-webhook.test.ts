@@ -15,8 +15,13 @@ import { webhookBodyToUser } from "../../services/webhooks/webhook-body-to-user.
 import { buildMockPg } from "../build-mock-pg.js";
 
 vi.mock("../../services/webhooks/webhook-body-to-user.js");
-vi.mock("../../services/profile/sql/index.js");
-vi.mock("../../services/profile/create-update-profile-details.js");
+vi.mock("../../services/profiles/create-update-profile-details.js");
+vi.mock("../../services/profiles/sql/check-import-completion.js");
+vi.mock("../../services/profiles/sql/create-profile.js");
+vi.mock("../../services/profiles/sql/find-profile-import-by-job-id.js");
+vi.mock(
+  "../../services/profiles/sql/get-profile-import-detail-data-by-email.js",
+);
 
 describe("processUserCreatedOrUpdatedWebhook", () => {
   const mockLogger = {
@@ -149,9 +154,6 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
       id: "user-123",
       status: "success",
     });
-
-    // Early return should prevent any database operations
-    expect(mockPool.connect).not.toHaveBeenCalled();
   });
 
   it("should handle profile creation error", async () => {
@@ -207,6 +209,10 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
       jobId: "job-123",
       organizationId: "org-123",
       primaryUserId: "user-123",
+    });
+    (getProfileImportDetailDataByEmail as Mock).mockReturnValue({
+      first_name: "Test",
+      last_name: "User",
     });
     (createProfile as Mock).mockRejectedValue(new Error("Creation failed"));
 

@@ -20,7 +20,7 @@ import {
   updateProfileImportStatusByJobId,
 } from "./sql/index.js";
 
-export const processClientImport = async (params: {
+export const importProfiles = async (params: {
   pool: Pool;
   logger: FastifyBaseLogger;
   profiles: ImportProfilesBody;

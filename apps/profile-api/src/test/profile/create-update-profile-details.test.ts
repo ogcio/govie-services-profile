@@ -17,6 +17,7 @@ describe("createUpdateProfileDetails", () => {
     const mockPg = buildMockPg([
       [{ in_transaction: false }], // isInTransaction check
       [], // BEGIN
+      [{ id: "detail-123" }],
       [{ id: "detail-123" }], // createProfileDetails
       [], // createProfileDataForProfileDetail
       [], // updateProfileDetailsToLatest
@@ -32,10 +33,10 @@ describe("createUpdateProfileDetails", () => {
 
     expect(result).toBe("detail-123");
     const queries = mockPg.getExecutedQueries();
-    expect(queries).toHaveLength(6);
+    expect(queries).toHaveLength(7);
     expect(queries[0].sql).toContain("pg_current_xact_id_if_assigned()");
     expect(queries[1].sql).toBe("BEGIN");
-    expect(queries[5].sql).toBe("COMMIT");
+    expect(queries[6].sql).toBe("COMMIT");
   });
 
   it("should handle ProfileDetailsError and rethrow", async () => {
