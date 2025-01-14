@@ -3,6 +3,7 @@ import { getLoggingConfiguration } from "@ogcio/fastify-logging-wrapper";
 import closeWithGrace from "close-with-grace";
 import fastify from "fastify";
 import fp from "fastify-plugin";
+import { writeFile } from "fs/promises";
 import buildServer from "./server.js";
 
 export async function initializeServer() {
@@ -20,7 +21,8 @@ export async function initializeServer() {
 
   server.register(fp(buildServer));
   await server.ready();
-  server.swagger();
+  await server.swagger();
+  await writeFile("./openapi-definition.yml", server.swagger({ yaml: true }));
 
   closeWithGrace(
     { delay: server.config.FASTIFY_CLOSE_GRACE_DELAY },

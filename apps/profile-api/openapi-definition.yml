@@ -1,0 +1,254 @@
+openapi: 3.0.3
+info:
+  title: Life Events Profile API
+  description: API for Life Events Profile Service
+  version: 0.0.1
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas: {}
+paths:
+  /api/v1/profiles/:
+    get:
+      operationId: indexProfiles
+      tags:
+        - Profiles
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: search
+          required: false
+          description: If set, the endpoint searches for users whom contain this value in
+            either the public name or the email address
+        - schema:
+            pattern: ^[0-9][0-9]*|undefined$
+            default: "0"
+            type: string
+          in: query
+          name: offset
+          required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
+        - schema:
+            default: "20"
+            pattern: ^([1-9]|100)|undefined$
+            type: string
+          in: query
+          name: limit
+          required: false
+          description: Indicates the maximum number (100) of items that will be returned
+            in a single request
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/profiles/import-profiles:
+    post:
+      operationId: importProfiles
+      tags:
+        - Profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              minItems: 1
+              type: array
+              items:
+                type: object
+                properties:
+                  address:
+                    type: string
+                  city:
+                    type: string
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  email:
+                    format: email
+                    type: string
+                  phone:
+                    type: string
+                  date_of_birth:
+                    format: date
+                    type: string
+                required:
+                  - address
+                  - city
+                  - first_name
+                  - last_name
+                  - email
+                  - phone
+                  - date_of_birth
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/profiles/select-profiles:
+    get:
+      operationId: selectProfiles
+      tags:
+        - Profiles
+      parameters:
+        - schema:
+            pattern: ^[a-zA-Z0-9-]+(,[a-zA-Z0-9-]+)*$
+            type: string
+          in: query
+          name: ids
+          required: true
+          description: Comma-separated list of profile IDs
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/profiles/find-profile:
+    get:
+      operationId: findProfile
+      tags:
+        - Profiles
+      parameters:
+        - schema:
+            format: email
+            type: string
+          in: query
+          name: email
+          required: false
+          description: Email address to search for
+        - schema:
+            type: string
+          in: query
+          name: firstName
+          required: false
+          description: First name to search for
+        - schema:
+            type: string
+          in: query
+          name: lastName
+          required: false
+          description: Last name to search for
+        - schema:
+            type: string
+          in: query
+          name: phone
+          required: false
+          description: Phone number to search for
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/profiles/{profileId}:
+    get:
+      operationId: getProfile
+      tags:
+        - Profiles
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: organizationId
+          required: false
+        - schema:
+            type: string
+          in: path
+          name: profileId
+          required: true
+          description: ID of the profile to retrieve
+      responses:
+        "200":
+          description: Default Response
+    put:
+      operationId: updateProfile
+      tags: &a1
+        - Profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                public_name:
+                  type: string
+                email:
+                  format: email
+                  type: string
+                phone:
+                  type: string
+                address:
+                  type: string
+                city:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                date_of_birth:
+                  format: date
+                  type: string
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: organizationId
+          required: true
+          description: Organization ID owning the profile
+        - schema:
+            type: string
+          in: path
+          name: profileId
+          required: true
+          description: ID of the profile to update
+      responses:
+        "200":
+          description: Default Response
+    patch:
+      operationId: updateProfile
+      tags: *a1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              type: object
+              properties:
+                public_name:
+                  type: string
+                email:
+                  format: email
+                  type: string
+                phone:
+                  type: string
+                address:
+                  type: string
+                city:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                date_of_birth:
+                  format: date
+                  type: string
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: organizationId
+          required: true
+          description: Organization ID owning the profile
+        - schema:
+            type: string
+          in: path
+          name: profileId
+          required: true
+          description: ID of the profile to update
+      responses:
+        "200":
+          description: Default Response
+  /user-login-wh:
+    post:
+      responses:
+        "200":
+          description: Default Response
+security:
+  - bearerAuth: []
