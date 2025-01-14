@@ -5,13 +5,16 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/api/v1/profiles/:profileId/:organizationId
+  url: {{baseUrl}}/api/v1/profiles/:profileId?organizationId=first-testing
   body: json
   auth: bearer
 }
 
 params:path {
   profileId: {{profileId}}
+}
+
+query {
   organizationId: first-testing
 }
 

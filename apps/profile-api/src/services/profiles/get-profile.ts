@@ -7,7 +7,7 @@ export const getProfile = async (params: {
   pool: Pool;
   organizationId: string;
   profileId: string;
-}): Promise<ProfileWithData> =>
+}): Promise<ProfileWithData | undefined> =>
   withClient(
     params.pool,
     async (client) =>

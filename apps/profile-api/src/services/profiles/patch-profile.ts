@@ -13,7 +13,7 @@ export const patchProfile = async (params: {
   profileId: string;
   organizationId: string;
   data: UpdateProfileBody;
-}): Promise<ProfileWithData> =>
+}): Promise<ProfileWithData | undefined> =>
   withClient(params.pool, async (client) => {
     const { profileId, organizationId, data } = params;
 

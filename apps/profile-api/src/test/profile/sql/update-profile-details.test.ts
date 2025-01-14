@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { updateProfileDetails } from "../../../services/profiles/sql/update-profile-details.js";
+import { updateProfileDetailsToLatest } from "../../../services/profiles/sql/update-profile-details-to-latest.js";
 import { buildMockPg } from "../../build-mock-pg.js";
 
-describe("updateProfileDetails", () => {
+describe("updateProfileDetailsToLatest", () => {
   it("should update is_latest flag for other profile details", async () => {
     const mockPg = buildMockPg([[]]);
 
-    await updateProfileDetails(
+    await updateProfileDetailsToLatest(
       mockPg,
       "detail-123", // profileDetailId
       "org-123", // organizationId
@@ -33,7 +33,12 @@ describe("updateProfileDetails", () => {
   it("should use parameterized query for safety", async () => {
     const mockPg = buildMockPg([[]]);
 
-    await updateProfileDetails(mockPg, "detail-123", "org-123", "profile-123");
+    await updateProfileDetailsToLatest(
+      mockPg,
+      "detail-123",
+      "org-123",
+      "profile-123",
+    );
 
     const query = mockPg.getExecutedQueries()[0];
     expect(query.sql).toContain("$1");
@@ -50,7 +55,12 @@ describe("updateProfileDetails", () => {
     ]);
 
     await expect(
-      updateProfileDetails(mockPg, "detail-123", "org-123", "profile-123"),
+      updateProfileDetailsToLatest(
+        mockPg,
+        "detail-123",
+        "org-123",
+        "profile-123",
+      ),
     ).resolves.not.toThrow();
   });
 });

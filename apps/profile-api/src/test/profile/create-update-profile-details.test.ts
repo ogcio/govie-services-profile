@@ -19,7 +19,7 @@ describe("createUpdateProfileDetails", () => {
       [], // BEGIN
       [{ id: "detail-123" }], // createProfileDetails
       [], // createProfileDataForProfileDetail
-      [], // updateProfileDetails
+      [], // updateProfileDetailsToLatest
       [], // COMMIT
     ]);
 

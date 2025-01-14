@@ -46,7 +46,7 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
       [{ in_transaction: true }],
       [{ id: "detail-123" }], // createProfileDetails
       [], // createProfileDataForProfileDetail
-      [], // updateProfileDetails
+      [], // updateProfileDetailsToLatest
       [], // COMMIT
       [{ in_transaction: false }],
       [], // BEGIN

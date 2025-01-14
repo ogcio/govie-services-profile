@@ -4,7 +4,8 @@ import { withRollback } from "~/utils/index.js";
 import {
   createProfileDataForProfileDetail,
   createProfileDetails,
-  updateProfileDetails,
+  findProfileWithData,
+  updateProfileDetailsToLatest,
 } from "./sql/index.js";
 
 export class ProfileDetailsError implements HttpError {
@@ -27,15 +28,35 @@ export const createUpdateProfileDetails = async (
 ): Promise<string> => {
   try {
     return await withRollback(client, async () => {
+      const profileWithData = await findProfileWithData(
+        client,
+        organizationId,
+        profileId,
+      );
+
       const profileDetailId = await createProfileDetails(
         client,
         profileId,
         organizationId,
       );
 
-      await createProfileDataForProfileDetail(client, profileDetailId, data);
+      let previsousProfileDetails = {};
 
-      await updateProfileDetails(
+      if (profileWithData?.details) {
+        previsousProfileDetails = Object.fromEntries(
+          Object.entries(profileWithData.details).map(([key, value]) => [
+            key,
+            value.value,
+          ]),
+        );
+      }
+
+      await createProfileDataForProfileDetail(client, profileDetailId, {
+        ...previsousProfileDetails,
+        ...data,
+      });
+
+      await updateProfileDetailsToLatest(
         client,
         profileDetailId,
         organizationId,

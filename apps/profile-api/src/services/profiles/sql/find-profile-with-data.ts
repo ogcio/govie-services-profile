@@ -1,4 +1,3 @@
-import { httpErrors } from "@fastify/sensible";
 import type { PoolClient } from "pg";
 import type { ProfileWithData } from "~/schemas/profiles/index.js";
 
@@ -6,7 +5,7 @@ export const findProfileWithData = async (
   client: PoolClient,
   organizationId: string,
   profileId: string,
-) => {
+): Promise<ProfileWithData | undefined> => {
   const result = await client.query<ProfileWithData>(
     `
         SELECT 
@@ -36,9 +35,5 @@ export const findProfileWithData = async (
     [organizationId, profileId],
   );
 
-  if (!result.rows[0]) {
-    throw httpErrors.notFound(`Profile with ID ${profileId} not found`);
-  }
-
-  return result.rows[0];
+  return result.rows?.[0];
 };

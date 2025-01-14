@@ -5,7 +5,7 @@ export * from "./find-profile-import-by-job-id.js";
 export * from "./get-profile-import-detail-data-by-email.js";
 export * from "./update-profile-import-details.js";
 export * from "./update-profile-import-details-status.js";
-export * from "./update-profile-details.js";
+export * from "./update-profile-details-to-latest.js";
 export * from "./create-profile.js";
 export * from "./create-profile-data-for-profile-details.js";
 export * from "./get-profile-import-status.js";
