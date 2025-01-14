@@ -25,12 +25,12 @@ export const processClientImport = async (params: {
   profiles: ImportProfilesBody;
   organizationId: string;
   config: EnvConfig;
-}): Promise<string> => {
-  const { config, pool, logger, profiles, organizationId } = params;
+}): Promise<string> =>
+  withClient(params.pool, async (client) => {
+    const { config, logger, profiles, organizationId } = params;
 
-  // 1. Create import job and import details
-  const { jobId, importDetailsMap } = await withClient(pool, async (client) => {
-    return withRollback(client, async () => {
+    // 1. Create import job and import details
+    const { jobId, importDetailsMap } = await withRollback(client, async () => {
       const jobId = await createProfileImport(client, organizationId);
       const importDetailsIdList = await createProfileImportDetails(
         client,
@@ -45,20 +45,18 @@ export const processClientImport = async (params: {
       );
       return { jobId, importDetailsMap };
     });
-  });
 
-  // 2. Process profiles
-  const failedProfileIds = new Set<string>();
-  const profilesToCreate: ImportProfilesBody = [];
-  for (const profile of profiles) {
-    const importDetailsId = importDetailsMap.get(profile.email) as string;
-    logger.debug(
-      `Processing profile ${profile.email}... for importDetailsId ${importDetailsId}`,
-    );
+    // 2. Process profiles
+    const failedProfileIds = new Set<string>();
+    const profilesToCreate: ImportProfilesBody = [];
+    for (const profile of profiles) {
+      const importDetailsId = importDetailsMap.get(profile.email) as string;
+      logger.debug(
+        `Processing profile ${profile.email}... for importDetailsId ${importDetailsId}`,
+      );
 
-    try {
-      await withClient(pool, async (client) => {
-        return withRollback(client, async () => {
+      try {
+        await withRollback(client, async () => {
           await updateProfileImportDetailsStatus(
             client,
             [importDetailsId],
@@ -94,35 +92,31 @@ export const processClientImport = async (params: {
             );
           }
         });
-      });
-    } catch (err) {
-      failedProfileIds.add(importDetailsId);
-      logger.error(
-        `Failed to process profile ${profile.email} and importDetailsId ${importDetailsId}: ${err instanceof Error ? err.message : "Unknown error"}`,
-      );
-      await withClient(pool, async (client) => {
-        return updateProfileImportDetails(
+      } catch (err) {
+        failedProfileIds.add(importDetailsId);
+        logger.error(
+          `Failed to process profile ${profile.email} and importDetailsId ${importDetailsId}: ${err instanceof Error ? err.message : "Unknown error"}`,
+        );
+        await updateProfileImportDetails(
           client,
           [importDetailsId],
           err instanceof Error ? err.message : "Unknown error",
           ImportStatus.FAILED,
         );
-      });
+      }
     }
-  }
 
-  // 3. Create Logto users for collected profiles that haven't failed
-  if (profilesToCreate.length > 0) {
-    try {
-      const results = await createLogtoUsers(
-        profilesToCreate,
-        config,
-        organizationId,
-        jobId,
-      );
+    // 3. Create Logto users for collected profiles that haven't failed
+    if (profilesToCreate.length > 0) {
+      try {
+        const results = await createLogtoUsers(
+          profilesToCreate,
+          config,
+          organizationId,
+          jobId,
+        );
 
-      // Mark successful profiles as pending (for webhook)
-      await withClient(pool, async (client) => {
+        // Mark successful profiles as pending (for webhook)
         const successfulEmails = results.map((r) => r.primaryEmail);
         const successfulIds = profilesToCreate
           .filter((p) => successfulEmails.includes(p.email))
@@ -134,11 +128,9 @@ export const processClientImport = async (params: {
           successfulIds,
           ImportStatus.PENDING,
         );
-      });
-    } catch (err) {
-      // Update both failed and successful profiles in a single transaction
-      await withClient(pool, async (client) => {
-        return withRollback(client, async () => {
+      } catch (err) {
+        // Update both failed and successful profiles in a single transaction
+        await withRollback(client, async () => {
           // Get successful and failed profiles
           const successfulEmails = (err as LogtoError)?.successfulEmails || [];
           const failedEmails = profilesToCreate
@@ -179,9 +171,8 @@ export const processClientImport = async (params: {
             );
           }
         });
-      });
-      await withClient(pool, async (client) => {
-        withRollback(client, async () => {
+
+        await withRollback(client, async () => {
           // Check completion and update overall status
           logger.debug(
             `[Process-Import] Checking completion after error for job ${jobId}`,
@@ -207,21 +198,16 @@ export const processClientImport = async (params: {
             );
           }
         });
-      });
-    }
-  } else {
-    // Set the status to completed if there are no profiles to create
-    await withClient(pool, async (client) => {
-      return updateProfileImportStatusByJobId(
+      }
+    } else {
+      // Set the status to completed if there are no profiles to create
+      await updateProfileImportStatusByJobId(
         client,
         jobId,
         ImportStatus.COMPLETED,
       );
-    });
-  }
+    }
 
-  // 4. Return current status
-  return await withClient(pool, async (client) => {
-    return getProfileImportStatus(client, jobId);
+    // 4. Return current status
+    return await getProfileImportStatus(client, jobId);
   });
-};

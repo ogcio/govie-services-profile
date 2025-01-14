@@ -8,10 +8,12 @@ export const selectProfiles = async (params: {
   organizationId: string;
   profileIds: string[];
 }): Promise<ProfileWithDataList> =>
-  withClient(params.pool, async (client) => {
-    return await selectProfilesWithData(
-      client,
-      params.organizationId,
-      params.profileIds,
-    );
-  });
+  withClient(
+    params.pool,
+    async (client) =>
+      await selectProfilesWithData(
+        client,
+        params.organizationId,
+        params.profileIds,
+      ),
+  );

@@ -6,10 +6,10 @@ export const findProfile = async (params: {
   pool: Pool;
   organizationId: string;
   query: Record<string, string>;
-}): Promise<ProfileWithData> => {
-  const { email, firstName, lastName, phone } = params.query;
+}): Promise<ProfileWithData> =>
+  withClient(params.pool, async (client) => {
+    const { email, firstName, lastName, phone } = params.query;
 
-  return withClient(params.pool, async (client) => {
     // Build dynamic WHERE clauses based on provided search params
     const conditions = [];
     const values = [params.organizationId];
@@ -103,4 +103,3 @@ export const findProfile = async (params: {
 
     return rows[0];
   });
-};

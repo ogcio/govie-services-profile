@@ -8,10 +8,12 @@ export const getProfile = async (params: {
   organizationId: string;
   profileId: string;
 }): Promise<ProfileWithData> =>
-  withClient(params.pool, async (client) => {
-    return await findProfileWithData(
-      client,
-      params.organizationId,
-      params.profileId,
-    );
-  });
+  withClient(
+    params.pool,
+    async (client) =>
+      await findProfileWithData(
+        client,
+        params.organizationId,
+        params.profileId,
+      ),
+  );

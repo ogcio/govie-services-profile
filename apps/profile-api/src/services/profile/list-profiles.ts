@@ -13,8 +13,8 @@ export const listProfiles = async (params: {
   pagination: Required<PaginationParams>;
   search?: string | undefined;
   activeOnly?: boolean;
-}): Promise<{ data: ProfileWithDataList; total: number }> => {
-  return withClient(params.pool, async (client) => {
+}): Promise<{ data: ProfileWithDataList; total: number }> =>
+  withClient(params.pool, async (client) => {
     const queries = buildlistProfilesQueries(params);
 
     const countResponse = client.query<{ count: number }>(
@@ -31,4 +31,3 @@ export const listProfiles = async (params: {
       total: (await countResponse).rows[0].count,
     };
   });
-};

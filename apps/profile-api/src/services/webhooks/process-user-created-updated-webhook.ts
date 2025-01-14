@@ -28,10 +28,10 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
   body: LogtoUserCreatedBody;
   pool: Pool;
   logger: FastifyBaseLogger;
-}): Promise<WebhookResponse> => {
-  const user = webhookBodyToUser(params.body.data);
+}): Promise<WebhookResponse> =>
+  withClient(params.pool, async (client) => {
+    const user = webhookBodyToUser(params.body.data);
 
-  return await withClient(params.pool, async (client) => {
     try {
       const jobId = user.jobId ?? null;
 
@@ -176,4 +176,3 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
       };
     }
   });
-};
