@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/v1/profiles/find-profile?lastName={{lastName}}
+  url: {{baseUrl}}/api/v1/profiles/find-profile?lastName={{profileLastName}}
   body: none
   auth: bearer
 }
@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 query {
-  lastName: {{profileLastName}}
+  profileLastName: {{profileLastName}}
 }
 
 vars:post-response {
