@@ -14,6 +14,7 @@ export const ImportProfilesSchema = {
       phone: Type.String(),
       date_of_birth: Type.String({ format: "date" }),
     }),
+    { minItems: 1 },
   ),
 };
 

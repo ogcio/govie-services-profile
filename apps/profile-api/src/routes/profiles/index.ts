@@ -17,6 +17,7 @@ import { listProfiles } from "~/services/profile/list-profiles.js";
 import { patchProfile } from "~/services/profile/patch-profile.js";
 import { processClientImport } from "~/services/profile/process-client-import.js";
 import { selectProfiles } from "~/services/profile/select-profiles.js";
+import type { ProfileWithData } from "~/types/profile.js";
 import { formatAPIResponse } from "~/utils/format-api-response.js";
 import { sanitizePagination } from "~/utils/pagination.js";
 import { withOrganizationId } from "~/utils/with-organization-id.js";
@@ -42,7 +43,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         pagination: sanitizePagination(request.query),
       });
 
-      return formatAPIResponse({
+      return formatAPIResponse<ProfileWithData>({
         data,
         config,
         request,
@@ -54,8 +55,8 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   fastify.post(
     "/import-profiles",
     {
-      // preValidation: (req, res) =>
-      //   fastify.checkPermissions(req, res, [Permissions.User.Write]),
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [Permissions.User.Write]),
       schema: ImportProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof ImportProfilesSchema>) => {
@@ -86,7 +87,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         profileIds: request.query.ids.split(","),
       });
 
-      return formatAPIResponse({
+      return formatAPIResponse<ProfileWithData>({
         data: profiles,
         config,
         request,

@@ -28,7 +28,7 @@ vars:post-response {
 assert {
   res.status: eq 200
   res.body.access_token: isDefined
-  ~res.body.scope: eq profile:user.self:*
+  ~res.body.scope: eq profile:user.self:read profile:user.self:write
 }
 
 docs {

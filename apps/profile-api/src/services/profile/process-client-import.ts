@@ -1,4 +1,3 @@
-import { httpErrors } from "@fastify/sensible";
 import type { FastifyBaseLogger } from "fastify";
 import type { Pool } from "pg";
 import { ImportStatus } from "~/const/profile.js";
@@ -28,10 +27,6 @@ export const processClientImport = async (params: {
   config: EnvConfig;
 }): Promise<string> => {
   const { config, pool, logger, profiles, organizationId } = params;
-
-  if (profiles.length === 0) {
-    throw httpErrors.badRequest("Profiles array cannot be empty");
-  }
 
   // 1. Create import job and import details
   const { jobId, importDetailsMap } = await withClient(pool, async (client) => {
