@@ -1,7 +1,9 @@
 import { httpErrors } from "@fastify/sensible";
 import type { Pool } from "pg";
-import type { UpdateProfileBody } from "~/schemas/profiles/index.js";
-import type { ProfileWithData } from "~/types/profile.js";
+import type {
+  ProfileWithData,
+  UpdateProfileBody,
+} from "~/schemas/profiles/index.js";
 import { withClient } from "~/utils/with-client.js";
 import { createUpdateProfileDetails } from "./create-update-profile-details.js";
 import { findProfileWithData } from "./sql/find-profile-with-data.js";

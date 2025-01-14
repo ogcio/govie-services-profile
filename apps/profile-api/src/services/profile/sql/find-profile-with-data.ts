@@ -1,6 +1,6 @@
 import { httpErrors } from "@fastify/sensible";
 import type { PoolClient } from "pg";
-import type { ProfileWithData } from "~/types/profile.js";
+import type { ProfileWithData } from "~/schemas/profiles/index.js";
 
 export const findProfileWithData = async (
   client: PoolClient,

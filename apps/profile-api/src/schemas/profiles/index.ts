@@ -1,5 +1,5 @@
 import { type Static, Type } from "@sinclair/typebox";
-import { NullableStringType } from "~/types/typebox.js";
+import { getGenericResponseSchema } from "~/utils/get-generic-response-schema.js";
 import { PaginationParamsSchema } from "../pagination.js";
 import { PROFILES_TAG } from "./shared.js";
 
@@ -24,29 +24,37 @@ export type ProfilesIndexQueryParams = Static<
 >;
 
 export const ProfileDetailsSchema = Type.Object({
-  city: NullableStringType(),
-  email: NullableStringType(),
-  address: NullableStringType(),
-  phone: NullableStringType(),
-  first_name: NullableStringType(),
-  last_name: NullableStringType(),
-  date_of_birth: NullableStringType(),
+  city: Type.Optional(Type.String()),
+  email: Type.Optional(Type.String()),
+  address: Type.Optional(Type.String()),
+  phone: Type.Optional(Type.String()),
+  first_name: Type.Optional(Type.String()),
+  last_name: Type.Optional(Type.String()),
+  date_of_birth: Type.Optional(Type.String()),
 });
 
 export type ProfileDetails = Static<typeof ProfileDetailsSchema>;
 
-export const ProfilesIndexResponseSchema = Type.Composite([
+export const ProfileWithDataSchema = Type.Composite([
   Type.Object({
     id: Type.String(),
     public_name: Type.String(),
     email: Type.String(),
     primary_user_id: Type.String(),
-    created_at: Type.String({ format: "date-time" }),
-    updated_at: Type.String({ format: "date-time" }),
+    safe_level: Type.Optional(Type.Number()),
+    created_at: Type.Optional(Type.String({ format: "date-time" })),
+    updated_at: Type.Optional(Type.String({ format: "date-time" })),
     details: ProfileDetailsSchema,
   }),
 ]);
+export type ProfileWithData = Static<typeof ProfileWithDataSchema>;
 
+export const ProfileWithDataListSchema = Type.Array(ProfileWithDataSchema);
+export type ProfileWithDataList = Static<typeof ProfileWithDataListSchema>;
+
+export const ProfilesIndexResponseSchema = getGenericResponseSchema(
+  ProfileWithDataListSchema,
+);
 export type ProfilesIndexResponse = Static<typeof ProfilesIndexResponseSchema>;
 
 export const GetProfileSchema = {

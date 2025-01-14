@@ -6,6 +6,7 @@ import { FindProfileSchema } from "~/schemas/profiles/find-profile.js";
 import { ImportProfilesSchema } from "~/schemas/profiles/import-profiles.js";
 import {
   GetProfileSchema,
+  type ProfileWithData,
   ProfilesIndexSchema,
   SelectProfilesSchema,
   UpdateProfileSchema,
@@ -17,7 +18,6 @@ import { listProfiles } from "~/services/profile/list-profiles.js";
 import { patchProfile } from "~/services/profile/patch-profile.js";
 import { processClientImport } from "~/services/profile/process-client-import.js";
 import { selectProfiles } from "~/services/profile/select-profiles.js";
-import type { ProfileWithData } from "~/types/profile.js";
 import { formatAPIResponse } from "~/utils/format-api-response.js";
 import { sanitizePagination } from "~/utils/pagination.js";
 import { withOrganizationId } from "~/utils/with-organization-id.js";
