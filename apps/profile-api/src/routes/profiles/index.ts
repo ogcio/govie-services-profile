@@ -126,15 +126,16 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         ]),
       schema: GetProfileSchema,
     },
-    async (request: FastifyRequestTypebox<typeof GetProfileSchema>) => {
-      const organizationId =
-        request.userData?.organizationId ?? request.query.organizationId;
-
+    async ({
+      userData,
+      query: { organizationId },
+      params: { profileId },
+    }: FastifyRequestTypebox<typeof GetProfileSchema>) => {
       return {
         data: await getProfile({
           pool,
-          organizationId,
-          profileId: request.params.profileId,
+          organizationId: userData?.organizationId ?? organizationId,
+          profileId,
         }),
       };
     },
@@ -150,13 +151,17 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         ...UpdateProfileSchema,
       },
     },
-    async (request: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
+    async ({
+      body: data,
+      params: { profileId },
+      query: { organizationId },
+    }: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
       return {
         data: await updateProfile({
           pool,
-          profileId: request.params.profileId,
-          organizationId: request.query.organizationId,
-          data: request.body,
+          profileId,
+          organizationId,
+          data,
         }),
       };
     },
@@ -172,13 +177,17 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         ...UpdateProfileSchema,
       },
     },
-    async (request: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
+    async ({
+      body: data,
+      params: { profileId },
+      query: { organizationId },
+    }: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
       return {
         data: await updateProfile({
           pool,
-          profileId: request.params.profileId,
-          organizationId: request.query.organizationId,
-          data: request.body,
+          profileId,
+          organizationId,
+          data,
         }),
       };
     },

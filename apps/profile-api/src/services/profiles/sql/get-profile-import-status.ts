@@ -1,5 +1,6 @@
 import { httpErrors } from "@fastify/sensible";
 import type { PoolClient } from "pg";
+import type { ImportStatus } from "~/const/index.js";
 
 export const getProfileImportStatus = async (
   client: PoolClient,
@@ -16,5 +17,5 @@ export const getProfileImportStatus = async (
     );
   }
 
-  return result.rows[0].status;
+  return result.rows[0].status as ImportStatus;
 };
