@@ -8,7 +8,9 @@ import {
   checkImportCompletion,
   createProfile,
   findProfileImportByJobId,
+  findProfileImportDetailByEmail,
   getProfileImportDetailDataByEmail,
+  updateProfileImportDetailsStatus,
 } from "../../services/profiles/sql/index.js";
 import { processUserCreatedOrUpdatedWebhook } from "../../services/webhooks/process-user-created-updated-webhook.js";
 import { webhookBodyToUser } from "../../services/webhooks/webhook-body-to-user.js";
@@ -22,7 +24,8 @@ vi.mock("../../services/profiles/sql/find-profile-import-by-job-id.js");
 vi.mock(
   "../../services/profiles/sql/get-profile-import-detail-data-by-email.js",
 );
-
+vi.mock("../../services/profiles/sql/find-profile-import-detail-by-email.js");
+vi.mock("../../services/profiles/sql/update-profile-import-details-status.js");
 describe("processUserCreatedOrUpdatedWebhook", () => {
   const mockLogger = {
     debug: vi.fn(),
@@ -160,12 +163,31 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
     const mockPg = buildMockPg([
       [{ in_transaction: false }], // First transaction check
       [], // BEGIN
-      [{ id: "import-123" }], // findProfileImportByJobId response
-      [{ profile: { first_name: "Test", last_name: "User" } }], // getProfileImportDetailDataByEmail response
+      [
+        {
+          id: "import-123",
+          organization_id: "org-123",
+          status: "PENDING",
+        },
+      ], // findProfileImportByJobId response
+      [
+        {
+          id: "import-detail-123",
+          import_id: "import-123",
+          email: "test@example.com",
+          data: {
+            profile: {
+              first_name: "Test",
+              last_name: "User",
+            },
+          },
+        },
+      ], // getProfileImportDetailDataByEmail response
       [], // createProfile throws error
       [], // ROLLBACK
       [{ in_transaction: false }], // Second transaction check
       [], // BEGIN
+      [{ in_transaction: true }], // Transaction check during error handling
       [
         {
           id: "import-123",
@@ -176,6 +198,7 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
       [], // COMMIT
       [{ in_transaction: false }],
       [], // BEGIN
+      [{ in_transaction: true }], // Transaction check during completion check
       [
         {
           total: 1,
@@ -213,8 +236,14 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
     (getProfileImportDetailDataByEmail as Mock).mockReturnValue({
       first_name: "Test",
       last_name: "User",
+      email: "test@example.com",
     });
     (createProfile as Mock).mockRejectedValue(new Error("Creation failed"));
+    (findProfileImportByJobId as Mock).mockResolvedValue("import-123");
+    (findProfileImportDetailByEmail as Mock).mockResolvedValue(
+      "import-detail-123",
+    );
+    (updateProfileImportDetailsStatus as Mock).mockResolvedValue(undefined);
 
     const result = await processUserCreatedOrUpdatedWebhook({
       body: webhookBody as unknown as LogtoUserCreatedBody,

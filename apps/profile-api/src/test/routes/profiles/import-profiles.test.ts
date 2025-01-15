@@ -1,8 +1,8 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import {
   type Mock,
-  afterAll,
-  beforeAll,
+  afterEach,
+  beforeEach,
   describe,
   expect,
   it,
@@ -48,7 +48,7 @@ describe("/profiles/import-profiles", () => {
     ],
   };
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     app = await build();
     app.addHook("onRequest", async (req: FastifyRequest) => {
       // Override the request decorator
@@ -68,11 +68,11 @@ describe("/profiles/import-profiles", () => {
         request.userData = req.userData;
       };
     });
-    vi.clearAllMocks();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await app.close();
+    vi.clearAllMocks();
   });
 
   it("should handle valid profiles import", async () => {
@@ -137,6 +137,8 @@ describe("/profiles/import-profiles", () => {
     (createProfileImport as Mock).mockRejectedValue(
       new Error("Database error"),
     );
+    (createProfileImportDetails as Mock).mockResolvedValue(["detail-123"]);
+    (getProfileImportStatus as Mock).mockResolvedValue(ImportStatus.FAILED);
 
     const response = await app.inject({
       method: "POST",
@@ -147,7 +149,7 @@ describe("/profiles/import-profiles", () => {
       },
     });
 
-    // expect(createProfileImport).toHaveBeenCalled();
+    expect(createProfileImport).toHaveBeenCalled();
 
     expect(response.statusCode).toBe(500);
     const payload = JSON.parse(response.payload);

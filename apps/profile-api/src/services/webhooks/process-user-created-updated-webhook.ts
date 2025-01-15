@@ -123,7 +123,7 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
     } catch (error) {
       params.logger.error("[Webhook] Error processing webhook:", error);
       // If there's an error, mark the profile as failed but don't fail the entire import
-      if (client && user.jobId) {
+      if (user.jobId) {
         // First transaction: Mark profile as failed
         await withRollback(client, async () => {
           params.logger.debug(
