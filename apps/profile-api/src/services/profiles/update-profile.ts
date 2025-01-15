@@ -42,6 +42,8 @@ export const updateProfile = async (params: {
       );
     }
 
+    console.log("data", data);
+
     // Create new profile details with updated data
     await createUpdateProfileDetails(client, organizationId, profileId, data);
     return await findProfileWithData(client, organizationId, profileId);
