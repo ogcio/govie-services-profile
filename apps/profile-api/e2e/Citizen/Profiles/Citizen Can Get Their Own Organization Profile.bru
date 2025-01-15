@@ -1,13 +1,17 @@
 meta {
-  name: Citizen can get their own profile
+  name: Citizen can get their own organization profile
   type: http
   seq: 2
 }
 
 get {
-  url: {{baseUrl}}/api/v1/profiles/:profileId
+  url: {{baseUrl}}/api/v1/profiles/:profileId?organizationId=first-testing
   body: none
   auth: bearer
+}
+
+query {
+  organizationId: first-testing
 }
 
 params:path {

@@ -7,7 +7,7 @@ export const updateProfile = async (
   email: string,
 ) => {
   await client.query(
-    "UPDATE profiles SET public_name = $1, email = $2 WHERE id = $3",
-    [publicName, email, profileId],
+    "UPDATE profiles SET public_name = $1, email = $2, updated_at = $3 WHERE id = $4",
+    [publicName, email, new Date(), profileId],
   );
 };

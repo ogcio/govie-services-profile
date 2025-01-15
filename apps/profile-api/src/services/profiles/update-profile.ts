@@ -34,7 +34,12 @@ export const updateProfile = async (params: {
 
     // Update base profile fields if provided
     if (email || public_name) {
-      await updateProfileSql(client, profileId, public_name ?? "", email ?? "");
+      await updateProfileSql(
+        client,
+        profileId,
+        public_name ?? existingProfile.public_name,
+        email ?? existingProfile.email,
+      );
     }
 
     // Create new profile details with updated data

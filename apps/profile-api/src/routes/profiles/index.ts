@@ -1,4 +1,3 @@
-import { httpErrors } from "@fastify/sensible";
 import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import type { FastifyInstance } from "fastify";
 import { Permissions } from "~/const/index.js";
@@ -130,9 +129,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
     async (request: FastifyRequestTypebox<typeof GetProfileSchema>) => {
       const organizationId =
         request.userData?.organizationId ?? request.query.organizationId;
-      if (!organizationId) {
-        throw httpErrors.forbidden("Organization id is not set");
-      }
 
       return {
         data: await getProfile({
