@@ -24,7 +24,7 @@ export const ProfileWithDataSchema = Type.Composite([
     safe_level: Type.Optional(Type.Number()),
     created_at: Type.Optional(Type.String({ format: "date-time" })),
     updated_at: Type.Optional(Type.String({ format: "date-time" })),
-    details: ProfileDataSchema,
+    details: Type.Optional(ProfileDataSchema),
   }),
 ]);
 export const ProfileWithDataListSchema = Type.Array(ProfileWithDataSchema);

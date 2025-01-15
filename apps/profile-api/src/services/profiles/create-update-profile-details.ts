@@ -22,7 +22,7 @@ export class ProfileDetailsError implements HttpError {
 
 export const createUpdateProfileDetails = async (
   client: PoolClient,
-  organizationId: string,
+  organizationId: string | undefined,
   profileId: string,
   data: Record<string, string | number>,
 ): Promise<string> => {

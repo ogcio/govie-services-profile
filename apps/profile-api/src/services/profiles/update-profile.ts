@@ -6,13 +6,16 @@ import type {
 } from "~/schemas/profiles/index.js";
 import { withClient } from "~/utils/index.js";
 import { createUpdateProfileDetails } from "./index.js";
-import { findProfileWithData, updateProfile } from "./sql/index.js";
+import {
+  findProfileWithData,
+  updateProfile as updateProfileSql,
+} from "./sql/index.js";
 
-export const patchProfile = async (params: {
+export const updateProfile = async (params: {
   pool: Pool;
   profileId: string;
-  organizationId: string;
   data: UpdateProfileBody;
+  organizationId?: string;
 }): Promise<ProfileWithData | undefined> =>
   withClient(params.pool, async (client) => {
     const { profileId, organizationId, data } = params;
@@ -31,7 +34,7 @@ export const patchProfile = async (params: {
 
     // Update base profile fields if provided
     if (email || public_name) {
-      await updateProfile(client, profileId, public_name ?? "", email ?? "");
+      await updateProfileSql(client, profileId, public_name ?? "", email ?? "");
     }
 
     // Create new profile details with updated data

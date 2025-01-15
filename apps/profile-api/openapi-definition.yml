@@ -149,7 +149,6 @@ paths:
                         - public_name
                         - email
                         - primary_user_id
-                        - details
                   metadata:
                     type: object
                     properties:
@@ -561,7 +560,6 @@ paths:
                         - public_name
                         - email
                         - primary_user_id
-                        - details
                   metadata:
                     type: object
                     properties:
@@ -838,7 +836,6 @@ paths:
                       - public_name
                       - email
                       - primary_user_id
-                      - details
                   metadata:
                     type: object
                     properties:
@@ -1101,7 +1098,6 @@ paths:
                       - public_name
                       - email
                       - primary_user_id
-                      - details
                   metadata:
                     type: object
                     properties:
@@ -1389,7 +1385,6 @@ paths:
                       - public_name
                       - email
                       - primary_user_id
-                      - details
                   metadata:
                     type: object
                     properties:
@@ -1676,7 +1671,6 @@ paths:
                       - public_name
                       - email
                       - primary_user_id
-                      - details
                   metadata:
                     type: object
                     properties:

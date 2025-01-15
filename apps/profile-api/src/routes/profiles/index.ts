@@ -17,8 +17,8 @@ import {
   getProfile,
   importProfiles,
   listProfiles,
-  patchProfile,
   selectProfiles,
+  updateProfile,
 } from "~/services/profiles/index.js";
 import {
   formatAPIResponse,
@@ -64,15 +64,15 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       schema: ImportProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof ImportProfilesSchema>) => {
-      const importStatus = await importProfiles({
-        profiles: request.body,
-        organizationId: withOrganizationId(request),
-        logger: request.log,
-        config,
-        pool,
-      });
-
-      return { status: importStatus };
+      return {
+        status: await importProfiles({
+          profiles: request.body,
+          organizationId: withOrganizationId(request),
+          logger: request.log,
+          config,
+          pool,
+        }),
+      };
     },
   );
 
@@ -107,11 +107,13 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       schema: FindProfileSchema,
     },
     async (request: FastifyRequestTypebox<typeof FindProfileSchema>) => {
-      return findProfile({
-        pool,
-        organizationId: withOrganizationId(request),
-        query: request.query,
-      });
+      return {
+        data: await findProfile({
+          pool,
+          organizationId: withOrganizationId(request),
+          query: request.query,
+        }),
+      };
     },
   );
 
@@ -132,11 +134,13 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         throw httpErrors.forbidden("Organization id is not set");
       }
 
-      return getProfile({
-        pool,
-        organizationId,
-        profileId: request.params.profileId,
-      });
+      return {
+        data: await getProfile({
+          pool,
+          organizationId,
+          profileId: request.params.profileId,
+        }),
+      };
     },
   );
 
@@ -151,12 +155,14 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       },
     },
     async (request: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
-      return patchProfile({
-        pool,
-        profileId: request.params.profileId,
-        organizationId: request.query.organizationId,
-        data: request.body,
-      });
+      return {
+        data: await updateProfile({
+          pool,
+          profileId: request.params.profileId,
+          organizationId: request.query.organizationId,
+          data: request.body,
+        }),
+      };
     },
   );
 
@@ -171,12 +177,14 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       },
     },
     async (request: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
-      return patchProfile({
-        pool,
-        profileId: request.params.profileId,
-        organizationId: request.query.organizationId,
-        data: request.body,
-      });
+      return {
+        data: await updateProfile({
+          pool,
+          profileId: request.params.profileId,
+          organizationId: request.query.organizationId,
+          data: request.body,
+        }),
+      };
     },
   );
 };

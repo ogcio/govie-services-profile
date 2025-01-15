@@ -4,7 +4,7 @@ import { ProfileDetailsError } from "../create-update-profile-details.js";
 export const createProfileDetails = async (
   client: PoolClient,
   profileId: string,
-  organizationId: string,
+  organizationId: string | undefined,
 ): Promise<string> => {
   const query = `INSERT INTO profile_details(
         profile_id,

@@ -3,7 +3,7 @@ import type { ProfileWithData } from "~/schemas/profiles/index.js";
 
 export const findProfileWithData = async (
   client: PoolClient,
-  organizationId: string,
+  organizationId: string | undefined,
   profileId: string,
 ): Promise<ProfileWithData | undefined> => {
   const result = await client.query<ProfileWithData>(

@@ -5,7 +5,7 @@ import { findProfileWithData } from "./sql/index.js";
 
 export const getProfile = async (params: {
   pool: Pool;
-  organizationId: string;
+  organizationId: string | undefined;
   profileId: string;
 }): Promise<ProfileWithData | undefined> =>
   withClient(

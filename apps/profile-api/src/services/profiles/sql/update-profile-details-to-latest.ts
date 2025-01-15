@@ -3,7 +3,7 @@ import type { PoolClient } from "pg";
 export const updateProfileDetailsToLatest = async (
   client: PoolClient,
   profileDetailId: string,
-  organizationId: string,
+  organizationId: string | undefined,
   profileId: string,
 ): Promise<void> => {
   const query =
