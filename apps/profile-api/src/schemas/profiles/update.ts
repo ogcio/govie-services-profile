@@ -12,9 +12,11 @@ export const UpdateProfileSchema = {
     }),
   }),
   querystring: Type.Object({
-    organizationId: Type.String({
-      description: "Organization ID owning the profile",
-    }),
+    organizationId: Type.Optional(
+      Type.String({
+        description: "Organization ID owning the profile",
+      }),
+    ),
   }),
   body: Type.Object(
     {

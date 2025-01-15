@@ -1276,7 +1276,7 @@ paths:
             type: string
           in: query
           name: organizationId
-          required: true
+          required: false
           description: Organization ID owning the profile
         - schema:
             type: string
@@ -1563,7 +1563,7 @@ paths:
             type: string
           in: query
           name: organizationId
-          required: true
+          required: false
           description: Organization ID owning the profile
         - schema:
             type: string

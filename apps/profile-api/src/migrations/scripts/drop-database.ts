@@ -1,6 +1,6 @@
 import pg, { type Client } from "pg";
 import type { EnvDbConfig } from "~/plugins/external/env.js";
-import { POSTGRES_DB_NAME, getDbEnvs } from "./shared.js";
+import { POSTGRES_DB_NAME } from "./shared.js";
 
 export async function dropDatabase(envDbConfig: EnvDbConfig): Promise<void> {
   if (envDbConfig.POSTGRES_DATABASE === POSTGRES_DB_NAME) {
@@ -28,5 +28,3 @@ async function runQuery(client: Client, dbName: string) {
   await client.query(`DROP DATABASE ${dbName}`);
   console.log(`Database ${dbName} dropped.`);
 }
-
-dropDatabase(getDbEnvs());

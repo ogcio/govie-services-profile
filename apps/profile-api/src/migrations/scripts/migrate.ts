@@ -3,7 +3,6 @@ import path from "node:path";
 import pg from "pg";
 import Postgrator from "postgrator";
 import type { EnvDbConfig } from "~/plugins/external/env.js";
-import { getDbEnvs } from "./shared.js";
 
 export async function doMigration(
   envDbConfig: EnvDbConfig,
@@ -44,13 +43,3 @@ export async function doMigration(
     await client.end();
   }
 }
-
-let version = "max";
-for (const arg of process.argv.slice(2)) {
-  if (arg.length && arg.startsWith("version=")) {
-    version = arg.replace("version=", "");
-    break;
-  }
-}
-
-doMigration(getDbEnvs(), version);

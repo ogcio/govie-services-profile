@@ -1,6 +1,6 @@
 import pg, { type Client } from "pg";
 import type { EnvDbConfig } from "~/plugins/external/env.js";
-import { POSTGRES_DB_NAME, getDbEnvs } from "./shared.js";
+import { POSTGRES_DB_NAME } from "./shared.js";
 
 export async function createDatabase(envDbConfig: EnvDbConfig): Promise<void> {
   const client = new pg.Client({
@@ -32,5 +32,3 @@ async function runQuery(client: Client, dbName: string) {
 
   console.log(`Database ${dbName} created or already exists.`);
 }
-
-createDatabase(getDbEnvs());
