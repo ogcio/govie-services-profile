@@ -12,17 +12,20 @@ export const createProfile = async (
       public_name,
       email,
       primary_user_id,
-      safe_level
+      safe_level,
+      preferred_language
     )
-    VALUES ($1, $2, $3, $4, $5)
+    VALUES ($1, $2, $3, $4, $5, $6)
     ON CONFLICT(id) DO UPDATE SET
       public_name = EXCLUDED.public_name,
       email = EXCLUDED.email,
-      safe_level = EXCLUDED.safe_level
+      safe_level = EXCLUDED.safe_level,
+      preferred_language = EXCLUDED.preferred_language
     WHERE 
       profiles.public_name IS DISTINCT FROM EXCLUDED.public_name OR
       profiles.email IS DISTINCT FROM EXCLUDED.email OR
-      profiles.safe_level IS DISTINCT FROM EXCLUDED.safe_level
+      profiles.safe_level IS DISTINCT FROM EXCLUDED.safe_level OR
+      profiles.preferred_language IS DISTINCT FROM EXCLUDED.preferred_language
     RETURNING id;
   `;
 
@@ -32,6 +35,7 @@ export const createProfile = async (
     profile.email,
     profile.primary_user_id,
     profile.safe_level,
+    profile.preferred_language ?? "en",
   ];
 
   const result = await client.query<{ id: string }>(query, values);

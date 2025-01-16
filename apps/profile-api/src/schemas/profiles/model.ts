@@ -1,4 +1,5 @@
 import { type Static, Type } from "@sinclair/typebox";
+import { TypeboxStringEnum } from "~/types/typebox.js";
 
 export const AvailableDetailTypes = {
   String: "string",
@@ -9,10 +10,7 @@ export const AvailableDetailTypes = {
 
 export type DetailType = "string" | "number" | "boolean" | "date";
 
-// const ProfileDataItemSchema = Type.Object({
-//   value: Type.String(),
-//   type: TypeboxStringEnum(Object.values(AvailableDetailTypes)),
-// });
+export const AvailableLanguagesSchema = TypeboxStringEnum(["en", "ga"], "en");
 
 const ProfileDataStringItemSchema = Type.Object({
   value: Type.String(),
@@ -46,6 +44,7 @@ export const ProfileSchema = Type.Object({
   email: Type.String({ format: "email" }),
   primary_user_id: Type.String(),
   safe_level: Type.Optional(Type.Number()),
+  preferred_language: Type.Optional(AvailableLanguagesSchema),
   created_at: Type.Optional(Type.String({ format: "date-time" })),
   updated_at: Type.Optional(Type.String({ format: "date-time" })),
 });

@@ -5,9 +5,10 @@ export const updateProfile = async (
   profileId: string,
   publicName: string,
   email: string,
+  preferredLanguage?: string,
 ) => {
   await client.query(
-    "UPDATE profiles SET public_name = $1, email = $2, updated_at = $3 WHERE id = $4",
-    [publicName, email, new Date(), profileId],
+    "UPDATE profiles SET public_name = $1, email = $2, preferred_language = COALESCE($3, preferred_language), updated_at = $4 WHERE id = $5",
+    [publicName, email, preferredLanguage, new Date(), profileId],
   );
 };

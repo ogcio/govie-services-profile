@@ -1,6 +1,7 @@
 import { type Static, Type } from "@sinclair/typebox";
 import { ImportStatus } from "~/const/index.js";
 import { HttpError } from "~/types/index.js";
+import { AvailableLanguagesSchema } from "./index.js";
 import { PROFILES_TAG } from "./shared.js";
 
 export const ImportProfilesSchema = {
@@ -16,6 +17,7 @@ export const ImportProfilesSchema = {
       phone: Type.String(),
       date_of_birth: Type.String({ format: "date" }),
       ppsn: Type.Optional(Type.String()),
+      preferred_language: Type.Optional(AvailableLanguagesSchema),
     }),
     { minItems: 1 },
   ),

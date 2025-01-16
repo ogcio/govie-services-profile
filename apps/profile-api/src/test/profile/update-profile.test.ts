@@ -71,11 +71,11 @@ describe("updateProfile", () => {
 
     // Verify profile update
     expect(queries[1].sql).toBe(
-      "UPDATE profiles SET public_name = $1, email = $2, updated_at = $3 WHERE id = $4",
+      "UPDATE profiles SET public_name = $1, email = $2, preferred_language = COALESCE($3, preferred_language), updated_at = $4 WHERE id = $5",
     );
     expect(queries[1].values?.[0]).toBe("New Name");
     expect(queries[1].values?.[1]).toBe("new@example.com");
-    expect(queries[1].values?.[3]).toBe("profile-123");
+    expect(queries[1].values?.[4]).toBe("profile-123");
   });
 
   it("should update profile details only", async () => {

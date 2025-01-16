@@ -16,6 +16,8 @@
     "fix:formatting": "pnpm -r fix:formatting",
     "check:linting": "pnpm -r check:linting",
     "fix:linting": "pnpm -r fix:linting",
+    "db:migrate": "pnpm --filter profile-api db:migrate",
+    "db:rollback": "pnpm --filter profile-api db:rollback",
     "test": "pnpm -r test",
     "test:www": "pnpm --filter profile test:frontend",
     "test:api": "pnpm --filter profile-api test",
@@ -26,7 +28,16 @@
     "preinstall": "npx only-allow pnpm"
   },
   "keywords": [],
-  "author": "",
+  "authors": [
+    {
+      "name": "Samuele Salvatico",
+      "email": "samuele.salvatico@nearform.com"
+    },
+    {
+      "name": "Matteo La Cognata",
+      "email": "matteo.lacognata@nearform.com"
+    }
+  ],
   "license": "ISC",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

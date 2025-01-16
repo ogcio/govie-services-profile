@@ -29,9 +29,8 @@ export class LogtoClient {
   }
 
   private async handleResponse(response: Response) {
-    const body = await response.json();
-
     if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
       switch (response.status) {
         case 400:
           throw new LogtoError("Invalid request parameters", 400, body);
@@ -48,7 +47,7 @@ export class LogtoClient {
       }
     }
 
-    return body;
+    return response.json();
   }
 
   private async request<T>(

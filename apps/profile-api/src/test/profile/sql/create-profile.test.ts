@@ -9,6 +9,7 @@ describe("createProfile", () => {
     email: "john@example.com",
     primary_user_id: "user-123",
     safe_level: 1,
+    preferred_language: "en",
   };
 
   it("should insert new profile and return ID", async () => {
@@ -27,6 +28,7 @@ describe("createProfile", () => {
       "john@example.com", // email
       "user-123", // primary_user_id
       1, // safe_level
+      "en", // preferred_language
     ]);
   });
 
@@ -54,5 +56,24 @@ describe("createProfile", () => {
     expect(query.sql).toContain(
       "profiles.safe_level IS DISTINCT FROM EXCLUDED.safe_level",
     );
+    expect(query.sql).toContain(
+      "profiles.preferred_language IS DISTINCT FROM EXCLUDED.preferred_language",
+    );
+  });
+
+  it("should use default 'en' for preferred_language if not provided", async () => {
+    const mockPg = buildMockPg([[{ id: "profile-123" }]]);
+    const profileWithoutLanguage = {
+      id: "profile-123",
+      public_name: "John Doe",
+      email: "john@example.com",
+      primary_user_id: "user-123",
+      safe_level: 1,
+    };
+
+    await createProfile(mockPg, profileWithoutLanguage);
+
+    const queries = mockPg.getExecutedQueries();
+    expect(queries[0]?.values?.[5]).toBe("en"); // preferred_language should default to "en"
   });
 });
