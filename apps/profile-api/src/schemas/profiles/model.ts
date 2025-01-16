@@ -13,6 +13,7 @@ export const ProfileDataSchema = Type.Object({
   first_name: Type.Optional(ProfileDataItemSchema),
   last_name: Type.Optional(ProfileDataItemSchema),
   date_of_birth: Type.Optional(ProfileDataItemSchema),
+  ppsn: Type.Optional(ProfileDataItemSchema),
 });
 
 export const ProfileWithDataSchema = Type.Composite([
