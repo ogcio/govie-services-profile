@@ -11,7 +11,7 @@ export const findProfile = async (params: {
   pool: Pool;
   organizationId: string;
   query: Record<string, string>;
-}): Promise<ProfileWithDetails | undefined> =>
+}): Promise<ProfileWithDetails> =>
   withClient(params.pool, async (client) => {
     const { email, firstName, lastName, phone } = params.query;
 
