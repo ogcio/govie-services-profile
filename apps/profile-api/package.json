@@ -14,10 +14,10 @@
     "fix:linting": "biome lint --write",
     "test:local": "NODE_OPTIONS='--import tsx' vitest",
     "test": "NODE_OPTIONS='--import tsx' vitest run --reporter junit --reporter default --coverage --outputFile=results.xml",
-    "db:create": "tsx --env-file=.env ./src/migrations/scripts/create-database.ts",
-    "db:drop": "tsx --env-file=.env ./src/migrations/scripts/drop-database.ts",
-    "db:migrate": "tsx --env-file=.env ./src/migrations/scripts/migrate.ts",
-    "db:rollback": "tsx --env-file=.env ./src/migrations/scripts/migrate.ts -- version=0",
+    "db:create": "tsx --env-file=.env ./src/migrations/scripts/run-create-database.ts",
+    "db:drop": "tsx --env-file=.env ./src/migrations/scripts/run-drop-database.ts",
+    "db:migrate": "tsx --env-file=.env ./src/migrations/scripts/run-migrate-database.ts",
+    "db:rollback": "tsx --env-file=.env ./src/migrations/scripts/run-migrate-database.ts -- version=0",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
