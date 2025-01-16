@@ -11,6 +11,18 @@ docker-compose up -d
 
 Change the variables in the `.env` file to match the database configuration.
 
+Then, run the migrations to create the database and tables.
+
+```bash
+pnpm db:migrate
+```
+
+To rollback the migrations, run the following command.
+
+```bash
+pnpm db:rollback
+```
+
 ## Development
 
 Run the following command to start the frontend and backend applications in development mode.
