@@ -17,7 +17,7 @@ export const updateProfile = async (params: {
   profileId: string;
   data: UpdateProfileBody;
   organizationId?: string;
-}): Promise<ProfileWithData | undefined> =>
+}): Promise<ProfileWithData> =>
   withClient(params.pool, async (client) => {
     const { profileId, organizationId, data } = params;
 

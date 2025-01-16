@@ -57,6 +57,7 @@ export const ProfileWithDataSchema = Type.Composite([
 
 export const ProfileListSchema = Type.Array(ProfileSchema);
 export const ProfileWithDataListSchema = Type.Array(ProfileWithDataSchema);
+export type Profile = Static<typeof ProfileSchema>;
 export type ProfileWithData = Static<typeof ProfileWithDataSchema>;
 export type ProfileList = Static<typeof ProfileListSchema>;
 export type ProfileWithDataList = Static<typeof ProfileWithDataListSchema>;

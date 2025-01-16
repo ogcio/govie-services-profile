@@ -7,6 +7,7 @@ import {
   FindProfileSchema,
   GetProfileSchema,
   ImportProfilesSchema,
+  type Profile,
   type ProfileWithData,
   ProfilesIndexSchema,
   SelectProfilesSchema,
@@ -48,7 +49,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         pagination: sanitizePagination(request.query),
       });
 
-      return formatAPIResponse<ProfileWithData>({
+      return formatAPIResponse<Profile>({
         data,
         config,
         request,

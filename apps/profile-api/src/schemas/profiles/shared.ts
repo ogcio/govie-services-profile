@@ -1,3 +1,4 @@
+import { toIsoDate } from "~/utils/index.js";
 import type {
   DetailType,
   KnownProfileDataDetails,
@@ -38,5 +39,8 @@ function parseSingleDetail(inputDetail: {
   type: DetailType;
   value: string;
 }): string {
+  if (inputDetail.type === "date") {
+    return toIsoDate(inputDetail.value);
+  }
   return inputDetail.value.toString();
 }

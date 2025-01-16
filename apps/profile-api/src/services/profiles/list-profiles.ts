@@ -1,9 +1,6 @@
 import type { Pool } from "pg";
 import type { PaginationParams } from "~/schemas/pagination.js";
-import type {
-  ProfileWithData,
-  ProfileWithDataList,
-} from "~/schemas/profiles/index.js";
+import type { ProfileList, ProfileWithData } from "~/schemas/profiles/index.js";
 import { withClient } from "~/utils/index.js";
 import { buildListProfilesQueries } from "./sql/index.js";
 
@@ -13,7 +10,7 @@ export const listProfiles = async (params: {
   pagination: Required<PaginationParams>;
   search?: string | undefined;
   activeOnly?: boolean;
-}): Promise<{ data: ProfileWithDataList; total: number }> =>
+}): Promise<{ data: ProfileList; total: number }> =>
   withClient(params.pool, async (client) => {
     const queries = buildListProfilesQueries(params);
 

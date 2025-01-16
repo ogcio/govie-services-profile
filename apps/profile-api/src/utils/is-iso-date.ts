@@ -10,3 +10,8 @@ export const isISODate = (value: string): boolean => {
   const date = new Date(value);
   return date instanceof Date && !Number.isNaN(date.getTime());
 };
+
+export const toIsoDate = (value: string): string => {
+  const date = new Date(value);
+  return date.toISOString();
+};
