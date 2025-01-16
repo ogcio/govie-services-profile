@@ -2,6 +2,7 @@ import { toIsoDate } from "~/utils/index.js";
 import type {
   DetailType,
   KnownProfileDataDetails,
+  KnownProfileDbDataDetails,
   ProfileWithDetails,
   ProfileWithDetailsFromDb,
 } from "./index.js";
@@ -21,24 +22,27 @@ export function parseProfileDetails(
     return { ...inputItem, details: undefined };
   }
 
-  const outputDetails: KnownProfileDataDetails = {
-    city: parseSingleDetail(inputItem.details.city),
-    email: parseSingleDetail(inputItem.details.email),
-    address: parseSingleDetail(inputItem.details.address),
-    phone: parseSingleDetail(inputItem.details.phone),
-    first_name: parseSingleDetail(inputItem.details.first_name),
-    last_name: parseSingleDetail(inputItem.details.last_name),
-    date_of_birth: parseSingleDetail(inputItem.details.date_of_birth),
-    ppsn: parseSingleDetail(inputItem.details.ppsn),
-  };
+  // in this way we extract the keys that exist on this instance
+  // without setting undefined additional ones in output
+  const keys: (keyof KnownProfileDbDataDetails)[] = Object.keys(
+    inputItem.details,
+  ) as unknown as (keyof KnownProfileDbDataDetails)[];
+  const outputDetails: KnownProfileDataDetails = {};
+
+  for (const key of keys) {
+    outputDetails[key] = parseSingleDetail(inputItem.details[key]);
+  }
 
   return { ...inputItem, details: outputDetails };
 }
 
-function parseSingleDetail(inputDetail: {
+function parseSingleDetail(inputDetail?: {
   type: DetailType;
   value: string;
-}): string {
+}): string | undefined {
+  if (!inputDetail) {
+    return undefined;
+  }
   if (inputDetail.type === "date") {
     return toIsoDate(inputDetail.value);
   }

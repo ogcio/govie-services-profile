@@ -113,7 +113,7 @@ describe("updateProfile", () => {
     });
 
     expect(result).toBeDefined();
-    expect(result?.details.phone.value).toBe("9876543210");
+    expect(result.details.phone).toBe("9876543210");
 
     const queries = mockPg.getExecutedQueries();
     expect(queries).toHaveLength(9); // No profile update query since no email/public_name change

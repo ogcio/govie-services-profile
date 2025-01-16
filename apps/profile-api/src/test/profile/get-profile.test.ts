@@ -5,7 +5,7 @@ import { getProfile } from "../../../src/services/profiles/get-profile.js";
 import { buildMockPg } from "../../test/build-mock-pg.js";
 
 describe("getProfile", () => {
-  const mockProfile = {
+  const mockFromDbProfile = {
     id: "profile-123",
     public_name: "Test User",
     email: "test@example.com",
@@ -20,8 +20,17 @@ describe("getProfile", () => {
     },
   };
 
+  const mockProfile = {
+    ...mockFromDbProfile,
+    details: {
+      first_name: mockFromDbProfile.details.first_name.value,
+      last_name: mockFromDbProfile.details.last_name.value,
+      phone: mockFromDbProfile.details.phone.value,
+    },
+  };
+
   it("should get profile by id with organization id", async () => {
-    const mockPg = buildMockPg([[mockProfile]]);
+    const mockPg = buildMockPg([[mockFromDbProfile]]);
     const mockPool = {
       connect: () => Promise.resolve(mockPg),
     };
@@ -40,7 +49,7 @@ describe("getProfile", () => {
   });
 
   it("should get profile by id without organization id", async () => {
-    const mockPg = buildMockPg([[mockProfile]]);
+    const mockPg = buildMockPg([[mockFromDbProfile]]);
     const mockPool = {
       connect: () => Promise.resolve(mockPg),
     };
@@ -82,7 +91,7 @@ describe("getProfile", () => {
 
   it("should handle database errors", async () => {
     const mockError = new Error("Database error");
-    const mockPg = buildMockPg([[mockProfile]]);
+    const mockPg = buildMockPg([[mockFromDbProfile]]);
     mockPg.query = vi.fn().mockRejectedValue(mockError);
     const mockPool = {
       connect: () => Promise.resolve(mockPg),

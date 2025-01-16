@@ -64,19 +64,14 @@ const prepareWhereClauses = (params: {
     whereClauses.push(
       `(
         p.email ILIKE $2 OR
-        p.public_name ILIKE $2
+        p.public_name ILIKE $2 OR
+        EXISTS (
+          SELECT 1 FROM profile_data pd
+          WHERE pd.profile_details_id = pd.id
+          AND pd.value_type = 'string'
+          AND pd.value ILIKE $2
+        )
       )`,
-      // Old query, at the moment we just need to search in email and public name, not in details
-      // `(
-      //   p.email ILIKE $2 OR
-      //   p.public_name ILIKE $2 OR
-      //   EXISTS (
-      //     SELECT 1 FROM profile_data pd
-      //     WHERE pd.profile_details_id = pd.id
-      //     AND pd.value_type = 'string'
-      //     AND pd.value ILIKE $2
-      //   )
-      // )`,
     );
     queryValues.push(`%${search}%`);
     nextIndexInQuery++;

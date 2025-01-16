@@ -68,7 +68,7 @@ export type ProfileWithDetailsList = Static<
 // Used to query the db
 // build a type with same keys as KnownProfileDataDetails but
 // where all the values are of type ProfileDataItemSchema
-export const KnownProfileDbDataDetails = Type.Object({
+export const KnownProfileDbDataDetailsSchema = Type.Object({
   city: ProfileDataStringItemSchema,
   email: ProfileDataStringItemSchema,
   address: ProfileDataStringItemSchema,
@@ -79,9 +79,13 @@ export const KnownProfileDbDataDetails = Type.Object({
   ppsn: ProfileDataStringItemSchema,
 });
 
+export type KnownProfileDbDataDetails = Static<
+  typeof KnownProfileDbDataDetailsSchema
+>;
+
 export const ProfileWithDetailsFromDbSchema = Type.Composite([
   ProfileSchema,
-  Type.Object({ details: Type.Optional(KnownProfileDbDataDetails) }),
+  Type.Object({ details: Type.Optional(KnownProfileDbDataDetailsSchema) }),
 ]);
 
 export type ProfileWithDetailsFromDb = Static<
