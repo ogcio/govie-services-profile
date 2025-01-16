@@ -131,6 +131,15 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       query: { organizationId },
       params: { profileId },
     }: FastifyRequestTypebox<typeof GetProfileSchema>) => {
+      // TODO: check if the organization in query params is different from the user's organization
+      // if yes, throw forbidden
+      // cases:
+      // 1. user is ps, ask for the same org as the logged in one -> ok, if no data found -> 404
+      // 2. user is ps, ask for a different org -> forbidden
+      // 3. user is ps, no org specified -> ok, use the logged in org, if no data found -> 404
+      // 3. user is not ps, it can ask for any org, if no data found -> 404
+      // 4. user is not ps, it can ask for any org, if data found -> ok
+      // TODO: check if user is not ps, if not check that the profileId is the same as the user's id
       return {
         data: await getProfile({
           pool,
@@ -156,6 +165,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       params: { profileId },
       query: { organizationId },
     }: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
+      // TODO: check if user is not ps, if not check that the profileId is the same as the user's id
       return {
         data: await updateProfile({
           pool,
@@ -182,6 +192,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       params: { profileId },
       query: { organizationId },
     }: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
+      // TODO: check if user is not ps, if not check that the profileId is the same as the user's id
       return {
         data: await updateProfile({
           pool,
