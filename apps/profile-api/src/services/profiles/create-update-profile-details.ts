@@ -40,10 +40,10 @@ export const createUpdateProfileDetails = async (
         organizationId,
       );
 
-      let previsousProfileDetails = {};
+      let previousProfileDetails = {};
 
       if (profileWithData?.details) {
-        previsousProfileDetails = Object.fromEntries(
+        previousProfileDetails = Object.fromEntries(
           Object.entries(profileWithData.details).map(([key, value]) => [
             key,
             value.value,
@@ -52,7 +52,7 @@ export const createUpdateProfileDetails = async (
       }
 
       await createProfileDataForProfileDetail(client, profileDetailId, {
-        ...previsousProfileDetails,
+        ...previousProfileDetails,
         ...data,
       });
 

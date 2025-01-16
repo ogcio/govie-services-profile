@@ -15,6 +15,7 @@ export const ImportProfilesSchema = {
       email: Type.String({ format: "email" }),
       phone: Type.String(),
       date_of_birth: Type.String({ format: "date" }),
+      ppsn: Type.Optional(Type.String()),
     }),
     { minItems: 1 },
   ),

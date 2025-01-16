@@ -5,7 +5,7 @@ import type {
   ProfileWithDataList,
 } from "~/schemas/profiles/index.js";
 import { withClient } from "~/utils/index.js";
-import { buildlistProfilesQueries } from "./sql/index.js";
+import { buildListProfilesQueries } from "./sql/index.js";
 
 export const listProfiles = async (params: {
   pool: Pool;
@@ -15,19 +15,27 @@ export const listProfiles = async (params: {
   activeOnly?: boolean;
 }): Promise<{ data: ProfileWithDataList; total: number }> =>
   withClient(params.pool, async (client) => {
-    const queries = buildlistProfilesQueries(params);
+    const queries = buildListProfilesQueries(params);
 
-    const countResponse = client.query<{ count: number }>(
+    const countResponse = await client.query<{ count: number }>(
       queries.count.query,
       queries.count.values,
     );
-    const response = client.query<ProfileWithData>(
+
+    if (countResponse.rows.length === 0 || countResponse.rows[0].count === 0) {
+      return {
+        data: [],
+        total: 0,
+      };
+    }
+
+    const response = await client.query<ProfileWithData>(
       queries.data.query,
       queries.data.values,
     );
 
     return {
-      data: (await response).rows,
-      total: (await countResponse).rows[0].count,
+      data: response.rows,
+      total: countResponse.rows[0].count,
     };
   });

@@ -1,4 +1,5 @@
 import type { PoolClient } from "pg";
+import type { DetailType } from "~/schemas/profiles/model.js";
 import { isISODate } from "~/utils/index.js";
 
 export const createProfileDataForProfileDetail = async (
@@ -20,14 +21,13 @@ export const createProfileDataForProfileDetail = async (
     .join(",");
 
   const params = [profileDetailId];
-  const getValueType = (
-    value: unknown,
-  ): "string" | "number" | "boolean" | "date" => {
+  const getValueType = (value: unknown): DetailType => {
     if (typeof value === "number") return "number";
     if (typeof value === "boolean") return "boolean";
     if (typeof value === "string" && isISODate(value)) return "date";
     return "string";
   };
+
   for (const [key, value] of entries) {
     params.push(
       key, // name

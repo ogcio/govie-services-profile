@@ -1,6 +1,7 @@
 import { httpErrors } from "@fastify/sensible";
 import type { Pool } from "pg";
 import type { ProfileWithData } from "~/schemas/profiles/index.js";
+import { parseProfileDetails } from "~/schemas/profiles/shared.js";
 import { withClient } from "~/utils/index.js";
 import { findProfileWithData } from "./sql/index.js";
 
@@ -17,5 +18,5 @@ export const getProfile = async (params: {
     throw httpErrors.notFound(`Profile ${params.profileId} not found`);
   }
 
-  return profileData;
+  return parseProfileDetails(profileData);
 };
