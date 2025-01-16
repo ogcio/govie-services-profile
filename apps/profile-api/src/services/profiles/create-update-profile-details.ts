@@ -27,7 +27,7 @@ export const createUpdateProfileDetails = async (
   data: Record<string, string | number>,
 ): Promise<string> => {
   try {
-    return withRollback(client, async () => {
+    return await withRollback(client, async () => {
       const profileWithData = await findProfileWithData(
         client,
         organizationId,
