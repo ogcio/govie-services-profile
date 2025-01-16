@@ -1,10 +1,10 @@
 import { httpErrors } from "@fastify/sensible";
 import type { PoolClient } from "pg";
-import type { ProfileWithDetails } from "~/schemas/profiles/index.js";
+import type { Profile } from "~/schemas/profiles/index.js";
 
 export const createProfile = async (
   client: PoolClient,
-  profile: Omit<ProfileWithDetails, "details">,
+  profile: Profile,
 ): Promise<string> => {
   const query = `
     INSERT INTO profiles (
