@@ -8,6 +8,8 @@
   },
   "scripts": {
     "dev": "pnpm -r dev",
+    "dev:www": "pnpm --filter profile dev:frontend",
+    "dev:api": "pnpm --filter profile-api dev",
     "build": "pnpm -r build",
     "start": "pnpm -r start",
     "check:formatting": "pnpm -r check:formatting",
@@ -15,6 +17,11 @@
     "check:linting": "pnpm -r check:linting",
     "fix:linting": "pnpm -r fix:linting",
     "test": "pnpm -r test",
+    "test:www": "pnpm --filter profile test:frontend",
+    "test:api": "pnpm --filter profile-api test",
+    "test:local": "pnpm -r test:local",
+    "test:api:local": "pnpm --filter profile-api test:local",
+    "test:www:local": "pnpm --filter profile test:local",
     "prepare": "husky || true",
     "preinstall": "npx only-allow pnpm"
   },
