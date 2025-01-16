@@ -31,9 +31,13 @@ export const updateProfile = async (params: {
     }
 
     const { email, public_name } = data;
+    const souldUpdateEmail = email && email !== existingProfile.email;
+    const shouldUpdatePublicName =
+      public_name && public_name !== existingProfile.public_name;
+    const shouldUpdateProfile = souldUpdateEmail || shouldUpdatePublicName;
 
     // Update base profile fields if provided
-    if (email || public_name) {
+    if (shouldUpdateProfile) {
       await updateProfileSql(
         client,
         profileId,

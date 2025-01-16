@@ -1,12 +1,12 @@
 import type { Pool } from "pg";
 import { describe, expect, it, vi } from "vitest";
 import {
-  createUpdateProfileDetails,
+  // createUpdateProfileDetails,
   updateProfile,
 } from "../../../src/services/profiles/index.js";
 import { buildMockPg } from "../../test/build-mock-pg.js";
 
-vi.mock("../../../src/services/profiles/create-update-profile-details.js");
+// vi.mock("../../../src/services/profiles/create-update-profile-details.js");
 
 describe("updateProfile", () => {
   const existingProfile = {
@@ -28,11 +28,12 @@ describe("updateProfile", () => {
       [existingProfile], // findProfileWithData initial check
       [], // updateProfileSql
       [{ in_transaction: false }],
-      [],
-      [existingProfile],
-      [{ detail: "detail-123" }],
-      [],
-      [{ detail: "detail-123" }], // createUpdateProfileDetails
+      [], // BEGIN
+      [existingProfile], // findProfileWithData
+      [{ id: "detail-123" }], // createProfileDetails
+      [], // createProfileDataForProfileDetail
+      [], // updateProfileDetailsToLatest
+      [], // COMMIT
       [
         {
           ...existingProfile,
@@ -45,8 +46,6 @@ describe("updateProfile", () => {
     const mockPool = {
       connect: () => Promise.resolve(mockPg),
     };
-
-    vi.mocked(createUpdateProfileDetails).mockResolvedValue("detail-123");
 
     const result = await updateProfile({
       pool: mockPool as unknown as Pool,
@@ -63,7 +62,7 @@ describe("updateProfile", () => {
     expect(result?.public_name).toBe("New Name");
 
     const queries = mockPg.getExecutedQueries();
-    expect(queries).toHaveLength(4);
+    expect(queries).toHaveLength(10);
 
     // Verify initial profile check
     expect(queries[0].sql).toContain("SELECT");
@@ -82,7 +81,13 @@ describe("updateProfile", () => {
   it("should update profile details only", async () => {
     const mockPg = buildMockPg([
       [existingProfile], // findProfileWithData initial check
-      [{ detail: "detail-123" }], // createUpdateProfileDetails
+      [{ in_transaction: false }],
+      [], // BEGIN
+      [existingProfile], // findProfileWithData
+      [{ id: "detail-123" }], // createProfileDetails
+      [], // createProfileDataForProfileDetail
+      [], // updateProfileDetailsToLatest
+      [], // COMMIT
       [
         {
           ...existingProfile,
@@ -111,7 +116,7 @@ describe("updateProfile", () => {
     expect(result?.details.phone.value).toBe("9876543210");
 
     const queries = mockPg.getExecutedQueries();
-    expect(queries).toHaveLength(3); // No profile update query since no email/public_name change
+    expect(queries).toHaveLength(9); // No profile update query since no email/public_name change
   });
 
   it("should throw not found error if profile does not exist", async () => {
@@ -162,7 +167,13 @@ describe("updateProfile", () => {
     const mockPg = buildMockPg([
       [existingProfile], // findProfileWithData initial check
       [], // updateProfileSql
-      [{ detail: "detail-123" }], // createUpdateProfileDetails
+      [{ in_transaction: false }],
+      [], // BEGIN
+      [existingProfile], // findProfileWithData
+      [{ id: "detail-123" }], // createProfileDetails
+      [], // createProfileDataForProfileDetail
+      [], // updateProfileDetailsToLatest
+      [], // COMMIT
       [
         {
           ...existingProfile,

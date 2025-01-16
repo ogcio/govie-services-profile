@@ -34,15 +34,11 @@ export const createUpdateProfileDetails = async (
         profileId,
       );
 
-      console.log("profileWithData", profileWithData);
-
       const profileDetailId = await createProfileDetails(
         client,
         profileId,
         organizationId,
       );
-
-      console.log("profileDetailId", profileDetailId);
 
       let previsousProfileDetails = {};
 
@@ -54,8 +50,6 @@ export const createUpdateProfileDetails = async (
           ]),
         );
       }
-
-      console.log("previsousProfileDetails", previsousProfileDetails);
 
       await createProfileDataForProfileDetail(client, profileDetailId, {
         ...previsousProfileDetails,
