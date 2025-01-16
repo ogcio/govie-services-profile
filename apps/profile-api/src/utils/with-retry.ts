@@ -15,14 +15,10 @@ export const withRetry = async <T>(
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-      const result = await operation(controller.signal);
-      clearTimeout(timeoutId);
-
-      return result;
+      return await operation(controller.signal);
     } catch (error) {
       lastError = error as Error;
       if (attempt < maxRetries - 1) {
@@ -30,6 +26,8 @@ export const withRetry = async <T>(
           setTimeout(resolve, initialDelay * 2 ** attempt),
         );
       }
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
