@@ -2,21 +2,21 @@ import { toIsoDate } from "~/utils/index.js";
 import type {
   DetailType,
   KnownProfileDataDetails,
-  ProfileWithData,
-  ProfileWithDataFromDb,
+  ProfileWithDetails,
+  ProfileWithDetailsFromDb,
 } from "./index.js";
 
 export const PROFILES_TAG = "Profiles";
 
 export function parseProfilesDetails(
-  inputItems: ProfileWithDataFromDb[],
-): ProfileWithData[] {
+  inputItems: ProfileWithDetailsFromDb[],
+): ProfileWithDetails[] {
   return inputItems.map((i) => parseProfileDetails(i));
 }
 
 export function parseProfileDetails(
-  inputItem: ProfileWithDataFromDb,
-): ProfileWithData {
+  inputItem: ProfileWithDetailsFromDb,
+): ProfileWithDetails {
   if (!inputItem.details) {
     return { ...inputItem, details: undefined };
   }

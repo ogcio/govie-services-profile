@@ -1,7 +1,7 @@
 import { httpErrors } from "@fastify/sensible";
 import type { Pool } from "pg";
 import type {
-  ProfileWithData,
+  ProfileWithDetails,
   UpdateProfileBody,
 } from "~/schemas/profiles/index.js";
 import { parseProfileDetails } from "~/schemas/profiles/shared.js";
@@ -17,7 +17,7 @@ export const updateProfile = async (params: {
   profileId: string;
   data: UpdateProfileBody;
   organizationId?: string;
-}): Promise<ProfileWithData> =>
+}): Promise<ProfileWithDetails> =>
   withClient(params.pool, async (client) => {
     const { profileId, organizationId, data } = params;
 

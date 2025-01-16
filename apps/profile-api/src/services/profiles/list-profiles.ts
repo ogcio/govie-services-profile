@@ -1,6 +1,9 @@
 import type { Pool } from "pg";
 import type { PaginationParams } from "~/schemas/pagination.js";
-import type { ProfileList, ProfileWithData } from "~/schemas/profiles/index.js";
+import type {
+  ProfileList,
+  ProfileWithDetails,
+} from "~/schemas/profiles/index.js";
 import { withClient } from "~/utils/index.js";
 import { buildListProfilesQueries } from "./sql/index.js";
 
@@ -26,7 +29,7 @@ export const listProfiles = async (params: {
       };
     }
 
-    const response = await client.query<ProfileWithData>(
+    const response = await client.query<ProfileWithDetails>(
       queries.data.query,
       queries.data.values,
     );

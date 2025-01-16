@@ -8,7 +8,7 @@ import {
   GetProfileSchema,
   ImportProfilesSchema,
   type Profile,
-  type ProfileWithData,
+  type ProfileWithDetails,
   ProfilesIndexSchema,
   SelectProfilesSchema,
   UpdateProfileSchema,
@@ -92,7 +92,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         profileIds: request.query.ids.split(","),
       });
 
-      return formatAPIResponse<ProfileWithData>({
+      return formatAPIResponse<ProfileWithDetails>({
         data: profiles,
         config,
         request,

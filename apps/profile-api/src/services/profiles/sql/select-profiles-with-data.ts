@@ -1,12 +1,12 @@
 import type { PoolClient } from "pg";
-import type { ProfileWithDataFromDb } from "~/schemas/profiles/index.js";
+import type { ProfileWithDetailsFromDb } from "~/schemas/profiles/index.js";
 
 export const selectProfilesWithData = async (
   client: PoolClient,
   organizationId: string,
   profileIds: string[],
-): Promise<ProfileWithDataFromDb[]> => {
-  const result = await client.query<ProfileWithDataFromDb>(
+): Promise<ProfileWithDetailsFromDb[]> => {
+  const result = await client.query<ProfileWithDetailsFromDb>(
     `
         SELECT 
           p.id,

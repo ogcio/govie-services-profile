@@ -50,17 +50,21 @@ export const ProfileSchema = Type.Object({
   updated_at: Type.Optional(Type.String({ format: "date-time" })),
 });
 
-export const ProfileWithDataSchema = Type.Composite([
+export const ProfileWithDetailsSchema = Type.Composite([
   ProfileSchema,
   Type.Object({ details: Type.Optional(KnownProfileDataDetailsSchema) }),
 ]);
 
 export const ProfileListSchema = Type.Array(ProfileSchema);
-export const ProfileWithDataListSchema = Type.Array(ProfileWithDataSchema);
+export const ProfileWithDetailsListSchema = Type.Array(
+  ProfileWithDetailsSchema,
+);
 export type Profile = Static<typeof ProfileSchema>;
-export type ProfileWithData = Static<typeof ProfileWithDataSchema>;
+export type ProfileWithDetails = Static<typeof ProfileWithDetailsSchema>;
 export type ProfileList = Static<typeof ProfileListSchema>;
-export type ProfileWithDataList = Static<typeof ProfileWithDataListSchema>;
+export type ProfileWithDetailsList = Static<
+  typeof ProfileWithDetailsListSchema
+>;
 
 // Used to query the db
 // build a type with same keys as KnownProfileDataDetails but
@@ -76,15 +80,17 @@ export const KnownProfileDbDataDetails = Type.Object({
   ppsn: ProfileDataStringItemSchema,
 });
 
-export const ProfileWithDataFromDbSchema = Type.Composite([
+export const ProfileWithDetailsFromDbSchema = Type.Composite([
   ProfileSchema,
   Type.Object({ details: Type.Optional(KnownProfileDbDataDetails) }),
 ]);
 
-export type ProfileWithDataFromDb = Static<typeof ProfileWithDataFromDbSchema>;
-export const ProfileWithDataFromDbListSchema = Type.Array(
-  ProfileWithDataFromDbSchema,
+export type ProfileWithDetailsFromDb = Static<
+  typeof ProfileWithDetailsFromDbSchema
+>;
+export const ProfileWithDetailsFromDbListSchema = Type.Array(
+  ProfileWithDetailsFromDbSchema,
 );
-export type ProfileWithDataFromDbList = Static<
-  typeof ProfileWithDataFromDbListSchema
+export type ProfileWithDetailsFromDbList = Static<
+  typeof ProfileWithDetailsFromDbListSchema
 >;

@@ -1,8 +1,8 @@
 import { httpErrors } from "@fastify/sensible";
 import type { Pool } from "pg";
 import type {
-  ProfileWithData,
-  ProfileWithDataFromDb,
+  ProfileWithDetails,
+  ProfileWithDetailsFromDb,
 } from "~/schemas/profiles/index.js";
 import { parseProfileDetails } from "~/schemas/profiles/shared.js";
 import { withClient } from "~/utils/index.js";
@@ -11,7 +11,7 @@ export const findProfile = async (params: {
   pool: Pool;
   organizationId: string;
   query: Record<string, string>;
-}): Promise<ProfileWithData | undefined> =>
+}): Promise<ProfileWithDetails | undefined> =>
   withClient(params.pool, async (client) => {
     const { email, firstName, lastName, phone } = params.query;
 
@@ -73,7 +73,7 @@ export const findProfile = async (params: {
       : "";
 
     // Query using indexes for performance
-    const { rows } = await client.query<ProfileWithDataFromDb>(
+    const { rows } = await client.query<ProfileWithDetailsFromDb>(
       `
           SELECT DISTINCT
             p.id,
