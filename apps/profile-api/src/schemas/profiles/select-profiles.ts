@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "~/types/index.js";
 import { getGenericResponseSchema } from "~/utils/index.js";
-import { ProfileWithDataListSchema } from "./index.js";
+import { ProfileWithDetailsListSchema } from "./index.js";
 import { PROFILES_TAG } from "./shared.js";
 
 export const SelectProfilesSchema = {
@@ -14,7 +14,7 @@ export const SelectProfilesSchema = {
     }),
   }),
   response: {
-    200: getGenericResponseSchema(ProfileWithDataListSchema),
+    200: getGenericResponseSchema(ProfileWithDetailsListSchema),
     "4xx": HttpError,
     "5xx": HttpError,
   },

@@ -1,10 +1,11 @@
+import { httpErrors } from "@fastify/sensible";
 import type { Pool } from "pg";
 import { describe, expect, it } from "vitest";
 import { findProfile } from "../../../src/services/profiles/find-profile.js";
 import { buildMockPg } from "../../test/build-mock-pg.js";
 
 describe("findProfile", () => {
-  const mockProfile = {
+  const mockFromDbProfile = {
     id: "profile-123",
     public_name: "Test User",
     email: "test@example.com",
@@ -19,9 +20,18 @@ describe("findProfile", () => {
     },
   };
 
+  const mockProfile = {
+    ...mockFromDbProfile,
+    details: {
+      first_name: mockFromDbProfile.details.first_name.value,
+      last_name: mockFromDbProfile.details.last_name.value,
+      phone: mockFromDbProfile.details.phone.value,
+    },
+  };
+
   it("should find profile by email", async () => {
     const mockPg = buildMockPg([
-      [mockProfile], // Query result
+      [mockFromDbProfile], // Query result
     ]);
 
     const mockPool = {
@@ -43,7 +53,7 @@ describe("findProfile", () => {
 
   it("should find profile by first name", async () => {
     const mockPg = buildMockPg([
-      [mockProfile], // Query result
+      [mockFromDbProfile], // Query result
     ]);
 
     const mockPool = {
@@ -65,7 +75,7 @@ describe("findProfile", () => {
 
   it("should find profile by last name", async () => {
     const mockPg = buildMockPg([
-      [mockProfile], // Query result
+      [mockFromDbProfile], // Query result
     ]);
 
     const mockPool = {
@@ -87,7 +97,7 @@ describe("findProfile", () => {
 
   it("should find profile by phone", async () => {
     const mockPg = buildMockPg([
-      [mockProfile], // Query result
+      [mockFromDbProfile], // Query result
     ]);
 
     const mockPool = {
@@ -109,7 +119,7 @@ describe("findProfile", () => {
 
   it("should find profile with multiple search criteria", async () => {
     const mockPg = buildMockPg([
-      [mockProfile], // Query result
+      [mockFromDbProfile], // Query result
     ]);
 
     const mockPool = {
@@ -135,21 +145,21 @@ describe("findProfile", () => {
     ]);
   });
 
-  it("should return undefined when no profile is found", async () => {
+  it("should throw an error when no profile is found", async () => {
     const mockPg = buildMockPg([
       [], // Empty query result
     ]);
-
     const mockPool = {
       connect: () => Promise.resolve(mockPg),
     };
+    const mockError = httpErrors.notFound("Profile not found");
 
-    const result = await findProfile({
-      pool: mockPool as unknown as Pool,
-      organizationId: "org-123",
-      query: { email: "nonexistent@example.com" },
-    });
-
-    expect(result).toBeUndefined();
+    await expect(
+      findProfile({
+        pool: mockPool as unknown as Pool,
+        organizationId: "org-123",
+        query: { email: "nonexistent@example.com" },
+      }),
+    ).rejects.toThrow(mockError);
   });
 });

@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "~/types/index.js";
 import { getGenericResponseSchema } from "~/utils/index.js";
-import { ProfileWithDataSchema } from "./model.js";
+import { ProfileWithDetailsSchema } from "./model.js";
 import { PROFILES_TAG } from "./shared.js";
 
 export const FindProfileSchema = {
@@ -38,7 +38,7 @@ export const FindProfileSchema = {
     },
   ),
   response: {
-    200: getGenericResponseSchema(ProfileWithDataSchema),
+    200: getGenericResponseSchema(ProfileWithDetailsSchema),
     "4xx": HttpError,
     "5xx": HttpError,
   },

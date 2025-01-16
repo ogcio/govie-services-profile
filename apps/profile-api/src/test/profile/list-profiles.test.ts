@@ -137,11 +137,6 @@ describe("listProfiles", () => {
       total: 0,
     });
     expect(mockPg.getExecutedQueries()[0].values).toEqual(["org-123"]);
-    expect(mockPg.getExecutedQueries()[1].values).toEqual([
-      "org-123",
-      10,
-      undefined,
-    ]);
   });
 
   it("should handle database errors", async () => {

@@ -1,12 +1,17 @@
+import { httpErrors } from "@fastify/sensible";
 import type { Pool } from "pg";
-import type { ProfileWithData } from "~/schemas/profiles/index.js";
+import type {
+  ProfileWithDetails,
+  ProfileWithDetailsFromDb,
+} from "~/schemas/profiles/index.js";
+import { parseProfileDetails } from "~/schemas/profiles/shared.js";
 import { withClient } from "~/utils/index.js";
 
 export const findProfile = async (params: {
   pool: Pool;
   organizationId: string;
   query: Record<string, string>;
-}): Promise<ProfileWithData> =>
+}): Promise<ProfileWithDetails> =>
   withClient(params.pool, async (client) => {
     const { email, firstName, lastName, phone } = params.query;
 
@@ -68,7 +73,7 @@ export const findProfile = async (params: {
       : "";
 
     // Query using indexes for performance
-    const { rows } = await client.query<ProfileWithData>(
+    const { rows } = await client.query<ProfileWithDetailsFromDb>(
       `
           SELECT DISTINCT
             p.id,
@@ -101,5 +106,9 @@ export const findProfile = async (params: {
       values,
     );
 
-    return rows[0];
+    if (rows[0]) {
+      return parseProfileDetails(rows[0]);
+    }
+
+    throw httpErrors.notFound("Profile not found");
   });

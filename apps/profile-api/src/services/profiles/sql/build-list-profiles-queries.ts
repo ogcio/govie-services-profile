@@ -1,4 +1,4 @@
-export const buildlistProfilesQueries = (params: {
+export const buildListProfilesQueries = (params: {
   organisationId: string;
   pagination: { limit: string; offset: string };
   search?: string;
@@ -33,17 +33,7 @@ export const buildlistProfilesQueries = (params: {
           p.email,
           p.primary_user_id,
           p.created_at,
-          p.updated_at,
-          (
-            SELECT jsonb_object_agg(pdata.name, 
-              jsonb_build_object(
-                'value', pdata.value,
-                'type', pdata.value_type
-              )
-            )
-            FROM profile_data pdata
-            WHERE pdata.profile_details_id = pd.id
-          ) as details
+          p.updated_at
         ${baseQuery}
         ORDER BY p.created_at DESC
         LIMIT $${nextIndexInQuery++} OFFSET $${nextIndexInQuery}

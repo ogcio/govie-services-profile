@@ -4,7 +4,7 @@ import { selectProfiles } from "../../../src/services/profiles/select-profiles.j
 import { buildMockPg } from "../../test/build-mock-pg.js";
 
 describe("selectProfiles", () => {
-  const mockProfiles = [
+  const mockFromDbProfiles = [
     {
       id: "profile-123",
       public_name: "Test User 1",
@@ -27,6 +27,22 @@ describe("selectProfiles", () => {
       details: {
         first_name: { value: "Another", type: "string" },
         last_name: { value: "User", type: "string" },
+      },
+    },
+  ];
+  const mockProfiles = [
+    {
+      ...mockFromDbProfiles[0],
+      details: {
+        first_name: mockFromDbProfiles[0].details.first_name.value,
+        last_name: mockFromDbProfiles[0].details.last_name.value,
+      },
+    },
+    {
+      ...mockFromDbProfiles[1],
+      details: {
+        first_name: mockFromDbProfiles[1].details.first_name.value,
+        last_name: mockFromDbProfiles[1].details.last_name.value,
       },
     },
   ];
@@ -61,7 +77,7 @@ describe("selectProfiles", () => {
       parameters: ["org-123", ["profile-123", "profile-456"]],
     };
 
-    const mockPg = buildMockPg([mockProfiles]);
+    const mockPg = buildMockPg([mockFromDbProfiles]);
     const mockPool = {
       connect: () => Promise.resolve(mockPg),
     };

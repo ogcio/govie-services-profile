@@ -60,6 +60,7 @@ paths:
                         public_name:
                           type: string
                         email:
+                          format: email
                           type: string
                         primary_user_id:
                           type: string
@@ -67,86 +68,16 @@ paths:
                           type: number
                         preferred_language:
                           type: string
-                          enum: ["en", "ga"]
+                          enum:
+                            - en
+                            - ga
+                          default: en
                         created_at:
                           format: date-time
                           type: string
                         updated_at:
                           format: date-time
                           type: string
-                        details:
-                          type: object
-                          properties:
-                            city:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
-                            email:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
-                            address:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
-                            phone:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
-                            first_name:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
-                            last_name:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
-                            date_of_birth:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
                       required:
                         - id
                         - public_name
@@ -322,11 +253,14 @@ paths:
                   date_of_birth:
                     format: date
                     type: string
+                  ppsn:
+                    type: string
                   preferred_language:
+                    type: string
                     enum:
                       - en
                       - ga
-                    type: string
+                    default: en
                 required:
                   - address
                   - city
@@ -479,16 +413,18 @@ paths:
                         public_name:
                           type: string
                         email:
+                          format: email
                           type: string
                         primary_user_id:
                           type: string
                         safe_level:
                           type: number
                         preferred_language:
+                          type: string
                           enum:
                             - en
                             - ga
-                          type: string
+                          default: en
                         created_at:
                           format: date-time
                           type: string
@@ -499,75 +435,23 @@ paths:
                           type: object
                           properties:
                             city:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
+                              type: string
                             email:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
+                              format: email
+                              type: string
                             address:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
+                              type: string
                             phone:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
+                              type: string
                             first_name:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
+                              type: string
                             last_name:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
+                              type: string
                             date_of_birth:
-                              type: object
-                              properties:
-                                value:
-                                  type: string
-                                type:
-                                  type: string
-                              required:
-                                - value
-                                - type
+                              format: date
+                              type: string
+                            ppsn:
+                              type: string
                       required:
                         - id
                         - public_name
@@ -760,16 +644,18 @@ paths:
                       public_name:
                         type: string
                       email:
+                        format: email
                         type: string
                       primary_user_id:
                         type: string
                       safe_level:
                         type: number
                       preferred_language:
+                        type: string
                         enum:
                           - en
                           - ga
-                        type: string
+                        default: en
                       created_at:
                         format: date-time
                         type: string
@@ -780,75 +666,23 @@ paths:
                         type: object
                         properties:
                           city:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           email:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            format: email
+                            type: string
                           address:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           phone:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           first_name:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           last_name:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           date_of_birth:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            format: date
+                            type: string
+                          ppsn:
+                            type: string
                     required:
                       - id
                       - public_name
@@ -1027,16 +861,18 @@ paths:
                       public_name:
                         type: string
                       email:
+                        format: email
                         type: string
                       primary_user_id:
                         type: string
                       safe_level:
                         type: number
                       preferred_language:
+                        type: string
                         enum:
                           - en
                           - ga
-                        type: string
+                        default: en
                       created_at:
                         format: date-time
                         type: string
@@ -1047,75 +883,23 @@ paths:
                         type: object
                         properties:
                           city:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           email:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            format: email
+                            type: string
                           address:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           phone:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           first_name:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           last_name:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           date_of_birth:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            format: date
+                            type: string
+                          ppsn:
+                            type: string
                     required:
                       - id
                       - public_name
@@ -1324,16 +1108,18 @@ paths:
                       public_name:
                         type: string
                       email:
+                        format: email
                         type: string
                       primary_user_id:
                         type: string
                       safe_level:
                         type: number
                       preferred_language:
+                        type: string
                         enum:
                           - en
                           - ga
-                        type: string
+                        default: en
                       created_at:
                         format: date-time
                         type: string
@@ -1344,75 +1130,23 @@ paths:
                         type: object
                         properties:
                           city:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           email:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            format: email
+                            type: string
                           address:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           phone:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           first_name:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           last_name:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           date_of_birth:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            format: date
+                            type: string
+                          ppsn:
+                            type: string
                     required:
                       - id
                       - public_name
@@ -1620,16 +1354,18 @@ paths:
                       public_name:
                         type: string
                       email:
+                        format: email
                         type: string
                       primary_user_id:
                         type: string
                       safe_level:
                         type: number
                       preferred_language:
+                        type: string
                         enum:
                           - en
                           - ga
-                        type: string
+                        default: en
                       created_at:
                         format: date-time
                         type: string
@@ -1640,75 +1376,23 @@ paths:
                         type: object
                         properties:
                           city:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           email:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            format: email
+                            type: string
                           address:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           phone:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           first_name:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           last_name:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            type: string
                           date_of_birth:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              type:
-                                type: string
-                            required:
-                              - value
-                              - type
+                            format: date
+                            type: string
+                          ppsn:
+                            type: string
                     required:
                       - id
                       - public_name
