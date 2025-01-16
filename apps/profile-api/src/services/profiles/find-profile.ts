@@ -101,5 +101,7 @@ export const findProfile = async (params: {
       values,
     );
 
+    // TODO verificare se rows[0] è undefined, l'utente potrebbe non avere relazione
+    // con l'organizzazione
     return rows[0];
   });

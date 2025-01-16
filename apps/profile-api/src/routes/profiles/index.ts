@@ -1,5 +1,7 @@
+import { httpErrors } from "@fastify/sensible";
 import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
-import type { FastifyInstance } from "fastify";
+import { ensureUserCanAccessUser } from "@ogcio/api-auth";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { Permissions } from "~/const/index.js";
 import {
   FindProfileSchema,
@@ -131,15 +133,8 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       query: { organizationId },
       params: { profileId },
     }: FastifyRequestTypebox<typeof GetProfileSchema>) => {
-      // TODO: check if the organization in query params is different from the user's organization
-      // if yes, throw forbidden
-      // cases:
-      // 1. user is ps, ask for the same org as the logged in one -> ok, if no data found -> 404
-      // 2. user is ps, ask for a different org -> forbidden
-      // 3. user is ps, no org specified -> ok, use the logged in org, if no data found -> 404
-      // 3. user is not ps, it can ask for any org, if no data found -> 404
-      // 4. user is not ps, it can ask for any org, if data found -> ok
-      // TODO: check if user is not ps, if not check that the profileId is the same as the user's id
+      ensureUserCanAccessData(userData, profileId, organizationId);
+
       return {
         data: await getProfile({
           pool,
@@ -164,8 +159,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       body: data,
       params: { profileId },
       query: { organizationId },
+      userData,
     }: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
-      // TODO: check if user is not ps, if not check that the profileId is the same as the user's id
+      ensureUserCanAccessUser(userData, profileId);
+
       return {
         data: await updateProfile({
           pool,
@@ -191,8 +188,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       body: data,
       params: { profileId },
       query: { organizationId },
+      userData,
     }: FastifyRequestTypebox<typeof UpdateProfileSchema>) => {
-      // TODO: check if user is not ps, if not check that the profileId is the same as the user's id
+      ensureUserCanAccessUser(userData, profileId);
+
       return {
         data: await updateProfile({
           pool,
@@ -203,6 +202,32 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       };
     },
   );
+
+  function ensureUserCanAccessData(
+    userData: FastifyRequest["userData"],
+    queryProfileId: string,
+    queryOrganizationId: string | undefined,
+  ): void {
+    const loggedUserData = ensureUserCanAccessUser(userData, queryProfileId);
+    // at this point we are already sure that the user requested
+    // for a profileId that can be accessed
+    // let's focus on organization check when needed
+
+    // if queryOrganizationId is not provided it means that
+    // it is trying to access its own data
+    // or the data of the logged-in organization
+    // if the user is not a ps, it can access any data for himself
+    if (!queryOrganizationId || !loggedUserData.organizationId) {
+      return;
+    }
+
+    // a ps can access data only for its own organization
+    if (loggedUserData.organizationId !== queryOrganizationId) {
+      throw httpErrors.forbidden(
+        "You can't access this user's data for this organization",
+      );
+    }
+  }
 };
 
 export default plugin;

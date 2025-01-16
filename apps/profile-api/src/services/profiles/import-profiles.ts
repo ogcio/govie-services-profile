@@ -210,5 +210,5 @@ export const importProfiles = async (params: {
     }
 
     // 4. Return current status
-    return await getProfileImportStatus(client, jobId);
+    return getProfileImportStatus(client, jobId);
   });

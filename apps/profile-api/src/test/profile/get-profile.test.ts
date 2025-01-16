@@ -1,3 +1,4 @@
+import { httpErrors } from "@fastify/sensible";
 import type { Pool } from "pg";
 import { describe, expect, it, vi } from "vitest";
 import { getProfile } from "../../../src/services/profiles/get-profile.js";
@@ -57,19 +58,22 @@ describe("getProfile", () => {
     ]);
   });
 
-  it("should return undefined when profile is not found", async () => {
+  it("should raise an error when profile is not found", async () => {
     const mockPg = buildMockPg([[]]);
     const mockPool = {
       connect: () => Promise.resolve(mockPg),
     };
+    const mockError = httpErrors.notFound(
+      "Profile nonexistent-profile not found",
+    );
 
-    const result = await getProfile({
-      pool: mockPool as unknown as Pool,
-      organizationId: "org-123",
-      profileId: "nonexistent-profile",
-    });
-
-    expect(result).toBeUndefined();
+    await expect(
+      getProfile({
+        pool: mockPool as unknown as Pool,
+        organizationId: "org-123",
+        profileId: "nonexistent-profile",
+      }),
+    ).rejects.toThrow(mockError);
     expect(mockPg.getExecutedQueries()[0].values).toEqual([
       "org-123",
       "nonexistent-profile",
