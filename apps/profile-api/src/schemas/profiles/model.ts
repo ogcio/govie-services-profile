@@ -22,6 +22,7 @@ export const ProfileWithDataSchema = Type.Composite([
     email: Type.String(),
     primary_user_id: Type.String(),
     safe_level: Type.Optional(Type.Number()),
+    preferred_language: Type.Optional(Type.String({ enum: ["en", "ga"] })),
     created_at: Type.Optional(Type.String({ format: "date-time" })),
     updated_at: Type.Optional(Type.String({ format: "date-time" })),
     details: Type.Optional(ProfileDataSchema),

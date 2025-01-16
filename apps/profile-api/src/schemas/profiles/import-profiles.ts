@@ -15,6 +15,7 @@ export const ImportProfilesSchema = {
       email: Type.String({ format: "email" }),
       phone: Type.String(),
       date_of_birth: Type.String({ format: "date" }),
+      preferred_language: Type.Optional(Type.String({ enum: ["en", "ga"] })),
     }),
     { minItems: 1 },
   ),

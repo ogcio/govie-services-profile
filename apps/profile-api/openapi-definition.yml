@@ -65,6 +65,9 @@ paths:
                           type: string
                         safe_level:
                           type: number
+                        preferred_language:
+                          type: string
+                          enum: ["en", "ga"]
                         created_at:
                           format: date-time
                           type: string
@@ -319,6 +322,11 @@ paths:
                   date_of_birth:
                     format: date
                     type: string
+                  preferred_language:
+                    enum:
+                      - en
+                      - ga
+                    type: string
                 required:
                   - address
                   - city
@@ -476,6 +484,11 @@ paths:
                           type: string
                         safe_level:
                           type: number
+                        preferred_language:
+                          enum:
+                            - en
+                            - ga
+                          type: string
                         created_at:
                           format: date-time
                           type: string
@@ -752,6 +765,11 @@ paths:
                         type: string
                       safe_level:
                         type: number
+                      preferred_language:
+                        enum:
+                          - en
+                          - ga
+                        type: string
                       created_at:
                         format: date-time
                         type: string
@@ -1014,6 +1032,11 @@ paths:
                         type: string
                       safe_level:
                         type: number
+                      preferred_language:
+                        enum:
+                          - en
+                          - ga
+                        type: string
                       created_at:
                         format: date-time
                         type: string
@@ -1267,6 +1290,11 @@ paths:
                 date_of_birth:
                   format: date
                   type: string
+                preferred_language:
+                  enum:
+                    - en
+                    - ga
+                  type: string
       parameters:
         - schema:
             type: string
@@ -1301,6 +1329,11 @@ paths:
                         type: string
                       safe_level:
                         type: number
+                      preferred_language:
+                        enum:
+                          - en
+                          - ga
+                        type: string
                       created_at:
                         format: date-time
                         type: string
@@ -1553,6 +1586,11 @@ paths:
                 date_of_birth:
                   format: date
                   type: string
+                preferred_language:
+                  enum:
+                    - en
+                    - ga
+                  type: string
       parameters:
         - schema:
             type: string
@@ -1587,6 +1625,11 @@ paths:
                         type: string
                       safe_level:
                         type: number
+                      preferred_language:
+                        enum:
+                          - en
+                          - ga
+                        type: string
                       created_at:
                         format: date-time
                         type: string

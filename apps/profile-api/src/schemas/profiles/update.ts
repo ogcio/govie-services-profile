@@ -28,6 +28,7 @@ export const UpdateProfileSchema = {
       first_name: Type.Optional(Type.String()),
       last_name: Type.Optional(Type.String()),
       date_of_birth: Type.Optional(Type.String({ format: "date" })),
+      preferred_language: Type.Optional(Type.String({ enum: ["en", "ga"] })),
     },
     { additionalProperties: false },
   ),
