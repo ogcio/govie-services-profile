@@ -10,7 +10,11 @@ export const AvailableDetailTypes = {
 
 export type DetailType = "string" | "number" | "boolean" | "date";
 
-export const AvailableLanguagesSchema = TypeboxStringEnum(["en", "ga"], "en");
+export const DEFAULT_LANGUAGE = "en";
+export const AvailableLanguagesSchema = TypeboxStringEnum(
+  ["en", "ga"],
+  DEFAULT_LANGUAGE,
+);
 
 const ProfileDataStringItemSchema = Type.Object({
   value: Type.String(),

@@ -1,6 +1,6 @@
 import { httpErrors } from "@fastify/sensible";
 import type { PoolClient } from "pg";
-import type { Profile } from "~/schemas/profiles/index.js";
+import { DEFAULT_LANGUAGE, type Profile } from "~/schemas/profiles/index.js";
 
 export const createProfile = async (
   client: PoolClient,
@@ -35,7 +35,7 @@ export const createProfile = async (
     profile.email,
     profile.primaryUserId,
     profile.safeLevel,
-    profile.preferredLanguage ?? "en",
+    profile.preferredLanguage ?? DEFAULT_LANGUAGE,
   ];
 
   const result = await client.query<{ id: string }>(query, values);
