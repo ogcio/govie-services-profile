@@ -1,12 +1,16 @@
-FROM base-deps AS deps
+FROM base-deps AS profile-base-deps
+
+RUN apk add --no-cache pnpm
+
+FROM profile-base-deps AS deps
 
 WORKDIR /app
 ENV LOG_LEVEL=trace
 
-COPY ./package*.json /app/
-COPY ./apps/profile/package*.json /app/apps/profile/
+COPY package.json pnpm-*.yaml /app/
+COPY apps/profile/package*.json /app/apps/profile/
 
-RUN npm ci
+RUN pnpm i --frozen-lockfile
 
 COPY ./apps/profile/ /app/apps/profile/
 
@@ -19,9 +23,9 @@ ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 ENV NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT
 
-RUN npm run build --workspace=apps/profile
+RUN pnpm build:www
 
-FROM base-deps AS runner
+FROM profile-base-deps AS runner
 
 WORKDIR /app
 

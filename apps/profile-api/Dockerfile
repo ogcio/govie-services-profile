@@ -1,10 +1,11 @@
-FROM node:22-alpine AS base-deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat pnpm
+FROM base-deps AS profile-api-base-deps
+
+RUN apk add --no-cache pnpm
 # Add non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -G nodejs
 
-FROM base-deps AS deps
+FROM profile-api-base-deps AS deps
+
 WORKDIR /app
 
 COPY package.json pnpm-*.yaml /app/
@@ -20,9 +21,9 @@ COPY --from=deps --chown=node:node /app/node_modules /app/node_modules
 COPY apps/profile-api/src /app/apps/profile-api/src
 COPY apps/profile-api/tsconfig* /app/apps/profile-api/
 
-RUN pnpm --filter "@govie-services/profile-api" run build
+RUN pnpm build:api
 
-FROM base-deps AS assembler
+FROM profile-api-base-deps AS assembler
 WORKDIR /app
 
 ARG PORT
@@ -39,7 +40,7 @@ COPY --from=builder --chown=node:node /app/node_modules /app/node_modules
 
 RUN pnpm prune --prod
 
-FROM base-deps AS runner
+FROM profile-api-base-deps AS runner
 
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace

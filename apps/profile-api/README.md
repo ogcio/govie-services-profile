@@ -7,6 +7,7 @@ This application is used to manage user profiles for Gov-IE.
 From the root folder
 
 ```bash
+docker build -t base-deps -f Dockerfile .
 docker build --build-arg PORT=8003 -t profile-api -f apps/profile-api/Dockerfile .
 ```
 
