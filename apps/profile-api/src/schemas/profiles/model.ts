@@ -22,17 +22,26 @@ const ProfileDataDateItemSchema = Type.Object({
   type: Type.Literal("date"),
 });
 
-// Used as output schema to the clients
-export const KnownProfileDataDetailsSchema = Type.Object({
-  city: Type.Optional(Type.String()),
-  email: Type.Optional(Type.String({ format: "email" })),
-  address: Type.Optional(Type.String()),
-  phone: Type.Optional(Type.String()),
-  first_name: Type.Optional(Type.String()),
-  last_name: Type.Optional(Type.String()),
-  date_of_birth: Type.Optional(Type.String({ format: "date" })),
-  ppsn: Type.Optional(Type.String()),
+export const MandatoryProfileDataDetailsSchema = Type.Object({
+  email: Type.String({ format: "email" }),
+  first_name: Type.String(),
+  last_name: Type.String(),
 });
+export type MandatoryProfileDataDetails = Static<
+  typeof MandatoryProfileDataDetailsSchema
+>;
+
+// Used as output schema to the clients
+export const KnownProfileDataDetailsSchema = Type.Composite([
+  MandatoryProfileDataDetailsSchema,
+  Type.Object({
+    city: Type.Optional(Type.String()),
+    address: Type.Optional(Type.String()),
+    phone: Type.Optional(Type.String()),
+    date_of_birth: Type.Optional(Type.String({ format: "date" })),
+    ppsn: Type.Optional(Type.String()),
+  }),
+]);
 
 export type KnownProfileDataDetails = Static<
   typeof KnownProfileDataDetailsSchema

@@ -17,6 +17,7 @@ describe("findProfile", () => {
       first_name: { value: "Test", type: "string" },
       last_name: { value: "User", type: "string" },
       phone: { value: "1234567890", type: "string" },
+      email: { value: "e@mail.com", type: "string" },
     },
   };
 
@@ -26,6 +27,7 @@ describe("findProfile", () => {
       first_name: mockFromDbProfile.details.first_name.value,
       last_name: mockFromDbProfile.details.last_name.value,
       phone: mockFromDbProfile.details.phone.value,
+      email: mockFromDbProfile.details.email.value,
     },
   };
 
