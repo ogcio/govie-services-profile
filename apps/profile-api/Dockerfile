@@ -1,6 +1,11 @@
-FROM base-deps AS deps
+FROM base-deps AS profile-api-base-deps
+
+RUN apk add --no-cache pnpm
 # Add non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -G nodejs
+
+FROM profile-api-base-deps AS deps
+
 WORKDIR /app
 
 COPY package.json pnpm-*.yaml /app/
@@ -18,7 +23,7 @@ COPY apps/profile-api/tsconfig* /app/apps/profile-api/
 
 RUN pnpm --filter "@govie-services/profile-api" run build
 
-FROM base-deps AS assembler
+FROM profile-api-base-deps AS assembler
 WORKDIR /app
 
 ARG PORT
@@ -35,7 +40,7 @@ COPY --from=builder --chown=node:node /app/node_modules /app/node_modules
 
 RUN pnpm prune --prod
 
-FROM base-deps AS runner
+FROM profile-api-base-deps AS runner
 
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
