@@ -1,0 +1,19 @@
+jobs:
+  - job: BuildBaseContainer
+    displayName: Build base container
+    steps:
+    - task: Docker@2
+      displayName:  Build base image
+      inputs:
+        command: build
+        repository: base-deps
+        tags: 'latest'
+        dockerfile: ./Dockerfile
+        buildContext: '$(Build.SourcesDirectory)'
+    - task: Docker@0
+      displayName: 'Docker save base'
+      inputs:
+        action: 'Run a Docker command'
+        customCommand: 'save -o $(Build.ArtifactStagingDirectory)/base-deps-$(Build.BuildId).tar base-deps:latest'
+    - publish:  $(Build.ArtifactStagingDirectory)
+      artifact: 'base-deps-$(Build.BuildId)'
