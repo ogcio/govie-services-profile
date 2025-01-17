@@ -434,24 +434,28 @@ paths:
                         details:
                           type: object
                           properties:
-                            city:
-                              type: string
                             email:
                               format: email
-                              type: string
-                            address:
-                              type: string
-                            phone:
                               type: string
                             first_name:
                               type: string
                             last_name:
+                              type: string
+                            city:
+                              type: string
+                            address:
+                              type: string
+                            phone:
                               type: string
                             date_of_birth:
                               format: date
                               type: string
                             ppsn:
                               type: string
+                          required:
+                            - email
+                            - first_name
+                            - last_name
                       required:
                         - id
                         - public_name
@@ -665,24 +669,28 @@ paths:
                       details:
                         type: object
                         properties:
-                          city:
-                            type: string
                           email:
                             format: email
-                            type: string
-                          address:
-                            type: string
-                          phone:
                             type: string
                           first_name:
                             type: string
                           last_name:
+                            type: string
+                          city:
+                            type: string
+                          address:
+                            type: string
+                          phone:
                             type: string
                           date_of_birth:
                             format: date
                             type: string
                           ppsn:
                             type: string
+                        required:
+                          - email
+                          - first_name
+                          - last_name
                     required:
                       - id
                       - public_name
@@ -882,24 +890,28 @@ paths:
                       details:
                         type: object
                         properties:
-                          city:
-                            type: string
                           email:
                             format: email
-                            type: string
-                          address:
-                            type: string
-                          phone:
                             type: string
                           first_name:
                             type: string
                           last_name:
+                            type: string
+                          city:
+                            type: string
+                          address:
+                            type: string
+                          phone:
                             type: string
                           date_of_birth:
                             format: date
                             type: string
                           ppsn:
                             type: string
+                        required:
+                          - email
+                          - first_name
+                          - last_name
                     required:
                       - id
                       - public_name
@@ -1129,24 +1141,28 @@ paths:
                       details:
                         type: object
                         properties:
-                          city:
-                            type: string
                           email:
                             format: email
-                            type: string
-                          address:
-                            type: string
-                          phone:
                             type: string
                           first_name:
                             type: string
                           last_name:
+                            type: string
+                          city:
+                            type: string
+                          address:
+                            type: string
+                          phone:
                             type: string
                           date_of_birth:
                             format: date
                             type: string
                           ppsn:
                             type: string
+                        required:
+                          - email
+                          - first_name
+                          - last_name
                     required:
                       - id
                       - public_name
@@ -1375,24 +1391,28 @@ paths:
                       details:
                         type: object
                         properties:
-                          city:
-                            type: string
                           email:
                             format: email
-                            type: string
-                          address:
-                            type: string
-                          phone:
                             type: string
                           first_name:
                             type: string
                           last_name:
+                            type: string
+                          city:
+                            type: string
+                          address:
+                            type: string
+                          phone:
                             type: string
                           date_of_birth:
                             format: date
                             type: string
                           ppsn:
                             type: string
+                        required:
+                          - email
+                          - first_name
+                          - last_name
                     required:
                       - id
                       - public_name
