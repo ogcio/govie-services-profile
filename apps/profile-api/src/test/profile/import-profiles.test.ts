@@ -110,7 +110,7 @@ describe("importProfiles", () => {
       config: mockConfig,
     });
 
-    expect(result).toBe(ImportStatus.COMPLETED);
+    expect(result).toStrictEqual({ status: ImportStatus.COMPLETED, jobId });
     expect(createProfileImport).toHaveBeenCalledWith(mockPg, "org-123");
     expect(createProfileImportDetails).toHaveBeenCalledWith(
       mockPg,
@@ -173,7 +173,10 @@ describe("importProfiles", () => {
       config: mockConfig,
     });
 
-    expect(result).toBe(ImportStatus.COMPLETED);
+    expect(result).toStrictEqual({
+      status: ImportStatus.COMPLETED,
+      jobId,
+    });
     expect(createUpdateProfileDetails).toHaveBeenCalled();
     expect(createLogtoUsers).toHaveBeenCalledOnce();
   });
@@ -230,7 +233,10 @@ describe("importProfiles", () => {
       config: mockConfig,
     });
 
-    expect(result).toBe(ImportStatus.FAILED);
+    expect(result).toStrictEqual({
+      status: ImportStatus.FAILED,
+      jobId,
+    });
     expect(updateProfileImportDetails).toHaveBeenCalled();
     expect(updateProfileImportStatusByJobId).toHaveBeenCalledWith(
       mockPg,
@@ -286,7 +292,10 @@ describe("importProfiles", () => {
       config: mockConfig,
     });
 
-    expect(result).toBe(ImportStatus.FAILED);
+    expect(result).toStrictEqual({
+      status: ImportStatus.FAILED,
+      jobId,
+    });
     expect(updateProfileImportDetails).toHaveBeenCalled();
     expect(mockLogger.error).toHaveBeenCalled();
   });

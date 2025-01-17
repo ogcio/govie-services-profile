@@ -5,7 +5,7 @@ import type { ImportStatus } from "~/const/index.js";
 export const getProfileImportStatus = async (
   client: PoolClient,
   jobId: string,
-): Promise<string> => {
+): Promise<ImportStatus> => {
   const result = await client.query<{ status: string }>(
     "SELECT status FROM profile_imports WHERE job_id = $1 LIMIT 1;",
     [jobId],

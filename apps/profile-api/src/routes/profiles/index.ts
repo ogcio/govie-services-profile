@@ -3,10 +3,12 @@ import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import { ensureUserCanAccessUser } from "@ogcio/api-auth";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { Permissions } from "~/const/index.js";
+import { MimeTypes } from "~/const/mime-types.js";
 import {
   FindProfileSchema,
   GetProfileSchema,
   ImportProfilesSchema,
+  type KnownProfileDataDetails,
   type Profile,
   type ProfileWithDetails,
   ProfilesIndexSchema,
@@ -14,6 +16,7 @@ import {
   UpdateProfileSchema,
 } from "~/schemas/profiles/index.js";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
+import { getProfilesFromCsv } from "~/services/profiles/get-profiles-from-csv.js";
 import {
   findProfile,
   getProfile,
@@ -27,6 +30,7 @@ import {
   sanitizePagination,
   withOrganizationId,
 } from "~/utils/index.js";
+import { saveRequestFile } from "~/utils/save-request-file.js";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   const {
@@ -66,15 +70,19 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       schema: ImportProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof ImportProfilesSchema>) => {
-      return {
-        status: await importProfiles({
-          profiles: request.body,
-          organizationId: withOrganizationId(request),
-          logger: request.log,
-          config,
-          pool,
-        }),
-      };
+      const profiles = request.headers["content-type"]?.startsWith(
+        MimeTypes.Json,
+      )
+        ? (request.body as KnownProfileDataDetails[])
+        : await getProfilesFromCsv(await saveRequestFile(request));
+
+      return await importProfiles({
+        profiles,
+        organizationId: withOrganizationId(request),
+        logger: request.log,
+        config,
+        pool,
+      });
     },
   );
 

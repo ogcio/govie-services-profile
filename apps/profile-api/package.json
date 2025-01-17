@@ -23,7 +23,7 @@
   "dependencies": {
     "@fastify/autoload": "^6.0.3",
     "@fastify/env": "^5.0.1",
-    "@fastify/multipart": "^9.0.1",
+    "@fastify/multipart": "^7.7.3",
     "@fastify/postgres": "^6.0.1",
     "@fastify/sensible": "^6.0.2",
     "@fastify/swagger": "^9.4.0",
@@ -42,7 +42,8 @@
     "fastify-raw-body": "^5.0.0",
     "pino": "^9.6.0",
     "pg": "^8.13.1",
-    "postgrator": "^8.0.0"
+    "postgrator": "^8.0.0",
+    "fast-csv": "^5.0.2"
   },
   "devDependencies": {
     "@testcontainers/postgresql": "^10.16.0",

@@ -68,6 +68,7 @@ describe("/profiles/import-profiles", () => {
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.payload)).toEqual({
       status: ImportStatus.FAILED,
+      jobId: "jobId",
     });
   });
 
