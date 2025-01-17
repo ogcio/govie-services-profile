@@ -20,6 +20,7 @@ describe("updateProfile", () => {
       first_name: { value: "Test", type: "string" },
       last_name: { value: "User", type: "string" },
       phone: { value: "1234567890", type: "string" },
+      email: { value: "abc@com.it", type: "string" },
     },
   };
 

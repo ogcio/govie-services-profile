@@ -15,6 +15,7 @@ describe("selectProfiles", () => {
       details: {
         first_name: { value: "Test", type: "string" },
         last_name: { value: "User", type: "string" },
+        email: { value: "e@mail.com", type: "string" },
       },
     },
     {
@@ -27,6 +28,7 @@ describe("selectProfiles", () => {
       details: {
         first_name: { value: "Another", type: "string" },
         last_name: { value: "User", type: "string" },
+        email: { value: "e2@mail.com", type: "string" },
       },
     },
   ];
@@ -36,6 +38,7 @@ describe("selectProfiles", () => {
       details: {
         first_name: mockFromDbProfiles[0].details.first_name.value,
         last_name: mockFromDbProfiles[0].details.last_name.value,
+        email: mockFromDbProfiles[0].details.email.value,
       },
     },
     {
@@ -43,6 +46,7 @@ describe("selectProfiles", () => {
       details: {
         first_name: mockFromDbProfiles[1].details.first_name.value,
         last_name: mockFromDbProfiles[1].details.last_name.value,
+        email: mockFromDbProfiles[1].details.email.value,
       },
     },
   ];
