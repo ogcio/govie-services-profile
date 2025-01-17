@@ -16,6 +16,7 @@ describe("updateProfile", () => {
     primaryUserId: "user-123",
     createdAt: "2024-01-15T12:00:00Z",
     updatedAt: "2024-01-15T12:00:00Z",
+    preferredLanguage: "en",
     details: {
       firstName: { value: "Test", type: "string" },
       lastName: { value: "User", type: "string" },

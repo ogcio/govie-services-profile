@@ -83,6 +83,7 @@ export const findProfile = async (params: {
             p.safe_level as "safeLevel",
             p.created_at as "createdAt",
             p.updated_at as "updatedAt",
+            p.preferred_language as "preferredLanguage",
             (
               SELECT jsonb_object_agg(pdata.name, 
                 jsonb_build_object(

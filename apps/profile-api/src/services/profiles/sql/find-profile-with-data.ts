@@ -15,6 +15,7 @@ export const findProfileWithData = async (
         p.primary_user_id as "primaryUserId",
         p.created_at as "createdAt",
         p.updated_at as "updatedAt",
+        p.preferred_language as "preferredLanguage",
         (
             SELECT jsonb_object_agg(pdata.name, 
             jsonb_build_object(

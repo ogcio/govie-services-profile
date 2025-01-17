@@ -33,7 +33,8 @@ export const buildListProfilesQueries = (params: {
           p.email,
           p.primary_user_id as "primaryUserId",
           p.created_at as "createdAt",
-          p.updated_at as "updatedAt"
+          p.updated_at as "updatedAt",
+          p.preferred_language as "preferredLanguage"
         ${baseQuery}
         ORDER BY p.created_at DESC
         LIMIT $${nextIndexInQuery++} OFFSET $${nextIndexInQuery}

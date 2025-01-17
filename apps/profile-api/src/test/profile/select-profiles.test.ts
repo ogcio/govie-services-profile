@@ -7,11 +7,12 @@ describe("selectProfiles", () => {
   const mockFromDbProfiles = [
     {
       id: "profile-123",
-      public_name: "Test User 1",
+      publicName: "Test User 1",
       email: "test1@example.com",
-      primary_user_id: "user-123",
-      created_at: "2024-01-15T12:00:00Z",
-      updated_at: "2024-01-15T12:00:00Z",
+      primaryUserId: "user-123",
+      createdAt: "2024-01-15T12:00:00Z",
+      updatedAt: "2024-01-15T12:00:00Z",
+      preferredLanguage: "en",
       details: {
         firstName: { value: "Test", type: "string" },
         lastName: { value: "User", type: "string" },
@@ -20,11 +21,12 @@ describe("selectProfiles", () => {
     },
     {
       id: "profile-456",
-      public_name: "Test User 2",
+      publicName: "Test User 2",
       email: "test2@example.com",
-      primary_user_id: "user-456",
-      created_at: "2024-01-15T12:00:00Z",
-      updated_at: "2024-01-15T12:00:00Z",
+      primaryUserId: "user-456",
+      createdAt: "2024-01-15T12:00:00Z",
+      updatedAt: "2024-01-15T12:00:00Z",
+      preferredLanguage: "en",
       details: {
         firstName: { value: "Another", type: "string" },
         lastName: { value: "User", type: "string" },
@@ -61,6 +63,7 @@ describe("selectProfiles", () => {
           p.primary_user_id as "primaryUserId",
           p.created_at as "createdAt",
           p.updated_at as "updatedAt",
+          p.preferred_language as "preferredLanguage",
           (
             SELECT jsonb_object_agg(pdata.name, 
               jsonb_build_object(
@@ -110,6 +113,7 @@ describe("selectProfiles", () => {
           p.primary_user_id as "primaryUserId",
           p.created_at as "createdAt",
           p.updated_at as "updatedAt",
+          p.preferred_language as "preferredLanguage",
           (
             SELECT jsonb_object_agg(pdata.name, 
               jsonb_build_object(
