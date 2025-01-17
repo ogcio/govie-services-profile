@@ -22,13 +22,13 @@ describe("updateProfile", () => {
     expect(query.values).toEqual([
       "John Doe", // public_name
       "john@example.com", // email
-      "ga", // preferred_language
+      "ga", // preferredLanguage
       expect.any(Date), // updated_at
       "profile-123", // id
     ]);
   });
 
-  it("should update profile without preferred_language", async () => {
+  it("should update profile without preferredLanguage", async () => {
     const mockPg = buildMockPg([[]]);
 
     await updateProfile(mockPg, "profile-123", "John Doe", "john@example.com");
@@ -41,7 +41,7 @@ describe("updateProfile", () => {
     expect(query.values).toEqual([
       "John Doe", // public_name
       "john@example.com", // email
-      undefined, // preferred_language
+      undefined, // preferredLanguage
       expect.any(Date), // updated_at
       "profile-123", // id
     ]);

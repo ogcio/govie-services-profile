@@ -11,14 +11,15 @@ import { buildMockPg } from "../../test/build-mock-pg.js";
 describe("updateProfile", () => {
   const existingProfile = {
     id: "profile-123",
-    public_name: "Test User",
+    publicName: "Test User",
     email: "test@example.com",
-    primary_user_id: "user-123",
-    created_at: "2024-01-15T12:00:00Z",
-    updated_at: "2024-01-15T12:00:00Z",
+    primaryUserId: "user-123",
+    createdAt: "2024-01-15T12:00:00Z",
+    updatedAt: "2024-01-15T12:00:00Z",
+    preferredLanguage: "en",
     details: {
-      first_name: { value: "Test", type: "string" },
-      last_name: { value: "User", type: "string" },
+      firstName: { value: "Test", type: "string" },
+      lastName: { value: "User", type: "string" },
       phone: { value: "1234567890", type: "string" },
       email: { value: "abc@com.it", type: "string" },
     },
@@ -39,7 +40,7 @@ describe("updateProfile", () => {
         {
           ...existingProfile,
           email: "new@example.com",
-          public_name: "New Name",
+          publicName: "New Name",
         },
       ], // findProfileWithData final result
     ]);
@@ -47,20 +48,18 @@ describe("updateProfile", () => {
     const mockPool = {
       connect: () => Promise.resolve(mockPg),
     };
-
     const result = await updateProfile({
       pool: mockPool as unknown as Pool,
       profileId: "profile-123",
       organizationId: "org-123",
       data: {
         email: "new@example.com",
-        public_name: "New Name",
+        publicName: "New Name",
       },
     });
 
-    expect(result).toBeDefined();
-    expect(result?.email).toBe("new@example.com");
-    expect(result?.public_name).toBe("New Name");
+    expect(result.email).toBe("new@example.com");
+    expect(result.publicName).toBe("New Name");
 
     const queries = mockPg.getExecutedQueries();
     expect(queries).toHaveLength(10);
@@ -179,7 +178,6 @@ describe("updateProfile", () => {
         {
           ...existingProfile,
           email: "new@example.com",
-          public_name: existingProfile.public_name,
         },
       ], // findProfileWithData final result
     ]);
@@ -198,12 +196,12 @@ describe("updateProfile", () => {
     });
 
     expect(result).toBeDefined();
-    expect(result?.email).toBe("new@example.com");
-    expect(result?.public_name).toBe(existingProfile.public_name);
+    expect(result.email).toBe("new@example.com");
+    expect(result.publicName).toBe(existingProfile.publicName);
 
     const queries = mockPg.getExecutedQueries();
     const updateQuery = queries[1];
-    expect(updateQuery.values?.[0]).toBe(existingProfile.public_name); // Preserved existing public_name
+    expect(updateQuery.values?.[0]).toBe(existingProfile.publicName); // Preserved existing public_name
     expect(updateQuery.values?.[1]).toBe("new@example.com");
   });
 });

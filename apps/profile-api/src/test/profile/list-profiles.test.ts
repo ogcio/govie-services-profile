@@ -13,8 +13,8 @@ describe("listProfiles", () => {
       created_at: "2024-01-15T12:00:00Z",
       updated_at: "2024-01-15T12:00:00Z",
       details: {
-        first_name: { value: "Test", type: "string" },
-        last_name: { value: "User", type: "string" },
+        firstName: { value: "Test", type: "string" },
+        lastName: { value: "User", type: "string" },
         phone: { value: "1234567890", type: "string" },
       },
     },
@@ -27,8 +27,8 @@ describe("listProfiles", () => {
       created_at: "2024-01-15T12:00:00Z",
       updated_at: "2024-01-15T12:00:00Z",
       details: {
-        first_name: { value: "Another", type: "string" },
-        last_name: { value: "User", type: "string" },
+        firstName: { value: "Another", type: "string" },
+        lastName: { value: "User", type: "string" },
         phone: { value: "0987654321", type: "string" },
       },
     },

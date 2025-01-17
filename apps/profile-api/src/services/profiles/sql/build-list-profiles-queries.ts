@@ -27,13 +27,14 @@ export const buildListProfilesQueries = (params: {
     },
     data: {
       query: `
-        SELECT DISTINCT
+       SELECT DISTINCT
           p.id,
-          p.public_name,
+          p.public_name as "publicName",
           p.email,
-          p.primary_user_id,
-          p.created_at,
-          p.updated_at
+          p.primary_user_id as "primaryUserId",
+          p.created_at as "createdAt",
+          p.updated_at as "updatedAt",
+          p.preferred_language as "preferredLanguage"
         ${baseQuery}
         ORDER BY p.created_at DESC
         LIMIT $${nextIndexInQuery++} OFFSET $${nextIndexInQuery}

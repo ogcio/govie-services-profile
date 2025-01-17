@@ -7,27 +7,29 @@ describe("selectProfiles", () => {
   const mockFromDbProfiles = [
     {
       id: "profile-123",
-      public_name: "Test User 1",
+      publicName: "Test User 1",
       email: "test1@example.com",
-      primary_user_id: "user-123",
-      created_at: "2024-01-15T12:00:00Z",
-      updated_at: "2024-01-15T12:00:00Z",
+      primaryUserId: "user-123",
+      createdAt: "2024-01-15T12:00:00Z",
+      updatedAt: "2024-01-15T12:00:00Z",
+      preferredLanguage: "en",
       details: {
-        first_name: { value: "Test", type: "string" },
-        last_name: { value: "User", type: "string" },
+        firstName: { value: "Test", type: "string" },
+        lastName: { value: "User", type: "string" },
         email: { value: "e@mail.com", type: "string" },
       },
     },
     {
       id: "profile-456",
-      public_name: "Test User 2",
+      publicName: "Test User 2",
       email: "test2@example.com",
-      primary_user_id: "user-456",
-      created_at: "2024-01-15T12:00:00Z",
-      updated_at: "2024-01-15T12:00:00Z",
+      primaryUserId: "user-456",
+      createdAt: "2024-01-15T12:00:00Z",
+      updatedAt: "2024-01-15T12:00:00Z",
+      preferredLanguage: "en",
       details: {
-        first_name: { value: "Another", type: "string" },
-        last_name: { value: "User", type: "string" },
+        firstName: { value: "Another", type: "string" },
+        lastName: { value: "User", type: "string" },
         email: { value: "e2@mail.com", type: "string" },
       },
     },
@@ -36,16 +38,16 @@ describe("selectProfiles", () => {
     {
       ...mockFromDbProfiles[0],
       details: {
-        first_name: mockFromDbProfiles[0].details.first_name.value,
-        last_name: mockFromDbProfiles[0].details.last_name.value,
+        firstName: mockFromDbProfiles[0].details.firstName.value,
+        lastName: mockFromDbProfiles[0].details.lastName.value,
         email: mockFromDbProfiles[0].details.email.value,
       },
     },
     {
       ...mockFromDbProfiles[1],
       details: {
-        first_name: mockFromDbProfiles[1].details.first_name.value,
-        last_name: mockFromDbProfiles[1].details.last_name.value,
+        firstName: mockFromDbProfiles[1].details.firstName.value,
+        lastName: mockFromDbProfiles[1].details.lastName.value,
         email: mockFromDbProfiles[1].details.email.value,
       },
     },
@@ -56,11 +58,12 @@ describe("selectProfiles", () => {
       sql: `
         SELECT 
           p.id,
-          p.public_name,
+          p.public_name as "publicName",
           p.email,
-          p.primary_user_id,
-          p.created_at,
-          p.updated_at,
+          p.primary_user_id as "primaryUserId",
+          p.created_at as "createdAt",
+          p.updated_at as "updatedAt",
+          p.preferred_language as "preferredLanguage",
           (
             SELECT jsonb_object_agg(pdata.name, 
               jsonb_build_object(
@@ -105,11 +108,12 @@ describe("selectProfiles", () => {
       sql: `
         SELECT 
           p.id,
-          p.public_name,
+          p.public_name as "publicName",
           p.email,
-          p.primary_user_id,
-          p.created_at,
-          p.updated_at,
+          p.primary_user_id as "primaryUserId",
+          p.created_at as "createdAt",
+          p.updated_at as "updatedAt",
+          p.preferred_language as "preferredLanguage",
           (
             SELECT jsonb_object_agg(pdata.name, 
               jsonb_build_object(

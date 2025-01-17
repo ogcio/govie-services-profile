@@ -14,8 +14,8 @@ describe("findProfile", () => {
     created_at: "2024-01-15T12:00:00Z",
     updated_at: "2024-01-15T12:00:00Z",
     details: {
-      first_name: { value: "Test", type: "string" },
-      last_name: { value: "User", type: "string" },
+      firstName: { value: "Test", type: "string" },
+      lastName: { value: "User", type: "string" },
       phone: { value: "1234567890", type: "string" },
       email: { value: "e@mail.com", type: "string" },
     },
@@ -24,8 +24,8 @@ describe("findProfile", () => {
   const mockProfile = {
     ...mockFromDbProfile,
     details: {
-      first_name: mockFromDbProfile.details.first_name.value,
-      last_name: mockFromDbProfile.details.last_name.value,
+      firstName: mockFromDbProfile.details.firstName.value,
+      lastName: mockFromDbProfile.details.lastName.value,
       phone: mockFromDbProfile.details.phone.value,
       email: mockFromDbProfile.details.email.value,
     },
