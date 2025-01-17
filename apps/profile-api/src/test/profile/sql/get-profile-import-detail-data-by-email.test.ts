@@ -7,13 +7,13 @@ import { buildMockPg } from "../../build-mock-pg.js";
 
 describe("getProfileImportDetailDataByEmail", () => {
   const sampleProfile = {
-    first_name: "John",
-    last_name: "Doe",
+    firstName: "John",
+    lastName: "Doe",
     email: "john@example.com",
     phone: "123456789",
     address: "123 Main St",
     city: "Dublin",
-    date_of_birth: "1990-01-01",
+    dateOfBirth: "1990-01-01",
   };
 
   it("should return profile data when found", async () => {

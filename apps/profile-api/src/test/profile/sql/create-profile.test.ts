@@ -5,11 +5,11 @@ import { buildMockPg } from "../../build-mock-pg.js";
 describe("createProfile", () => {
   const sampleProfile = {
     id: "profile-123",
-    public_name: "John Doe",
+    publicName: "John Doe",
     email: "john@example.com",
-    primary_user_id: "user-123",
-    safe_level: 1,
-    preferred_language: "en",
+    primaryUserId: "user-123",
+    safeLevel: 1,
+    preferredLanguage: "en",
   };
 
   it("should insert new profile and return ID", async () => {
@@ -28,7 +28,7 @@ describe("createProfile", () => {
       "john@example.com", // email
       "user-123", // primary_user_id
       1, // safe_level
-      "en", // preferred_language
+      "en", // preferredLanguage
     ]);
   });
 
@@ -61,7 +61,7 @@ describe("createProfile", () => {
     );
   });
 
-  it("should use default 'en' for preferred_language if not provided", async () => {
+  it("should use default 'en' for preferredLanguage if not provided", async () => {
     const mockPg = buildMockPg([[{ id: "profile-123" }]]);
     const profileWithoutLanguage = {
       id: "profile-123",
@@ -74,6 +74,6 @@ describe("createProfile", () => {
     await createProfile(mockPg, profileWithoutLanguage);
 
     const queries = mockPg.getExecutedQueries();
-    expect(queries[0]?.values?.[5]).toBe("en"); // preferred_language should default to "en"
+    expect(queries[0]?.values?.[5]).toBe("en"); // preferredLanguage should default to "en"
   });
 });

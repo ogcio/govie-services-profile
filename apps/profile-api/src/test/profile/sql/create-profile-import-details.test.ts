@@ -5,22 +5,22 @@ import { buildMockPg } from "../../build-mock-pg.js";
 describe("createProfileImportDetails", () => {
   const sampleProfiles = [
     {
-      first_name: "John",
-      last_name: "Doe",
+      firstName: "John",
+      lastName: "Doe",
       email: "john@example.com",
       phone: "123456789",
       address: "123 Main St",
       city: "Dublin",
-      date_of_birth: "1990-01-01",
+      dateOfBirth: "1990-01-01",
     },
     {
-      first_name: "Jane",
-      last_name: "Smith",
+      firstName: "Jane",
+      lastName: "Smith",
       email: "jane@example.com",
       phone: "987654321",
       address: "456 High St",
       city: "Cork",
-      date_of_birth: "1992-02-02",
+      dateOfBirth: "1992-02-02",
     },
   ];
 

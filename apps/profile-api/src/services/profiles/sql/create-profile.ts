@@ -31,11 +31,11 @@ export const createProfile = async (
 
   const values = [
     profile.id,
-    profile.public_name,
+    profile.publicName,
     profile.email,
-    profile.primary_user_id,
-    profile.safe_level,
-    profile.preferred_language ?? "en",
+    profile.primaryUserId,
+    profile.safeLevel,
+    profile.preferredLanguage ?? "en",
   ];
 
   const result = await client.query<{ id: string }>(query, values);

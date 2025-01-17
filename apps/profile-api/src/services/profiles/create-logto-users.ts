@@ -19,7 +19,7 @@ const chunks = <T>(arr: T[], size: number): T[][] =>
   );
 
 export const createLogtoUsers = async (
-  profiles: Pick<ImportProfilesBody[0], "email" | "first_name" | "last_name">[],
+  profiles: Pick<ImportProfilesBody[0], "email" | "firstName" | "lastName">[],
   config: EnvConfig,
   organizationId: string,
   jobId: string,
@@ -42,10 +42,10 @@ export const createLogtoUsers = async (
       try {
         const result = await client.createUser({
           primaryEmail: profile.email,
-          username: [profile.first_name, profile.last_name]
+          username: [profile.firstName, profile.lastName]
             .join("_")
             .toLowerCase(),
-          name: [profile.first_name, profile.last_name].join(" "),
+          name: [profile.firstName, profile.lastName].join(" "),
           customData: {
             organizationId,
             jobId,

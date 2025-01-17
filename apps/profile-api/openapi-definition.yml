@@ -22,7 +22,8 @@ paths:
           in: query
           name: search
           required: false
-          description: If set, the endpoint searches for users whom contain this value in
+          description:
+            If set, the endpoint searches for users whom contain this value in
             either the public name or the email address
         - schema:
             pattern: ^[0-9][0-9]*|undefined$
@@ -31,7 +32,8 @@ paths:
           in: query
           name: offset
           required: false
-          description: Indicates where to start fetching data or how many records to skip,
+          description:
+            Indicates where to start fetching data or how many records to skip,
             defining the initial position within the list
         - schema:
             default: "20"
@@ -40,7 +42,8 @@ paths:
           in: query
           name: limit
           required: false
-          description: Indicates the maximum number (100) of items that will be returned
+          description:
+            Indicates the maximum number (100) of items that will be returned
             in a single request
       responses:
         "200":
@@ -66,7 +69,7 @@ paths:
                           type: string
                         safe_level:
                           type: number
-                        preferred_language:
+                        preferredLanguage:
                           type: string
                           enum:
                             - en
@@ -100,7 +103,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the next page of results in a paginated response.
+                                description:
+                                  URL pointing to the next page of results in a paginated response.
                                   If there are no more results, this field may
                                   be omitted
                                 type: string
@@ -108,7 +112,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the previous page of results in a paginated
+                                description:
+                                  URL pointing to the previous page of results in a paginated
                                   response. If there are no more results, this
                                   field may be omitted
                                 type: string
@@ -125,7 +130,8 @@ paths:
                                 description: URL pointing to the first page of results in a paginated response
                                 type: string
                           pages:
-                            description: It may contain a list of other useful URLs, e.g. one entry for
+                            description:
+                              It may contain a list of other useful URLs, e.g. one entry for
                               page:'page 1', 'page 2'
                             type: object
                             additionalProperties:
@@ -157,7 +163,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -197,7 +204,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -241,21 +249,21 @@ paths:
                     type: string
                   city:
                     type: string
-                  first_name:
+                  firstName:
                     type: string
-                  last_name:
+                  lastName:
                     type: string
                   email:
                     format: email
                     type: string
                   phone:
                     type: string
-                  date_of_birth:
+                  dateOfBirth:
                     format: date
                     type: string
                   ppsn:
                     type: string
-                  preferred_language:
+                  preferredLanguage:
                     type: string
                     enum:
                       - en
@@ -264,11 +272,11 @@ paths:
                 required:
                   - address
                   - city
-                  - first_name
-                  - last_name
+                  - firstName
+                  - lastName
                   - email
                   - phone
-                  - date_of_birth
+                  - dateOfBirth
       responses:
         "200":
           description: Default Response
@@ -316,7 +324,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -356,7 +365,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -419,7 +429,7 @@ paths:
                           type: string
                         safe_level:
                           type: number
-                        preferred_language:
+                        preferredLanguage:
                           type: string
                           enum:
                             - en
@@ -437,9 +447,9 @@ paths:
                             email:
                               format: email
                               type: string
-                            first_name:
+                            firstName:
                               type: string
-                            last_name:
+                            lastName:
                               type: string
                             city:
                               type: string
@@ -447,15 +457,15 @@ paths:
                               type: string
                             phone:
                               type: string
-                            date_of_birth:
+                            dateOfBirth:
                               format: date
                               type: string
                             ppsn:
                               type: string
                           required:
                             - email
-                            - first_name
-                            - last_name
+                            - firstName
+                            - lastName
                       required:
                         - id
                         - public_name
@@ -478,7 +488,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the next page of results in a paginated response.
+                                description:
+                                  URL pointing to the next page of results in a paginated response.
                                   If there are no more results, this field may
                                   be omitted
                                 type: string
@@ -486,7 +497,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the previous page of results in a paginated
+                                description:
+                                  URL pointing to the previous page of results in a paginated
                                   response. If there are no more results, this
                                   field may be omitted
                                 type: string
@@ -503,7 +515,8 @@ paths:
                                 description: URL pointing to the first page of results in a paginated response
                                 type: string
                           pages:
-                            description: It may contain a list of other useful URLs, e.g. one entry for
+                            description:
+                              It may contain a list of other useful URLs, e.g. one entry for
                               page:'page 1', 'page 2'
                             type: object
                             additionalProperties:
@@ -535,7 +548,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -575,7 +589,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -654,7 +669,7 @@ paths:
                         type: string
                       safe_level:
                         type: number
-                      preferred_language:
+                      preferredLanguage:
                         type: string
                         enum:
                           - en
@@ -672,9 +687,9 @@ paths:
                           email:
                             format: email
                             type: string
-                          first_name:
+                          firstName:
                             type: string
-                          last_name:
+                          lastName:
                             type: string
                           city:
                             type: string
@@ -682,15 +697,15 @@ paths:
                             type: string
                           phone:
                             type: string
-                          date_of_birth:
+                          dateOfBirth:
                             format: date
                             type: string
                           ppsn:
                             type: string
                         required:
                           - email
-                          - first_name
-                          - last_name
+                          - firstName
+                          - lastName
                     required:
                       - id
                       - public_name
@@ -713,7 +728,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the next page of results in a paginated response.
+                                description:
+                                  URL pointing to the next page of results in a paginated response.
                                   If there are no more results, this field may
                                   be omitted
                                 type: string
@@ -721,7 +737,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the previous page of results in a paginated
+                                description:
+                                  URL pointing to the previous page of results in a paginated
                                   response. If there are no more results, this
                                   field may be omitted
                                 type: string
@@ -738,7 +755,8 @@ paths:
                                 description: URL pointing to the first page of results in a paginated response
                                 type: string
                           pages:
-                            description: It may contain a list of other useful URLs, e.g. one entry for
+                            description:
+                              It may contain a list of other useful URLs, e.g. one entry for
                               page:'page 1', 'page 2'
                             type: object
                             additionalProperties:
@@ -770,7 +788,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -810,7 +829,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -875,7 +895,7 @@ paths:
                         type: string
                       safe_level:
                         type: number
-                      preferred_language:
+                      preferredLanguage:
                         type: string
                         enum:
                           - en
@@ -893,9 +913,9 @@ paths:
                           email:
                             format: email
                             type: string
-                          first_name:
+                          firstName:
                             type: string
-                          last_name:
+                          lastName:
                             type: string
                           city:
                             type: string
@@ -903,15 +923,15 @@ paths:
                             type: string
                           phone:
                             type: string
-                          date_of_birth:
+                          dateOfBirth:
                             format: date
                             type: string
                           ppsn:
                             type: string
                         required:
                           - email
-                          - first_name
-                          - last_name
+                          - firstName
+                          - lastName
                     required:
                       - id
                       - public_name
@@ -934,7 +954,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the next page of results in a paginated response.
+                                description:
+                                  URL pointing to the next page of results in a paginated response.
                                   If there are no more results, this field may
                                   be omitted
                                 type: string
@@ -942,7 +963,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the previous page of results in a paginated
+                                description:
+                                  URL pointing to the previous page of results in a paginated
                                   response. If there are no more results, this
                                   field may be omitted
                                 type: string
@@ -959,7 +981,8 @@ paths:
                                 description: URL pointing to the first page of results in a paginated response
                                 type: string
                           pages:
-                            description: It may contain a list of other useful URLs, e.g. one entry for
+                            description:
+                              It may contain a list of other useful URLs, e.g. one entry for
                               page:'page 1', 'page 2'
                             type: object
                             additionalProperties:
@@ -991,7 +1014,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -1031,7 +1055,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -1079,14 +1104,14 @@ paths:
                   type: string
                 city:
                   type: string
-                first_name:
+                firstName:
                   type: string
-                last_name:
+                lastName:
                   type: string
-                date_of_birth:
+                dateOfBirth:
                   format: date
                   type: string
-                preferred_language:
+                preferredLanguage:
                   enum:
                     - en
                     - ga
@@ -1126,7 +1151,7 @@ paths:
                         type: string
                       safe_level:
                         type: number
-                      preferred_language:
+                      preferredLanguage:
                         type: string
                         enum:
                           - en
@@ -1144,9 +1169,9 @@ paths:
                           email:
                             format: email
                             type: string
-                          first_name:
+                          firstName:
                             type: string
-                          last_name:
+                          lastName:
                             type: string
                           city:
                             type: string
@@ -1154,15 +1179,15 @@ paths:
                             type: string
                           phone:
                             type: string
-                          date_of_birth:
+                          dateOfBirth:
                             format: date
                             type: string
                           ppsn:
                             type: string
                         required:
                           - email
-                          - first_name
-                          - last_name
+                          - firstName
+                          - lastName
                     required:
                       - id
                       - public_name
@@ -1185,7 +1210,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the next page of results in a paginated response.
+                                description:
+                                  URL pointing to the next page of results in a paginated response.
                                   If there are no more results, this field may
                                   be omitted
                                 type: string
@@ -1193,7 +1219,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the previous page of results in a paginated
+                                description:
+                                  URL pointing to the previous page of results in a paginated
                                   response. If there are no more results, this
                                   field may be omitted
                                 type: string
@@ -1210,7 +1237,8 @@ paths:
                                 description: URL pointing to the first page of results in a paginated response
                                 type: string
                           pages:
-                            description: It may contain a list of other useful URLs, e.g. one entry for
+                            description:
+                              It may contain a list of other useful URLs, e.g. one entry for
                               page:'page 1', 'page 2'
                             type: object
                             additionalProperties:
@@ -1242,7 +1270,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -1282,7 +1311,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -1329,14 +1359,14 @@ paths:
                   type: string
                 city:
                   type: string
-                first_name:
+                firstName:
                   type: string
-                last_name:
+                lastName:
                   type: string
-                date_of_birth:
+                dateOfBirth:
                   format: date
                   type: string
-                preferred_language:
+                preferredLanguage:
                   enum:
                     - en
                     - ga
@@ -1376,7 +1406,7 @@ paths:
                         type: string
                       safe_level:
                         type: number
-                      preferred_language:
+                      preferredLanguage:
                         type: string
                         enum:
                           - en
@@ -1394,9 +1424,9 @@ paths:
                           email:
                             format: email
                             type: string
-                          first_name:
+                          firstName:
                             type: string
-                          last_name:
+                          lastName:
                             type: string
                           city:
                             type: string
@@ -1404,15 +1434,15 @@ paths:
                             type: string
                           phone:
                             type: string
-                          date_of_birth:
+                          dateOfBirth:
                             format: date
                             type: string
                           ppsn:
                             type: string
                         required:
                           - email
-                          - first_name
-                          - last_name
+                          - firstName
+                          - lastName
                     required:
                       - id
                       - public_name
@@ -1435,7 +1465,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the next page of results in a paginated response.
+                                description:
+                                  URL pointing to the next page of results in a paginated response.
                                   If there are no more results, this field may
                                   be omitted
                                 type: string
@@ -1443,7 +1474,8 @@ paths:
                             type: object
                             properties:
                               href:
-                                description: URL pointing to the previous page of results in a paginated
+                                description:
+                                  URL pointing to the previous page of results in a paginated
                                   response. If there are no more results, this
                                   field may be omitted
                                 type: string
@@ -1460,7 +1492,8 @@ paths:
                                 description: URL pointing to the first page of results in a paginated response
                                 type: string
                           pages:
-                            description: It may contain a list of other useful URLs, e.g. one entry for
+                            description:
+                              It may contain a list of other useful URLs, e.g. one entry for
                               page:'page 1', 'page 2'
                             type: object
                             additionalProperties:
@@ -1492,7 +1525,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:
@@ -1532,7 +1566,8 @@ paths:
                     description: Description of the error
                     type: string
                   requestId:
-                    description: Unique request id. This one will be used to troubleshoot the
+                    description:
+                      Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
                   name:

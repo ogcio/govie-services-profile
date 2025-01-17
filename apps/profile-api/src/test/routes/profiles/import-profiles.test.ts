@@ -11,20 +11,20 @@ describe("/profiles/import-profiles", () => {
     {
       address: "123 Test St",
       city: "Testville",
-      first_name: "Test",
-      last_name: "User",
+      firstName: "Test",
+      lastName: "User",
       email: "test1@example.com",
       phone: "1234567890",
-      date_of_birth: "1990-01-01",
+      dateOfBirth: "1990-01-01",
     },
     {
       address: "456 Test St",
       city: "Testville",
-      first_name: "Test",
-      last_name: "User",
+      firstName: "Test",
+      lastName: "User",
       email: "test2@example.com",
       phone: "1234567890",
-      date_of_birth: "1990-01-01",
+      dateOfBirth: "1990-01-01",
     },
   ];
 

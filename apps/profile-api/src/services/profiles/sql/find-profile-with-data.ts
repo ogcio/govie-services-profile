@@ -10,11 +10,11 @@ export const findProfileWithData = async (
     `
         SELECT 
         p.id,
-        p.public_name,
+        p.public_name as "publicName",
         p.email,
-        p.primary_user_id,
-        p.created_at,
-        p.updated_at,
+        p.primary_user_id as "primaryUserId",
+        p.created_at as "createdAt",
+        p.updated_at as "updatedAt",
         (
             SELECT jsonb_object_agg(pdata.name, 
             jsonb_build_object(
