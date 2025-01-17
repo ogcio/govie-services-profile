@@ -21,7 +21,7 @@ COPY --from=deps --chown=node:node /app/node_modules /app/node_modules
 COPY apps/profile-api/src /app/apps/profile-api/src
 COPY apps/profile-api/tsconfig* /app/apps/profile-api/
 
-RUN pnpm --filter "@govie-services/profile-api" run build
+RUN pnpm build:api
 
 FROM profile-api-base-deps AS assembler
 WORKDIR /app

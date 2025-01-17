@@ -13,14 +13,12 @@ init: init-packages init-env
 
 ## Migrations
 create-db:
-	pnpm --filter "@govie-services/profile-api" run db:create
+	pnpm dev:api db:create
 migrate:
-	pnpm --filter "@govie-services/profile-api" run db:migrate
+	pnpm dev:api db:migrate
 
 start-services:
-	concurrently --kill-others-on-fail \
-	"pnpm --filter "@govie-services/profile-api" run dev" \
-	"pnpm --filter "@govie-services/profile" run dev" \
+	pnpm dev
 	
 kill-services:
 	sleep 2 && lsof -ti:8001,3001 | xargs sudo kill -9
