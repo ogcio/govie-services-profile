@@ -84,6 +84,9 @@ stages:
                 displayName: Code Scan
   - stage: BuildDeps
     displayName: Build service dependencies
+    dependsOn:
+      - securityScan
+      - setup
     pool:
       vmImage: ${{ parameters.vmImage }}
     jobs:
@@ -94,8 +97,7 @@ stages:
         pool:
           vmImage: ${{ parameters.vmImage }}
         dependsOn:
-          - securityScan
-          - setup
+          - BuildDeps
         jobs:
           - template: pipeline-templates/pnpm_unit_test.yml
             parameters:
