@@ -12,19 +12,19 @@ export const getProfilesFromCsv = async (
     headers: true,
   }).transform(
     ({
-      first_name,
-      last_name,
+      firstName,
+      lastName,
       email,
       ...otherProps
     }: ProfileRow): ProfileRow | null => {
-      if (!first_name || !last_name || !email) {
+      if (!firstName || !lastName || !email) {
         // TODO: handle error
         return null;
       }
 
       return normalizeCsvRow({
-        first_name,
-        last_name,
+        firstName,
+        lastName,
         email,
         ...otherProps,
       });
@@ -39,14 +39,14 @@ export const getProfilesFromCsv = async (
 };
 
 const normalizeCsvRow = (row: KnownProfileDataDetails): ProfileRow => ({
-  first_name: normalizeCsvValue(row.first_name) as string,
-  last_name: normalizeCsvValue(row.last_name) as string,
+  firstName: normalizeCsvValue(row.firstName) as string,
+  lastName: normalizeCsvValue(row.lastName) as string,
   phone: normalizeCsvValue(row.phone),
-  date_of_birth: normalizeCsvValue(row.date_of_birth),
+  dateOfBirth: normalizeCsvValue(row.dateOfBirth),
   email: normalizeCsvValue(row.email) as string,
   address: normalizeCsvValue(row.address),
   city: normalizeCsvValue(row.city),
-  preferred_language: normalizeCsvValue(row.preferred_language) as
+  preferredLanguage: normalizeCsvValue(row.preferredLanguage) as
     | "en"
     | "ga"
     | undefined,

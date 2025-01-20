@@ -44,7 +44,7 @@ export const KnownProfileDataDetailsSchema = Type.Composite([
     phone: Type.Optional(Type.String()),
     dateOfBirth: Type.Optional(Type.String({ format: "date" })),
     ppsn: Type.Optional(Type.String()),
-    preferred_language: Type.Optional(AvailableLanguagesSchema),
+    preferredLanguage: Type.Optional(AvailableLanguagesSchema),
   }),
 ]);
 
