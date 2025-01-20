@@ -15,18 +15,18 @@ jobs:
       - task: NodeTool@0
         inputs:
           versionSpec: "22.x"
-      - task: Pnpm@1
+      - task: CmdLine@2
         displayName: "pnpm install --frozen-lockfile"
         inputs:
-          command: install
+          script: pnpm install --frozen-lockfile
       - task: CmdLine@2
         displayName: "Build dependencies"
         inputs:
           script: ${{ parameters.dependenciesBuild }}
-      - task: Pnpm@1
-        displayName: "npm install"
+      - task: CmdLine@2
+        displayName: "pnpm install --frozen-lockfile"
         inputs:
-          command: install
+          script: pnpm install --frozen-lockfile
       - task: CmdLine@2
         displayName: "Run unit tests for ${{ parameters.serviceName }}"
         inputs:
