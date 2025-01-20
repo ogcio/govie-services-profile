@@ -230,45 +230,70 @@ paths:
         - Profiles
       requestBody:
         content:
-          application/json:
+          application/json: &a1
             schema:
-              minItems: 1
-              type: array
-              items:
-                type: object
-                properties:
-                  address:
-                    type: string
-                  city:
-                    type: string
-                  firstName:
-                    type: string
-                  lastName:
-                    type: string
-                  email:
-                    format: email
-                    type: string
-                  phone:
-                    type: string
-                  dateOfBirth:
-                    format: date
-                    type: string
-                  ppsn:
-                    type: string
-                  preferredLanguage:
-                    type: string
-                    enum:
-                      - en
-                      - ga
-                    default: en
-                required:
-                  - address
-                  - city
-                  - firstName
-                  - lastName
-                  - email
-                  - phone
-                  - dateOfBirth
+              type: object
+              properties:
+                profiles:
+                  minItems: 1
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      address:
+                        type: string
+                      city:
+                        type: string
+                      firstName:
+                        type: string
+                      lastName:
+                        type: string
+                      email:
+                        format: email
+                        type: string
+                      phone:
+                        type: string
+                      dateOfBirth:
+                        format: date
+                        type: string
+                      ppsn:
+                        type: string
+                      preferredLanguage:
+                        default: en
+                        anyOf:
+                          - type: string
+                            enum:
+                              - en
+                          - type: string
+                            enum:
+                              - ga
+                    required:
+                      - address
+                      - city
+                      - firstName
+                      - lastName
+                      - email
+                      - phone
+                      - dateOfBirth
+                file:
+                  type: object
+                  properties:
+                    filename:
+                      type: string
+                    encoding:
+                      type: string
+                    mimetype:
+                      enum:
+                        - text/csv
+                      type: string
+                    file: {}
+                  required:
+                    - filename
+                    - encoding
+                    - mimetype
+                    - file
+          multipart/form-data: *a1
+          text/csv: *a1
       responses:
         "200":
           description: Default Response
@@ -278,30 +303,12 @@ paths:
                 type: object
                 properties:
                   status:
-                    anyOf:
-                      - type: string
-                        enum:
-                          - pending
-                      - type: string
-                        enum:
-                          - processing
-                      - type: string
-                        enum:
-                          - completed
-                      - type: string
-                        enum:
-                          - failed
-                      - type: string
-                        enum:
-                          - cancelled
-                      - type: string
-                        enum:
-                          - unrecoverable
-                      - type: string
-                        enum:
-                          - success
+                    type: string
+                  jobId:
+                    type: string
                 required:
                   - status
+                  - jobId
         4XX:
           description: Default Response
           content:
@@ -452,6 +459,12 @@ paths:
                               type: string
                             ppsn:
                               type: string
+                            preferredLanguage:
+                              type: string
+                              enum:
+                                - en
+                                - ga
+                              default: en
                           required:
                             - email
                             - firstName
@@ -687,6 +700,12 @@ paths:
                             type: string
                           ppsn:
                             type: string
+                          preferredLanguage:
+                            type: string
+                            enum:
+                              - en
+                              - ga
+                            default: en
                         required:
                           - email
                           - firstName
@@ -908,6 +927,12 @@ paths:
                             type: string
                           ppsn:
                             type: string
+                          preferredLanguage:
+                            type: string
+                            enum:
+                              - en
+                              - ga
+                            default: en
                         required:
                           - email
                           - firstName
@@ -1059,7 +1084,7 @@ paths:
                   - name
     put:
       operationId: updateProfilePut
-      tags: &a1
+      tags: &a2
         - Profiles
       requestBody:
         content:
@@ -1160,6 +1185,12 @@ paths:
                             type: string
                           ppsn:
                             type: string
+                          preferredLanguage:
+                            type: string
+                            enum:
+                              - en
+                              - ga
+                            default: en
                         required:
                           - email
                           - firstName
@@ -1311,7 +1342,7 @@ paths:
                   - name
     patch:
       operationId: updateProfilePatch
-      tags: *a1
+      tags: *a2
       requestBody:
         content:
           application/json:
@@ -1411,6 +1442,12 @@ paths:
                             type: string
                           ppsn:
                             type: string
+                          preferredLanguage:
+                            type: string
+                            enum:
+                              - en
+                              - ga
+                            default: en
                         required:
                           - email
                           - firstName
@@ -1562,6 +1599,130 @@ paths:
                   - name
   /user-login-wh:
     post:
+      operationId: logtoUserCreated
+      tags:
+        - webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hookId:
+                  type: string
+                event:
+                  type: string
+                sessionId:
+                  type: string
+                userAgent:
+                  type: string
+                ip:
+                  type: string
+                path:
+                  type: string
+                method:
+                  type: string
+                status:
+                  type: number
+                createdAt:
+                  format: date-time
+                  type: string
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    username:
+                      type: string
+                    primaryEmail:
+                      format: email
+                      type: string
+                    primaryPhone:
+                      anyOf:
+                        - type: string
+                        - type: "null"
+                    name:
+                      type: string
+                    avatar:
+                      anyOf:
+                        - type: string
+                        - type: "null"
+                    customData:
+                      type: object
+                      properties:
+                        jobId:
+                          type: string
+                        organizationId:
+                          type: string
+                      required:
+                        - jobId
+                        - organizationId
+                    identities:
+                      type: object
+                      additionalProperties:
+                        type: object
+                        properties:
+                          details:
+                            type: object
+                            properties:
+                              email:
+                                type: string
+                              rawData:
+                                type: object
+                                additionalProperties:
+                                  type: string
+                            required:
+                              - email
+                              - rawData
+                        required:
+                          - details
+                    lastSignInAt:
+                      anyOf:
+                        - type: number
+                        - type: "null"
+                    createdAt:
+                      type: number
+                    updatedAt:
+                      type: number
+                    profile:
+                      type: object
+                      additionalProperties: {}
+                    applicationId:
+                      anyOf:
+                        - type: string
+                        - type: "null"
+                    isSuspended:
+                      type: boolean
+                    hasPassword:
+                      type: boolean
+                  required:
+                    - id
+                    - username
+                    - primaryEmail
+                    - primaryPhone
+                    - name
+                    - avatar
+                    - customData
+                    - identities
+                    - lastSignInAt
+                    - createdAt
+                    - updatedAt
+                    - profile
+                    - applicationId
+                    - isSuspended
+                    - hasPassword
+              required:
+                - hookId
+                - event
+                - sessionId
+                - userAgent
+                - ip
+                - path
+                - method
+                - status
+                - createdAt
+                - data
+        required: true
       responses:
         "200":
           description: Default Response

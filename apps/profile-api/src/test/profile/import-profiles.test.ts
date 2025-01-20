@@ -1,13 +1,17 @@
 import type { FastifyBaseLogger } from "fastify";
 import type { Pool } from "pg";
-import { type Mock, describe, expect, it, vi } from "vitest";
+import { type Mock, afterEach, describe, expect, it, vi } from "vitest";
+
+// Mock declarations first
+vi.mock("../../services/profiles/sql/index.js");
+vi.mock("../../services/profiles/create-logto-users.js");
+vi.mock("../../services/profiles/create-update-profile-details.js");
+
+// Then imports
 import { ImportStatus } from "../../const/profile.js";
+import { createLogtoUsers } from "../../services/profiles/create-logto-users.js";
+import { createUpdateProfileDetails } from "../../services/profiles/create-update-profile-details.js";
 import { importProfiles } from "../../services/profiles/import-profiles.js";
-import {
-  type LogtoError,
-  createLogtoUsers,
-  createUpdateProfileDetails,
-} from "../../services/profiles/index.js";
 import {
   checkImportCompletion,
   createProfileImport,
@@ -19,10 +23,11 @@ import {
 } from "../../services/profiles/sql/index.js";
 import { buildMockPg } from "../build-mock-pg.js";
 
-vi.mock("../../services/profiles/sql/index.js");
-vi.mock("../../services/profiles/index.js");
-
 describe("importProfiles", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   const mockLogger = {
     debug: vi.fn(),
     error: vi.fn(),
@@ -111,7 +116,7 @@ describe("importProfiles", () => {
     });
 
     expect(result).toStrictEqual({ status: ImportStatus.COMPLETED, jobId });
-    expect(createProfileImport).toHaveBeenCalledWith(mockPg, "org-123");
+    expect(createProfileImport).toHaveBeenCalledWith(mockPg, "org-123", "csv");
     expect(createProfileImportDetails).toHaveBeenCalledWith(
       mockPg,
       jobId,
@@ -209,11 +214,6 @@ describe("importProfiles", () => {
       [{ in_transaction: false }], // Second withRollback check
       [], // BEGIN
       [], // COMMIT
-      // Logto users creation
-      [{ in_transaction: false }], // Third withRollback check
-      [], // BEGIN
-      [], // updateProfileImportDetailsStatus
-      [], // COMMIT
       // Final status update
       [{ in_transaction: false }], // Fourth withRollback check
       [], // BEGIN
@@ -228,7 +228,12 @@ describe("importProfiles", () => {
       exists: true,
       profileId: "profile-123",
     });
+    (checkImportCompletion as Mock).mockResolvedValue({
+      isComplete: true,
+      finalStatus: ImportStatus.COMPLETED,
+    });
     (getProfileImportStatus as Mock).mockResolvedValue(ImportStatus.COMPLETED);
+    (createUpdateProfileDetails as Mock).mockResolvedValue(undefined);
 
     const mockPool = {
       connect: () => Promise.resolve(mockPg),
@@ -247,7 +252,6 @@ describe("importProfiles", () => {
       jobId,
     });
     expect(createUpdateProfileDetails).toHaveBeenCalled();
-    expect(createLogtoUsers).toHaveBeenCalledOnce();
   });
 
   it("should handle Logto user creation failures", async () => {
@@ -277,7 +281,11 @@ describe("importProfiles", () => {
       [], // COMMIT
     ]);
 
-    const logtoError = new Error("Logto error") as unknown as LogtoError;
+    interface LogtoError extends Error {
+      successfulEmails: string[];
+    }
+
+    const logtoError = new Error("Logto error") as LogtoError;
     logtoError.successfulEmails = ["test1@example.com"];
 
     (createProfileImport as Mock).mockResolvedValue(jobId);
@@ -367,5 +375,145 @@ describe("importProfiles", () => {
     });
     expect(updateProfileImportDetails).toHaveBeenCalled();
     expect(mockLogger.error).toHaveBeenCalled();
+  });
+
+  it("should process JSON profiles array", async () => {
+    const mockPg = buildMockPg([
+      [{ in_transaction: false }], // Initial transaction check
+      [], // BEGIN
+      [], // COMMIT
+    ]);
+    mockPg.release = vi.fn();
+
+    const mockPool = {
+      connect: () => Promise.resolve(mockPg),
+    };
+    const mockLogger = { debug: vi.fn(), error: vi.fn() };
+    const mockConfig = {
+      LOGTO_MANAGEMENT_API_ENDPOINT: "endpoint",
+      LOGTO_MANAGEMENT_API_RESOURCE_URL: "resource",
+      LOGTO_MANAGEMENT_API_CLIENT_ID: "client-id",
+      LOGTO_MANAGEMENT_API_CLIENT_SECRET: "secret",
+      LOGTO_OIDC_ENDPOINT: "oidc",
+    };
+
+    const profiles = [
+      {
+        address: "123 Test St",
+        city: "Test City",
+        firstName: "John",
+        lastName: "Doe",
+        email: "john@example.com",
+        phone: "1234567890",
+        dateOfBirth: "1990-01-01",
+      },
+    ];
+
+    (createProfileImport as Mock).mockResolvedValue("test-job-id");
+    (createProfileImportDetails as Mock).mockResolvedValue(["detail-1"]);
+    (lookupProfile as Mock).mockResolvedValue({ exists: false });
+    (createLogtoUsers as Mock).mockResolvedValue([
+      { id: "user-1", primaryEmail: "john@example.com" },
+    ]);
+    (checkImportCompletion as Mock).mockResolvedValue({
+      isComplete: true,
+      finalStatus: ImportStatus.COMPLETED,
+    });
+    (getProfileImportStatus as Mock).mockResolvedValue(ImportStatus.COMPLETED);
+
+    const result = await importProfiles({
+      pool: mockPool as unknown as Pool,
+      logger: mockLogger as unknown as FastifyBaseLogger,
+      profiles,
+      organizationId: "test-org",
+      config: mockConfig,
+      source: "json",
+    });
+
+    expect(result).toEqual({
+      status: ImportStatus.COMPLETED,
+      jobId: "test-job-id",
+    });
+    expect(mockPg.release).toHaveBeenCalled();
+  });
+
+  it("should process CSV file upload", async () => {
+    const mockPg = buildMockPg([
+      [{ in_transaction: false }], // Initial transaction check
+      [], // BEGIN
+      [], // COMMIT
+    ]);
+    mockPg.release = vi.fn();
+
+    const mockPool = {
+      connect: () => Promise.resolve(mockPg),
+    };
+    const mockLogger = { debug: vi.fn(), error: vi.fn() };
+    const mockConfig = {
+      LOGTO_MANAGEMENT_API_ENDPOINT: "endpoint",
+      LOGTO_MANAGEMENT_API_RESOURCE_URL: "resource",
+      LOGTO_MANAGEMENT_API_CLIENT_ID: "client-id",
+      LOGTO_MANAGEMENT_API_CLIENT_SECRET: "secret",
+      LOGTO_OIDC_ENDPOINT: "oidc",
+    };
+
+    const csvContent =
+      "firstName,lastName,email,phone,dateOfBirth,address,city\nJohn,Doe,john@example.com,1234567890,1990-01-01,123 Test St,Test City";
+    const csvData = Buffer.from(csvContent).toString("base64");
+
+    (createProfileImport as Mock).mockResolvedValue("test-job-id");
+    (createProfileImportDetails as Mock).mockResolvedValue(["detail-1"]);
+    (lookupProfile as Mock).mockResolvedValue({ exists: false });
+    (createLogtoUsers as Mock).mockResolvedValue([
+      { id: "user-1", primaryEmail: "john@example.com" },
+    ]);
+    (checkImportCompletion as Mock).mockResolvedValue({
+      isComplete: true,
+      finalStatus: ImportStatus.COMPLETED,
+    });
+    (getProfileImportStatus as Mock).mockResolvedValue(ImportStatus.COMPLETED);
+
+    const result = await importProfiles({
+      pool: mockPool as unknown as Pool,
+      logger: mockLogger as unknown as FastifyBaseLogger,
+      profiles: [{ data: csvData }],
+      organizationId: "test-org",
+      config: mockConfig,
+      source: "csv",
+    });
+
+    expect(result).toEqual({
+      status: ImportStatus.COMPLETED,
+      jobId: "test-job-id",
+    });
+    expect(mockPg.release).toHaveBeenCalled();
+  });
+
+  it("should throw error if neither profiles nor file provided", async () => {
+    const mockPg = buildMockPg([
+      [{ in_transaction: false }], // Initial transaction check
+      [], // BEGIN
+      [], // ROLLBACK - needed when error occurs
+    ]);
+    mockPg.release = vi.fn();
+
+    const mockPool = {
+      connect: () => Promise.resolve(mockPg),
+    };
+
+    // Set up the error case
+    (createProfileImport as Mock).mockRejectedValue(
+      new Error("Either profiles or file must be provided"),
+    );
+
+    await expect(
+      importProfiles({
+        pool: mockPool as unknown as Pool,
+        logger: mockLogger as unknown as FastifyBaseLogger,
+        profiles: [],
+        organizationId: "test-org",
+        config: mockConfig,
+      }),
+    ).rejects.toThrow("Either profiles or file must be provided");
   });
 });

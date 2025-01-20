@@ -7,6 +7,7 @@ import { MimeTypes } from "~/const/mime-types.js";
 import {
   FindProfileSchema,
   GetProfileSchema,
+  type ImportProfilesBody,
   ImportProfilesSchema,
   type KnownProfileDataDetails,
   type Profile,
@@ -74,8 +75,11 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         MimeTypes.Json,
       );
       const profiles = isJson
-        ? (request.body as KnownProfileDataDetails[])
+        ? ((request.body as ImportProfilesBody)
+            .profiles as unknown as KnownProfileDataDetails[])
         : await getProfilesFromCsv(await saveRequestFile(request));
+
+      console.log("profiles", profiles);
 
       return await importProfiles({
         profiles,

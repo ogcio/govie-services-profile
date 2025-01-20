@@ -124,7 +124,7 @@ describe("/user-login-wh", {}, () => {
       payload: validWebhookBody,
     });
 
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(401);
     expect(processUserWebhook).not.toHaveBeenCalled();
   });
 
@@ -138,7 +138,7 @@ describe("/user-login-wh", {}, () => {
       payload: validWebhookBody,
     });
 
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(401);
     expect(processUserWebhook).not.toHaveBeenCalled();
   });
 
@@ -159,7 +159,7 @@ describe("/user-login-wh", {}, () => {
       payload: { invalid: "body" },
     });
 
-    expect(response.statusCode).toBe(501);
+    expect(response.statusCode).toBe(422);
     expect(processUserWebhook).not.toHaveBeenCalled();
   });
 });

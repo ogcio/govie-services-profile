@@ -2,7 +2,6 @@ import { type Static, Type } from "@sinclair/typebox";
 import type { FastifySchema } from "fastify";
 import { MimeTypes } from "~/const/mime-types.js";
 import { HttpError } from "~/types/index.js";
-import { AvailableLanguagesSchema } from "./index.js";
 import { PROFILES_TAG } from "./shared.js";
 
 export const ImportProfilesResponseSchema = Type.Object({
@@ -20,26 +19,28 @@ export const ImportProfileFromJsonSchema = Type.Array(
     phone: Type.String(),
     dateOfBirth: Type.String({ format: "date" }),
     ppsn: Type.Optional(Type.String()),
-    preferredLanguage: Type.Optional(AvailableLanguagesSchema),
+    preferredLanguage: Type.Optional(
+      Type.Enum({ en: "en", ga: "ga" }, { default: "en" }),
+    ),
   }),
   { minItems: 1 },
 );
 
 export const ImportProfileFromMultipartSchema = Type.Object({
-  file: Type.Object({
-    type: Type.String(),
-    encoding: Type.String(),
-    mimetype: Type.String(),
-    buffer: Type.Any(),
-  }),
+  filename: Type.String(),
+  encoding: Type.String(),
+  mimetype: Type.String({ enum: ["text/csv"] }),
+  file: Type.Any(),
+});
+
+export const ImportProfileBodySchema = Type.Object({
+  profiles: Type.Optional(ImportProfileFromJsonSchema),
+  file: Type.Optional(ImportProfileFromMultipartSchema),
 });
 
 export const ImportProfilesSchema: FastifySchema = {
-  consumes: [MimeTypes.Json, MimeTypes.FormData],
-  body: Type.Union([
-    ImportProfileFromJsonSchema,
-    ImportProfileFromMultipartSchema,
-  ]),
+  consumes: [MimeTypes.Json, MimeTypes.FormData, MimeTypes.Csv],
+  body: ImportProfileBodySchema,
   tags: [PROFILES_TAG],
   operationId: "importProfiles",
   response: {
@@ -49,6 +50,4 @@ export const ImportProfilesSchema: FastifySchema = {
   },
 };
 
-export type ImportProfilesBody =
-  | Static<typeof ImportProfileFromJsonSchema>
-  | Static<typeof ImportProfileFromMultipartSchema>;
+export type ImportProfilesBody = Static<typeof ImportProfileBodySchema>;
