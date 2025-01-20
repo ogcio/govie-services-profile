@@ -49,4 +49,6 @@ export const ImportProfilesSchema: FastifySchema = {
   },
 };
 
-export type ImportProfilesBody = Static<typeof ImportProfileFromJsonSchema>;
+export type ImportProfilesBody =
+  | Static<typeof ImportProfileFromJsonSchema>
+  | Static<typeof ImportProfileFromMultipartSchema>;
