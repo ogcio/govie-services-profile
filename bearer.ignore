@@ -1,0 +1,13 @@
+{
+  "test/profile/import-profiles.test.ts": {
+    "test/fixtures/common.ts": {
+      "mockLogtoConfig": {
+        "LOGTO_MANAGEMENT_API_ENDPOINT": "http://logto-api",
+        "LOGTO_MANAGEMENT_API_RESOURCE_URL": "http://logto-resource",
+        "LOGTO_MANAGEMENT_API_CLIENT_ID": "client-123",
+        "LOGTO_MANAGEMENT_API_CLIENT_SECRET": "secret-123",
+        "LOGTO_OIDC_ENDPOINT": "http://logto-oidc",
+      }
+    }
+  }
+}

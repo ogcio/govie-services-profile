@@ -240,16 +240,16 @@ paths:
                   items:
                     type: object
                     properties:
-                      address:
-                        type: string
-                      city:
+                      email:
+                        format: email
                         type: string
                       firstName:
                         type: string
                       lastName:
                         type: string
-                      email:
-                        format: email
+                      city:
+                        type: string
+                      address:
                         type: string
                       phone:
                         type: string
@@ -259,22 +259,15 @@ paths:
                       ppsn:
                         type: string
                       preferredLanguage:
+                        type: string
+                        enum:
+                          - en
+                          - ga
                         default: en
-                        anyOf:
-                          - type: string
-                            enum:
-                              - en
-                          - type: string
-                            enum:
-                              - ga
                     required:
-                      - address
-                      - city
+                      - email
                       - firstName
                       - lastName
-                      - email
-                      - phone
-                      - dateOfBirth
                 file:
                   type: object
                   properties:
