@@ -268,23 +268,7 @@ paths:
                       - email
                       - firstName
                       - lastName
-                file:
-                  type: object
-                  properties:
-                    filename:
-                      type: string
-                    encoding:
-                      type: string
-                    mimetype:
-                      enum:
-                        - text/csv
-                      type: string
-                    file: {}
-                  required:
-                    - filename
-                    - encoding
-                    - mimetype
-                    - file
+                file: {}
           multipart/form-data: *a1
           text/csv: *a1
       responses:

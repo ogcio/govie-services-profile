@@ -1,16 +1,21 @@
 import { httpErrors } from "@fastify/sensible";
-import type { FastifyRequest } from "fastify";
-import type { ImportProfilesBody } from "~/schemas/profiles/import-profiles.js";
+import { MimeTypes } from "~/const/mime-types.js";
+import type { ImportProfilesSchema } from "~/schemas/profiles/index.js";
+import type { FastifyRequestTypebox } from "~/schemas/shared.js";
 
 export const saveRequestFile = async (
-  request: FastifyRequest,
+  request: FastifyRequestTypebox<typeof ImportProfilesSchema>,
 ): Promise<string> => {
-  const file = await (request.body as ImportProfilesBody).file?.file;
-  if (!file) {
-    throw httpErrors.badRequest("File is missing in the request");
+  const firstFile = await request.body.file;
+  if (!firstFile) {
+    throw httpErrors.badRequest("File is not a valid one");
   }
 
-  const savedFiles = await request.saveRequestFiles();
+  if (firstFile.mimetype !== MimeTypes.Csv) {
+    throw httpErrors.badRequest("File must be a CSV");
+  }
 
-  return savedFiles[0].filepath;
+  const saved = await request.saveRequestFiles({ limits: { files: 1 } });
+
+  return saved[0].filepath;
 };

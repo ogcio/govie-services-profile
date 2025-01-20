@@ -14,16 +14,11 @@ export const ImportProfileFromJsonSchema = Type.Array(
   { minItems: 1 },
 );
 
-export const ImportProfileFromMultipartSchema = Type.Object({
-  filename: Type.String(),
-  encoding: Type.String(),
-  mimetype: Type.String({ enum: ["text/csv"] }),
-  file: Type.Any(),
-});
+export const CsvFileSchema = Type.Any();
 
 export const ImportProfileBodySchema = Type.Object({
   profiles: Type.Optional(ImportProfileFromJsonSchema),
-  file: Type.Optional(ImportProfileFromMultipartSchema),
+  file: Type.Optional(CsvFileSchema),
 });
 
 export const ImportProfilesSchema = {
@@ -39,3 +34,4 @@ export const ImportProfilesSchema = {
 };
 
 export type ImportProfilesBody = Static<typeof ImportProfileBodySchema>;
+export type CsvFile = Static<typeof CsvFileSchema>;
