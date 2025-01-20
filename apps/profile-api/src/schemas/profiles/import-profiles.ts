@@ -2,7 +2,6 @@ import { type Static, Type } from "@sinclair/typebox";
 import type { FastifySchema } from "fastify";
 import { MimeTypes } from "~/const/mime-types.js";
 import { HttpError } from "~/types/index.js";
-import { getGenericResponseSchema } from "~/utils/index.js";
 import { AvailableLanguagesSchema } from "./index.js";
 import { PROFILES_TAG } from "./shared.js";
 
@@ -23,6 +22,7 @@ export const ImportProfileFromJsonSchema = Type.Array(
     ppsn: Type.Optional(Type.String()),
     preferredLanguage: Type.Optional(AvailableLanguagesSchema),
   }),
+  { minItems: 1 },
 );
 
 export const ImportProfileFromMultipartSchema = Type.Object({
@@ -43,7 +43,7 @@ export const ImportProfilesSchema: FastifySchema = {
   tags: [PROFILES_TAG],
   operationId: "importProfiles",
   response: {
-    200: getGenericResponseSchema(ImportProfilesResponseSchema),
+    200: ImportProfilesResponseSchema,
     "4xx": HttpError,
     "5xx": HttpError,
   },
