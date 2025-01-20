@@ -1,13 +1,16 @@
 {
+  "bafcda898c4d928d1d6a4f3aa1158e61_0": {
+    "author": "Matteo La Cognata",
+    "false_positive": true,
+    "ignored_at": "2025-01-20T16:18:07Z"
+  },
+  "c442a1a3842f075617b18c78553258ea_0": {
+    "author": "Matteo La Cognata",
+    "false_positive": true,
+    "ignored_at": "2025-01-20T16:19:26Z"
+  },
   "test/profile/import-profiles.test.ts": {
-    "test/fixtures/common.ts": {
-      "mockLogtoConfig": {
-        "LOGTO_MANAGEMENT_API_ENDPOINT": "http://logto-api",
-        "LOGTO_MANAGEMENT_API_RESOURCE_URL": "http://logto-resource",
-        "LOGTO_MANAGEMENT_API_CLIENT_ID": "client-123",
-        "LOGTO_MANAGEMENT_API_CLIENT_SECRET": "secret-123",
-        "LOGTO_OIDC_ENDPOINT": "http://logto-oidc"
-      }
-    }
+    "false_positive": false,
+    "ignored_at": ""
   }
 }
