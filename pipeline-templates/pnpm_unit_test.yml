@@ -15,7 +15,7 @@ jobs:
       - task: NodeTool@0
         inputs:
           versionSpec: "22.x"
-      - template: templates/pnpm-install.yaml
+      - template: pnpm-install.yaml
       - task: CmdLine@2
         displayName: "pnpm install --frozen-lockfile"
         inputs:
