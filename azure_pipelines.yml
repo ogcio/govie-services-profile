@@ -54,6 +54,16 @@ resources:
       endpoint: ogcio
 
 stages:
+  - stage: setup
+    displayName: Setup Dependencies
+    dependsOn: []
+    jobs:
+      - job: SetupDependencies
+        displayName: Setup pnpm and Install Dependencies
+        pool:
+          vmImage: ${{ parameters.vmImage }}
+        steps:
+          - template: pipeline-templates/pnpm_install.yaml
   - stage: securityScan
     displayName: Security Scans
     pool:
@@ -74,6 +84,9 @@ stages:
                 displayName: Code Scan
   - stage: BuildDeps
     displayName: Build service dependencies
+    dependsOn:
+      - securityScan
+      - setup
     pool:
       vmImage: ${{ parameters.vmImage }}
     jobs:
@@ -84,9 +97,9 @@ stages:
         pool:
           vmImage: ${{ parameters.vmImage }}
         dependsOn:
-          - securityScan
+          - BuildDeps
         jobs:
-          - template: test/unit_test.yml@pipeline-templates
+          - template: pipeline-templates/pnpm_unit_test.yml
             parameters:
               serviceName: ${{ serviceName }}
               testPath: "./apps/"
