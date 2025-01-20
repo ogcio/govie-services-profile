@@ -1,7 +1,7 @@
 import { getAccessToken } from "@ogcio/api-auth";
 import { LogtoClient } from "~/clients/logto.js";
 import type { EnvConfig } from "~/plugins/external/env.js";
-import type { ImportProfilesBody } from "~/schemas/profiles/index.js";
+import type { KnownProfileDataDetails } from "~/schemas/profiles/index.js";
 
 interface LogtoUserResult {
   id: string;
@@ -19,7 +19,7 @@ const chunks = <T>(arr: T[], size: number): T[][] =>
   );
 
 export const createLogtoUsers = async (
-  profiles: Pick<ImportProfilesBody[0], "email" | "firstName" | "lastName">[],
+  profiles: Pick<KnownProfileDataDetails, "email" | "firstName" | "lastName">[],
   config: EnvConfig,
   organizationId: string,
   jobId: string,
