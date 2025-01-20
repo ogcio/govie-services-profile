@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { updateProfileDetailsToLatest } from "../../../services/profiles/sql/update-profile-details-to-latest.js";
 import { buildMockPg } from "../../build-mock-pg.js";
+import { mockDbProfiles } from "../../fixtures/common.js";
 
 describe("updateProfileDetailsToLatest", () => {
   it("should update is_latest flag for other profile details", async () => {
@@ -10,7 +11,7 @@ describe("updateProfileDetailsToLatest", () => {
       mockPg,
       "detail-123", // profileDetailId
       "org-123", // organizationId
-      "profile-123", // profileId
+      mockDbProfiles[0].id, // profileId
     );
 
     const query = mockPg.getExecutedQueries()[0];
@@ -26,7 +27,7 @@ describe("updateProfileDetailsToLatest", () => {
     expect(query.values).toEqual([
       "detail-123", // id
       "org-123", // organisation_id
-      "profile-123", // profile_id
+      mockDbProfiles[0].id, // profile_id
     ]);
   });
 
@@ -37,7 +38,7 @@ describe("updateProfileDetailsToLatest", () => {
       mockPg,
       "detail-123",
       "org-123",
-      "profile-123",
+      mockDbProfiles[0].id,
     );
 
     const query = mockPg.getExecutedQueries()[0];
@@ -46,12 +47,12 @@ describe("updateProfileDetailsToLatest", () => {
     expect(query.sql).toContain("$3");
     expect(query.sql).not.toContain("detail-123");
     expect(query.sql).not.toContain("org-123");
-    expect(query.sql).not.toContain("profile-123");
+    expect(query.sql).not.toContain(mockDbProfiles[0].id);
   });
 
   it("should execute update even with no affected rows", async () => {
     const mockPg = buildMockPg([
-      { rowCount: 0 }, // No rows updated
+      [{}], // No rows updated
     ]);
 
     await expect(
@@ -59,7 +60,7 @@ describe("updateProfileDetailsToLatest", () => {
         mockPg,
         "detail-123",
         "org-123",
-        "profile-123",
+        mockDbProfiles[0].id,
       ),
     ).resolves.not.toThrow();
   });

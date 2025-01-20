@@ -1,43 +1,14 @@
 import type { Pool } from "pg";
 import { describe, expect, it, vi } from "vitest";
-import { listProfiles } from "../../../src/services/profiles/list-profiles.js";
-import { buildMockPg } from "../../test/build-mock-pg.js";
-describe("listProfiles", () => {
-  const mockProfiles = [
-    {
-      id: "profile-123",
-      public_name: "Test User 1",
-      email: "test1@example.com",
-      primary_user_id: "user-123",
-      safe_level: 1,
-      created_at: "2024-01-15T12:00:00Z",
-      updated_at: "2024-01-15T12:00:00Z",
-      details: {
-        firstName: { value: "Test", type: "string" },
-        lastName: { value: "User", type: "string" },
-        phone: { value: "1234567890", type: "string" },
-      },
-    },
-    {
-      id: "profile-456",
-      public_name: "Test User 2",
-      email: "test2@example.com",
-      primary_user_id: "user-456",
-      safe_level: 1,
-      created_at: "2024-01-15T12:00:00Z",
-      updated_at: "2024-01-15T12:00:00Z",
-      details: {
-        firstName: { value: "Another", type: "string" },
-        lastName: { value: "User", type: "string" },
-        phone: { value: "0987654321", type: "string" },
-      },
-    },
-  ];
+import { listProfiles } from "../../services/profiles/list-profiles.js";
+import { buildMockPg } from "../build-mock-pg.js";
+import { mockDbProfiles } from "../fixtures/common.js";
 
+describe("listProfiles", () => {
   it("should list profiles with pagination", async () => {
     const mockCount = [{ count: 2 }];
 
-    const mockPg = buildMockPg([mockCount, mockProfiles]);
+    const mockPg = buildMockPg([mockCount, mockDbProfiles]);
     const mockPool = {
       connect: () => Promise.resolve(mockPg),
     };
@@ -49,7 +20,7 @@ describe("listProfiles", () => {
     });
 
     expect(result).toEqual({
-      data: mockProfiles,
+      data: mockDbProfiles,
       total: 2,
     });
     expect(mockPg.getExecutedQueries()[0].values).toEqual(["org-123"]);
@@ -63,7 +34,7 @@ describe("listProfiles", () => {
   it("should list profiles with search", async () => {
     const mockCount = [{ count: 1 }];
 
-    const mockPg = buildMockPg([mockCount, [mockProfiles[0]]]);
+    const mockPg = buildMockPg([mockCount, [mockDbProfiles[0]]]);
     const mockPool = {
       connect: () => Promise.resolve(mockPg),
     };
@@ -76,7 +47,7 @@ describe("listProfiles", () => {
     });
 
     expect(result).toEqual({
-      data: [mockProfiles[0]],
+      data: [mockDbProfiles[0]],
       total: 1,
     });
     expect(mockPg.getExecutedQueries()[0].values).toEqual([
@@ -94,7 +65,7 @@ describe("listProfiles", () => {
   it("should list active profiles only", async () => {
     const mockCount = [{ count: 2 }];
 
-    const mockPg = buildMockPg([mockCount, mockProfiles]);
+    const mockPg = buildMockPg([mockCount, mockDbProfiles]);
     const mockPool = {
       connect: () => Promise.resolve(mockPg),
     };
@@ -107,7 +78,7 @@ describe("listProfiles", () => {
     });
 
     expect(result).toEqual({
-      data: mockProfiles,
+      data: mockDbProfiles,
       total: 2,
     });
     expect(mockPg.getExecutedQueries()[0].values).toEqual(["org-123"]);

@@ -1,28 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { createProfileImportDetails } from "../../../services/profiles/sql/create-profile-import-details.js";
 import { buildMockPg } from "../../build-mock-pg.js";
+import { mockProfiles } from "../../fixtures/common.js";
 
 describe("createProfileImportDetails", () => {
-  const sampleProfiles = [
-    {
-      firstName: "John",
-      lastName: "Doe",
-      email: "john@example.com",
-      phone: "123456789",
-      address: "123 Main St",
-      city: "Dublin",
-      dateOfBirth: "1990-01-01",
-    },
-    {
-      firstName: "Jane",
-      lastName: "Smith",
-      email: "jane@example.com",
-      phone: "987654321",
-      address: "456 High St",
-      city: "Cork",
-      dateOfBirth: "1992-02-02",
-    },
-  ];
+  const sampleProfiles = mockProfiles.slice(0, 2);
 
   it("should insert profile details and return IDs", async () => {
     const mockPg = buildMockPg([

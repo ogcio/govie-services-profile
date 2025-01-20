@@ -1,47 +1,51 @@
 import { describe, expect, it } from "vitest";
 import { lookupProfile } from "../../services/profiles/sql/lookup-profile.js";
 import { buildMockPg } from "../build-mock-pg.js";
+import { mockDbProfiles } from "../fixtures/common.js";
 
 describe("lookupProfile", () => {
   it("should find profile by direct email match", async () => {
     const mockPg = buildMockPg([
       [
         {
-          profile_id: "profile-123",
+          profile_id: mockDbProfiles[0].id,
           profile_detail_id: "detail-123",
         },
       ],
     ]);
 
-    const result = await lookupProfile(mockPg, "john@example.com");
+    const result = await lookupProfile(mockPg, mockDbProfiles[0].email);
 
     expect(result).toEqual({
       exists: true,
-      profileId: "profile-123",
+      profileId: mockDbProfiles[0].id,
       profileDetailId: "detail-123",
     });
 
     const query = mockPg.getExecutedQueries()[0];
     expect(query.sql).toContain("FROM profiles");
     expect(query.sql).toContain("WHERE email = $1");
-    expect(query.values).toEqual(["john@example.com"]);
+    expect(query.values).toEqual([mockDbProfiles[0].email]);
   });
 
   it("should find profile by profile_data email match", async () => {
     const mockPg = buildMockPg([
       [
         {
-          profile_id: "profile-123",
+          profile_id: mockDbProfiles[0].id,
           profile_detail_id: "detail-123",
         },
       ],
     ]);
 
-    const result = await lookupProfile(mockPg, "john@example.com");
+    const result = await lookupProfile(
+      mockPg,
+      mockDbProfiles[0].details.email.value,
+    );
 
     expect(result).toEqual({
       exists: true,
-      profileId: "profile-123",
+      profileId: mockDbProfiles[0].id,
       profileDetailId: "detail-123",
     });
 
@@ -67,16 +71,17 @@ describe("lookupProfile", () => {
     const mockPg = buildMockPg([
       [
         {
-          profile_id: "profile-123",
+          profile_id: mockDbProfiles[0].id,
           profile_detail_id: "detail-123",
         },
       ],
     ]);
 
-    await lookupProfile(mockPg, "John@Example.com");
+    const uppercaseEmail = mockDbProfiles[0].email.toUpperCase();
+    await lookupProfile(mockPg, uppercaseEmail);
 
     const query = mockPg.getExecutedQueries()[0];
-    expect(query.values).toEqual(["john@example.com"]);
+    expect(query.values).toEqual([mockDbProfiles[0].email.toLowerCase()]);
   });
 
   it("should exclude deleted profiles", async () => {
@@ -84,7 +89,7 @@ describe("lookupProfile", () => {
 
     const query =
       // biome-ignore lint/style/noCommaOperator: It's OK to use the comma operator here
-      (await lookupProfile(mockPg, "john@example.com"),
+      (await lookupProfile(mockPg, mockDbProfiles[0].email),
       mockPg.getExecutedQueries()[0]);
 
     expect(query.sql).toContain("deleted_at IS NULL");
@@ -95,7 +100,7 @@ describe("lookupProfile", () => {
 
     const query =
       // biome-ignore lint/style/noCommaOperator: It's OK to use the comma operator here
-      (await lookupProfile(mockPg, "test@example.com"),
+      (await lookupProfile(mockPg, mockDbProfiles[0].email),
       mockPg.getExecutedQueries()[0]);
 
     // Check index hints are present
