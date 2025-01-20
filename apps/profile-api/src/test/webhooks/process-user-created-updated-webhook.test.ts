@@ -44,8 +44,8 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
       [
         {
           profile: {
-            first_name: "Test",
-            last_name: "User",
+            firstName: "Test",
+            lastName: "User",
             email: "test@example.com",
           },
         },
@@ -83,8 +83,8 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
     });
     (findProfileImportByJobId as Mock).mockReturnValue("import-123");
     (getProfileImportDetailDataByEmail as Mock).mockReturnValue({
-      first_name: "Test",
-      last_name: "User",
+      firstName: "Test",
+      lastName: "User",
     });
     (createProfile as Mock).mockResolvedValue("profile-123");
     (createUpdateProfileDetails as Mock).mockResolvedValue("detail-123");
@@ -177,8 +177,8 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
           email: "test@example.com",
           data: {
             profile: {
-              first_name: "Test",
-              last_name: "User",
+              firstName: "Test",
+              lastName: "User",
             },
           },
         },
@@ -234,8 +234,8 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
       primaryUserId: "user-123",
     });
     (getProfileImportDetailDataByEmail as Mock).mockReturnValue({
-      first_name: "Test",
-      last_name: "User",
+      firstName: "Test",
+      lastName: "User",
       email: "test@example.com",
     });
     (createProfile as Mock).mockRejectedValue(new Error("Creation failed"));

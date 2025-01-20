@@ -60,11 +60,9 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
         const profileId = await createProfile(client, {
           id: user.id,
           email: user.email,
-          public_name: [importDetail.first_name, importDetail.last_name].join(
-            " ",
-          ),
-          primary_user_id: user.primaryUserId,
-          safe_level: 0,
+          publicName: [importDetail.firstName, importDetail.lastName].join(" "),
+          primaryUserId: user.primaryUserId,
+          safeLevel: 0,
         });
 
         await createUpdateProfileDetails(

@@ -36,7 +36,7 @@ export const findProfile = async (params: {
       conditions.push(`EXISTS (
             SELECT 1 FROM profile_data pd
             WHERE pd.profile_details_id = pdet.id
-            AND pd.name = 'first_name'
+            AND pd.name = 'firstName'
             AND pd.value_type = 'string'
             AND pd.value ILIKE $${paramIndex}
           )`);
@@ -48,7 +48,7 @@ export const findProfile = async (params: {
       conditions.push(`EXISTS (
             SELECT 1 FROM profile_data pd
             WHERE pd.profile_details_id = pdet.id
-            AND pd.name = 'last_name'
+            AND pd.name = 'lastName'
             AND pd.value_type = 'string'
             AND pd.value ILIKE $${paramIndex}
           )`);
@@ -77,12 +77,13 @@ export const findProfile = async (params: {
       `
           SELECT DISTINCT
             p.id,
-            p.public_name,
+            p.public_name as "publicName",
             p.email,
-            p.primary_user_id,
-            p.safe_level,
-            p.created_at,
-            p.updated_at,
+            p.primary_user_id as "primaryUserId",
+            p.safe_level as "safeLevel",
+            p.created_at as "createdAt",
+            p.updated_at as "updatedAt",
+            p.preferred_language as "preferredLanguage",
             (
               SELECT jsonb_object_agg(pdata.name, 
                 jsonb_build_object(

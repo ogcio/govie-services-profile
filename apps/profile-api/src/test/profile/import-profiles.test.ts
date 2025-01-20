@@ -39,21 +39,21 @@ describe("importProfiles", () => {
   const profiles = [
     {
       email: "test1@example.com",
-      first_name: "Test1",
-      last_name: "User",
+      firstName: "Test1",
+      lastName: "User",
       address: "123 Test St",
       city: "Test City",
       phone: "1234567890",
-      date_of_birth: "1990-01-01",
+      dateOfBirth: "1990-01-01",
     },
     {
       email: "test2@example.com",
-      first_name: "Test2",
-      last_name: "User",
+      firstName: "Test2",
+      lastName: "User",
       address: "456 Test St",
       city: "Test City",
       phone: "0987654321",
-      date_of_birth: "1990-01-01",
+      dateOfBirth: "1990-01-01",
     },
   ];
 

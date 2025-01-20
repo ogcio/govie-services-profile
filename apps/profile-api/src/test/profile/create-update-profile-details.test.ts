@@ -7,8 +7,8 @@ import { buildMockPg } from "../build-mock-pg.js";
 
 describe("createUpdateProfileDetails", () => {
   const testData = {
-    first_name: "John",
-    last_name: "Doe",
+    firstName: "John",
+    lastName: "Doe",
     email: "john@example.com",
     phone: "123456789",
   };

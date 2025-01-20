@@ -31,18 +31,18 @@ export const updateProfile = async (params: {
       throw httpErrors.notFound(`Profile ${profileId} not found`);
     }
 
-    const { email, public_name } = data;
-    const souldUpdateEmail = email && email !== existingProfile.email;
+    const { email, publicName } = data;
+    const shouldUpdateEmail = email && email !== existingProfile.email;
     const shouldUpdatePublicName =
-      public_name && public_name !== existingProfile.public_name;
-    const shouldUpdateProfile = souldUpdateEmail || shouldUpdatePublicName;
+      publicName && publicName !== existingProfile.publicName;
+    const shouldUpdateProfile = shouldUpdateEmail || shouldUpdatePublicName;
 
     if (shouldUpdateProfile) {
       // Update base profile fields if provided
       await updateProfileSql(
         client,
         profileId,
-        public_name ?? existingProfile.public_name,
+        publicName ?? existingProfile.publicName,
         email ?? existingProfile.email,
       );
     }

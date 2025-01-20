@@ -10,7 +10,11 @@ export const AvailableDetailTypes = {
 
 export type DetailType = "string" | "number" | "boolean" | "date";
 
-export const AvailableLanguagesSchema = TypeboxStringEnum(["en", "ga"], "en");
+export const DEFAULT_LANGUAGE = "en";
+export const AvailableLanguagesSchema = TypeboxStringEnum(
+  ["en", "ga"],
+  DEFAULT_LANGUAGE,
+);
 
 const ProfileDataStringItemSchema = Type.Object({
   value: Type.String(),
@@ -24,8 +28,8 @@ const ProfileDataDateItemSchema = Type.Object({
 
 export const MandatoryProfileDataDetailsSchema = Type.Object({
   email: Type.String({ format: "email" }),
-  first_name: Type.String(),
-  last_name: Type.String(),
+  firstName: Type.String(),
+  lastName: Type.String(),
 });
 export type MandatoryProfileDataDetails = Static<
   typeof MandatoryProfileDataDetailsSchema
@@ -38,7 +42,7 @@ export const KnownProfileDataDetailsSchema = Type.Composite([
     city: Type.Optional(Type.String()),
     address: Type.Optional(Type.String()),
     phone: Type.Optional(Type.String()),
-    date_of_birth: Type.Optional(Type.String({ format: "date" })),
+    dateOfBirth: Type.Optional(Type.String({ format: "date" })),
     ppsn: Type.Optional(Type.String()),
     preferred_language: Type.Optional(AvailableLanguagesSchema),
   }),
@@ -50,13 +54,13 @@ export type KnownProfileDataDetails = Static<
 
 export const ProfileSchema = Type.Object({
   id: Type.String(),
-  public_name: Type.String(),
+  publicName: Type.String(),
   email: Type.String({ format: "email" }),
-  primary_user_id: Type.String(),
-  safe_level: Type.Optional(Type.Number()),
-  preferred_language: Type.Optional(AvailableLanguagesSchema),
-  created_at: Type.Optional(Type.String({ format: "date-time" })),
-  updated_at: Type.Optional(Type.String({ format: "date-time" })),
+  primaryUserId: Type.String(),
+  safeLevel: Type.Optional(Type.Number()),
+  preferredLanguage: Type.Optional(AvailableLanguagesSchema),
+  createdAt: Type.Optional(Type.String({ format: "date-time" })),
+  updatedAt: Type.Optional(Type.String({ format: "date-time" })),
 });
 
 export const ProfileWithDetailsSchema = Type.Composite([
@@ -83,9 +87,9 @@ export const KnownProfileDbDataDetailsSchema = Type.Object({
   email: ProfileDataStringItemSchema,
   address: ProfileDataStringItemSchema,
   phone: ProfileDataStringItemSchema,
-  first_name: ProfileDataStringItemSchema,
-  last_name: ProfileDataStringItemSchema,
-  date_of_birth: ProfileDataDateItemSchema,
+  firstName: ProfileDataStringItemSchema,
+  lastName: ProfileDataStringItemSchema,
+  dateOfBirth: ProfileDataDateItemSchema,
   ppsn: ProfileDataStringItemSchema,
 });
 

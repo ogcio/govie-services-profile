@@ -26,13 +26,13 @@ describe("createLogtoUsers", () => {
   const sampleProfiles = [
     {
       email: "john@example.com",
-      first_name: "John",
-      last_name: "Doe",
+      firstName: "John",
+      lastName: "Doe",
     },
     {
       email: "jane@example.com",
-      first_name: "Jane",
-      last_name: "Smith",
+      firstName: "Jane",
+      lastName: "Smith",
     },
   ];
 
@@ -108,8 +108,8 @@ describe("createLogtoUsers", () => {
       .fill(null)
       .map((_, i) => ({
         email: `user${i}@example.com`,
-        first_name: `User${i}`,
-        last_name: "Test",
+        firstName: `User${i}`,
+        lastName: "Test",
       }));
 
     const mockCreateUser = vi.fn().mockImplementation((userData) =>

@@ -7,13 +7,13 @@ export const ImportProfileFromJsonSchema = Type.Array(
   Type.Object({
     address: Type.String(),
     city: Type.String(),
-    first_name: Type.String(),
-    last_name: Type.String(),
+    firstName: Type.String(),
+    lastName: Type.String(),
     email: Type.String({ format: "email" }),
     phone: Type.String(),
-    date_of_birth: Type.String({ format: "date" }),
+    dateOfBirth: Type.String({ format: "date" }),
     ppsn: Type.Optional(Type.String()),
-    preferred_language: AvailableLanguagesSchema,
+    preferredLanguage: Type.Optional(AvailableLanguagesSchema),
   }),
 );
 
