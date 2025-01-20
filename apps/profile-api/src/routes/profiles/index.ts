@@ -70,9 +70,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       schema: ImportProfilesSchema,
     },
     async (request: FastifyRequestTypebox<typeof ImportProfilesSchema>) => {
-      const profiles = request.headers["content-type"]?.startsWith(
+      const isJson = request.headers["content-type"]?.startsWith(
         MimeTypes.Json,
-      )
+      );
+      const profiles = isJson
         ? (request.body as KnownProfileDataDetails[])
         : await getProfilesFromCsv(await saveRequestFile(request));
 
@@ -82,6 +83,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         logger: request.log,
         config,
         pool,
+        source: isJson ? "json" : "csv",
       });
     },
   );

@@ -125,6 +125,75 @@ describe("importProfiles", () => {
     );
   });
 
+  it("should successfully import new profiles with json source", async () => {
+    const jobId = "job-123";
+    const importDetailsIds = ["detail-1", "detail-2"];
+    const mockPg = buildMockPg([
+      [{ in_transaction: false }], // Initial transaction check
+      [], // BEGIN
+      [], // COMMIT
+      // First profile
+      [{ in_transaction: false }], // First withRollback check
+      [], // BEGIN
+      [], // COMMIT
+      // Second profile
+      [{ in_transaction: false }], // Second withRollback check
+      [], // BEGIN
+      [], // COMMIT
+      // Logto users creation
+      [{ in_transaction: false }], // Third withRollback check
+      [], // BEGIN
+      [], // updateProfileImportDetailsStatus
+      [], // COMMIT
+      // Final status update
+      [{ in_transaction: false }], // Fourth withRollback check
+      [], // BEGIN
+      [], // checkImportCompletion
+      [], // updateProfileImportStatusByJobId
+      [], // COMMIT
+    ]);
+
+    (createProfileImport as Mock).mockResolvedValue(jobId);
+    (createProfileImportDetails as Mock).mockResolvedValue(importDetailsIds);
+    (lookupProfile as Mock).mockResolvedValue({ exists: false });
+    (createLogtoUsers as Mock).mockResolvedValue([
+      { id: "user-1", primaryEmail: "test1@example.com" },
+      { id: "user-2", primaryEmail: "test2@example.com" },
+    ]);
+    (checkImportCompletion as Mock).mockResolvedValue({
+      isComplete: true,
+      finalStatus: ImportStatus.COMPLETED,
+    });
+    (getProfileImportStatus as Mock).mockResolvedValue(ImportStatus.COMPLETED);
+
+    const mockPool = {
+      connect: () => Promise.resolve(mockPg),
+    };
+
+    const result = await importProfiles({
+      pool: mockPool as unknown as Pool,
+      logger: mockLogger as unknown as FastifyBaseLogger,
+      profiles,
+      organizationId: "org-123",
+      config: mockConfig,
+      source: "json",
+    });
+
+    expect(result).toStrictEqual({ status: ImportStatus.COMPLETED, jobId });
+    expect(createProfileImport).toHaveBeenCalledWith(mockPg, "org-123", "json");
+    expect(createProfileImportDetails).toHaveBeenCalledWith(
+      mockPg,
+      jobId,
+      profiles,
+    );
+    expect(createLogtoUsers).toHaveBeenCalledWith(
+      profiles,
+      mockConfig,
+      "org-123",
+      jobId,
+    );
+  });
+
   it("should handle existing profiles", async () => {
     const jobId = "job-123";
     const importDetailsIds = ["detail-1", "detail-2"];

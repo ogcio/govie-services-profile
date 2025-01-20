@@ -26,13 +26,14 @@ export const importProfiles = async (params: {
   profiles: KnownProfileDataDetails[];
   organizationId: string;
   config: EnvConfig;
+  source?: "json" | "csv";
 }): Promise<{ status: ImportStatus; jobId: string }> =>
   withClient(params.pool, async (client) => {
-    const { config, logger, profiles, organizationId } = params;
+    const { config, logger, profiles, organizationId, source = "csv" } = params;
 
     // 1. Create import job and import details
     const { jobId, importDetailsMap } = await withRollback(client, async () => {
-      const jobId = await createProfileImport(client, organizationId);
+      const jobId = await createProfileImport(client, organizationId, source);
       const importDetailsIdList = await createProfileImportDetails(
         client,
         jobId,

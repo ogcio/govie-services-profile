@@ -55,13 +55,32 @@ describe("/profiles/import-profiles", () => {
     vi.clearAllMocks();
   });
 
-  it("should handle valid profiles import", async () => {
+  it("should handle valid JSON profiles import", async () => {
     const response = await app.inject({
       method: "POST",
       url,
       payload: profiles,
       headers: {
         "content-type": "application/json",
+      },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.payload)).toEqual({
+      status: ImportStatus.FAILED,
+      jobId: "jobId",
+    });
+  });
+
+  it("should handle valid CSV profiles import", async () => {
+    const csvContent =
+      "firstName,lastName,email,phone,address,city,dateOfBirth\nTest,User,test@example.com,1234567890,123 Test St,Testville,1990-01-01";
+    const response = await app.inject({
+      method: "POST",
+      url,
+      payload: Buffer.from(csvContent),
+      headers: {
+        "content-type": "text/csv",
       },
     });
 
