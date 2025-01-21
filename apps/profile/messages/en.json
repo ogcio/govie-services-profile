@@ -156,5 +156,34 @@
     "motherName": "Mother's name",
     "certificateNumber": "Certificate number",
     "back": "Back"
+  },
+  "Metadata":{
+    "profileTitle":"Profile"
+  },
+  "Home": {
+    "gaeilgeMenuLabel": "Gaeilge",
+    "englishMenuLabel": "English",
+    "bannerText": "This is a new service - your <url>feedback</url> will help us to improve it.",
+    "messaging": "Messaging",
+    "profile": "Profile",
+    "notificationPreferences" : "Notification Preferences"
+  },
+  "Profile": {
+    "profile": "Profile",
+    "publicName": "Public name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "update": "Update",
+    "name": "Name",
+    "dateOfBirth": "Date of birth",
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
+    "clickToReveal": "Click to reveal",
+    "clickToHide": "Click to hide",
+    "gender": "Gender",
+    "contactDetails": "Contact details",
+    "phone": "Phone",
+    "email": "Email"
   }
 }

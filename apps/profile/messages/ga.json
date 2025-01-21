@@ -1,5 +1,34 @@
 {
   "Index": {
     "title": "Homepage"
+  },
+  "Metadata": {
+    "profileTitle": "Próifíl"
+  },
+  "Home": {
+    "gaeilgeMenuLabel": "Gaeilge",
+    "englishMenuLabel": "English",
+    "bannerText": "Is seirbhís nua í seo - cabhróidh <url>d'aiseolas</url> linn é a fheabhsú.",
+    "messaging": "Teachtaireachtaí",
+    "profile": "Próifíl",
+    "notificationPreferences" : "Sainroghanna Fógraí"
+  },
+  "Profile": {
+    "profile": "Próifíl",
+    "publicName": "Ainm poiblí",
+    "firstName": "Céad ainm",
+    "lastName": "Sloinne",
+    "update": "Nuashonraigh",
+    "name": "Ainm",
+    "dateOfBirth": "Dáta breithe",
+    "day": "Lá",
+    "month": "Mí",
+    "year": "Bliain",
+    "clickToReveal": "Cliceáil chun nochtadh",
+    "clickToHide": "Cliceáil chun folúntais",
+    "gender": "Inscne",
+    "contactDetails": "Sonraí teagmhála",
+    "phone": "Guthán",
+    "email": "Ríomhphost"
   }
 }

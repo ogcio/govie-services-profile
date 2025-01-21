@@ -1,13 +1,53 @@
-@import "/app/styles/globals.scss";
+.body {
+  margin: unset;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-.mainContainer {
-  max-width: 100%;
-  width: 100%;
-  margin: 0 auto;
-  padding: 0 15px;
-  box-sizing: border-box;
+.main {
+  flex: auto;
+}
 
-  @include wide-desktop {
-    max-width: 1400px;
+.content_wrapper {
+  padding: var(--gieds-space-9) 0 var(--gieds-space-9) 0;
+  display: flex;
+  flex-direction: row;
+  gap: var(--gieds-space-9);
+  flex-wrap: wrap;
+
+  @media (max-width: var(--gieds-screen-sm)) {
+    flex-direction: column;
   }
+}
+
+.flex_row {
+  display: flex;
+}
+
+.flex_col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gap_1 {
+  gap: var(--gieds-space-3);
+}
+
+.gap_2 {
+  gap: var(--gieds-space-6);
+}
+
+.flex_wrap {
+  flex-wrap: wrap;
+}
+
+.flex_1 {
+  flex: 1;
+}
+
+.text_input {
+  min-width: calc(var(--gieds-screen-sm) / 2);
 }
