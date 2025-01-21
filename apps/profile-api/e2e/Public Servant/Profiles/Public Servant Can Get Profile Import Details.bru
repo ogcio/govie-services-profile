@@ -1,0 +1,38 @@
+meta {
+  name: Public Servant Can Get Profile Import Details
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{baseUrl}}/api/v1/profiles/imports/{{importId}}/details
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data[*].firstName: isDefined
+  res.body.data[*].lastName: isDefined
+  res.body.data[*].email: isDefined
+  res.body.data[*].preferredLanguage: isDefined
+}
+
+tests {
+  test("Should return 404 for non-existent import") {
+    req.url.path.importId: "non-existent-import"
+    res.status: eq 404
+    res.body.message: eq "No import details found for import ID: non-existent-import"
+  }
+
+  test("Should return 400 for invalid import ID") {
+    req.url.path.importId: ""
+    res.status: eq 400
+    res.body.message: eq "Profile import ID is required"
+  }
+} 

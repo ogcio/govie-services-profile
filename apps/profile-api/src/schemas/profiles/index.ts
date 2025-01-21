@@ -1,5 +1,6 @@
 export * from "./find-profile.js";
 export * from "./get.js";
+export * from "./get-import.js";
 export * from "./import-profiles.js";
 export * from "./list.js";
 export * from "./list-imports.js";

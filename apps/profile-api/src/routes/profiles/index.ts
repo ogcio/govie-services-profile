@@ -6,6 +6,7 @@ import { Permissions } from "~/const/index.js";
 import { MimeTypes } from "~/const/mime-types.js";
 import {
   FindProfileSchema,
+  GetProfileImportDetailsSchema,
   GetProfileSchema,
   ImportProfilesSchema,
   type KnownProfileDataDetails,
@@ -21,6 +22,7 @@ import { getProfilesFromCsv } from "~/services/profiles/get-profiles-from-csv.js
 import {
   findProfile,
   getProfile,
+  getProfileImportDetails,
   importProfiles,
   listProfileImports,
   listProfiles,
@@ -163,6 +165,22 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         request,
         totalCount,
       });
+    },
+  );
+
+  fastify.get(
+    "/imports/:importId/details",
+    {
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [Permissions.User.Read]),
+      schema: GetProfileImportDetailsSchema,
+    },
+    async (
+      request: FastifyRequestTypebox<typeof GetProfileImportDetailsSchema>,
+    ) => {
+      return {
+        data: await getProfileImportDetails(pool, request.params.importId),
+      };
     },
   );
 
