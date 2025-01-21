@@ -1,6 +1,20 @@
 import { MY_GOV_ID_IDENTITY } from "~/const/index.js";
 import { getCurrentUTCDate } from "~/utils/index.js";
 
+export type WebhookUser = {
+  id: string;
+  details?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  email: string;
+  primaryUserId: string;
+  createdAt: string;
+  organizationId?: string | null;
+  jobId?: string | null;
+};
+
 export const webhookBodyToUser = (bodyData: {
   identities: Record<
     string,
@@ -14,7 +28,7 @@ export const webhookBodyToUser = (bodyData: {
   id: string;
   customData?: { organizationId?: string | null; jobId?: string | null };
   primaryEmail: string;
-}) => {
+}): WebhookUser => {
   // From MyGovid
   if (bodyData.identities[MY_GOV_ID_IDENTITY]) {
     const identity = bodyData.identities[MY_GOV_ID_IDENTITY].details;
@@ -22,11 +36,13 @@ export const webhookBodyToUser = (bodyData: {
     return {
       id: bodyData.id as string,
       details: {
-        firstName: identity.rawData.firstName ?? identity.rawData.givenName,
-        lastName: identity.rawData.lastName ?? identity.rawData.surname,
-        email: identity.email,
+        firstName: (identity.rawData.firstName ??
+          identity.rawData.givenName) as string,
+        lastName: (identity.rawData.lastName ??
+          identity.rawData.surname) as string,
+        email: (identity.email ?? bodyData.primaryEmail) as string,
       },
-      email: identity.email,
+      email: (identity.email ?? bodyData.primaryEmail) as string,
       primaryUserId: bodyData.id,
       createdAt: getCurrentUTCDate(),
     };

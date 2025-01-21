@@ -36,7 +36,7 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
     vi.clearAllMocks();
   });
 
-  it("should process webhook successfully", async () => {
+  it("should process webhook successfully - from job", async () => {
     const mockPg = buildMockPg([
       [{ in_transaction: false }],
       [], // BEGIN
@@ -121,7 +121,7 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
     expect(queries).toContain("COMMIT");
   });
 
-  it("should handle missing jobId", async () => {
+  it("should process webhook successfully - direct signin", async () => {
     const mockPg = buildMockPg([
       [{ in_transaction: false }],
       [], // BEGIN
@@ -129,23 +129,33 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
     ]);
 
     const mockPool = {
-      connect: vi.fn().mockResolvedValue(mockPg),
+      connect: () => Promise.resolve(mockPg),
     };
+
+    // Mock functions if needed (depends on how your code calls them)
+    (webhookBodyToUser as Mock).mockReturnValue({
+      id: "user-123",
+      email: "test@example.com",
+      details: {
+        firstName: "Name",
+        lastName: "Surname",
+        email: "test@example.com",
+      },
+    });
+
+    (createProfile as Mock).mockResolvedValue("profile-123");
+    (createUpdateProfileDetails as Mock).mockResolvedValue("detail-123");
+    (checkImportCompletion as Mock).mockResolvedValue({
+      isComplete: true,
+      finalStatus: ImportStatus.COMPLETED,
+    });
 
     const webhookBody = {
       data: {
         id: "user-123",
         primaryEmail: "test@example.com",
-        customData: {}, // No jobId here
       },
     };
-
-    (webhookBodyToUser as Mock).mockReturnValue({
-      id: "user-123",
-      email: "test@example.com",
-      primaryUserId: "user-123",
-      // No jobId here
-    });
 
     const result = await processUserCreatedOrUpdatedWebhook({
       body: webhookBody as unknown as LogtoUserCreatedBody,
@@ -154,9 +164,14 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
     });
 
     expect(result).toEqual({
-      id: "user-123",
+      id: "profile-123",
       status: "success",
     });
+
+    // Optional: verify the transaction flow
+    const queries = mockPg.getExecutedQueries().map((q) => q.sql);
+    expect(queries).toContain("BEGIN");
+    expect(queries).toContain("COMMIT");
   });
 
   it("should handle profile creation error", async () => {

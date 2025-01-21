@@ -6,8 +6,12 @@ import { Permissions } from "~/const/index.js";
 import { MimeTypes } from "~/const/mime-types.js";
 import {
   FindProfileSchema,
+  GetProfileImportDetailsSchema,
   GetProfileSchema,
+  GetProfileTemplateSchema,
   ImportProfilesSchema,
+  type KnownProfileDataDetails,
+  ListProfileImportsSchema,
   type Profile,
   type ProfileWithDetails,
   ProfilesIndexSchema,
@@ -19,7 +23,10 @@ import { getProfilesFromCsv } from "~/services/profiles/get-profiles-from-csv.js
 import {
   findProfile,
   getProfile,
+  getProfileImportDetails,
+  getProfileTemplate,
   importProfiles,
+  listProfileImports,
   listProfiles,
   selectProfiles,
   updateProfile,
@@ -29,7 +36,10 @@ import {
   sanitizePagination,
   withOrganizationId,
 } from "~/utils/index.js";
-import { saveRequestFile } from "~/utils/save-request-file.js";
+import {
+  type SavedFileInfo,
+  saveRequestFile,
+} from "~/utils/save-request-file.js";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   const {
@@ -72,9 +82,16 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       const isJson = request.headers["content-type"]?.startsWith(
         MimeTypes.Json,
       );
-      const profiles = isJson
-        ? (request.body.profiles ?? [])
-        : await getProfilesFromCsv(await saveRequestFile(request));
+
+      let profiles: KnownProfileDataDetails[];
+      let savedFile: SavedFileInfo | undefined;
+
+      if (isJson) {
+        profiles = request.body.profiles ?? [];
+      } else {
+        savedFile = await saveRequestFile(request);
+        profiles = await getProfilesFromCsv(savedFile.filepath);
+      }
 
       return importProfiles({
         profiles,
@@ -83,6 +100,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         config,
         pool,
         source: isJson ? "json" : "csv",
+        fileMetadata: savedFile?.metadata,
       });
     },
   );
@@ -124,6 +142,46 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
           organizationId: withOrganizationId(request),
           query: request.query,
         }),
+      };
+    },
+  );
+
+  fastify.get(
+    "/imports",
+    {
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [Permissions.User.Read]),
+      schema: ListProfileImportsSchema,
+    },
+    async (request: FastifyRequestTypebox<typeof ListProfileImportsSchema>) => {
+      const { data, total: totalCount } = await listProfileImports({
+        pool,
+        organisationId: withOrganizationId(request),
+        pagination: sanitizePagination(request.query),
+        source: request.query.source,
+      });
+
+      return formatAPIResponse({
+        data,
+        config,
+        request,
+        totalCount,
+      });
+    },
+  );
+
+  fastify.get(
+    "/imports/:importId",
+    {
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [Permissions.User.Read]),
+      schema: GetProfileImportDetailsSchema,
+    },
+    async (
+      request: FastifyRequestTypebox<typeof GetProfileImportDetailsSchema>,
+    ) => {
+      return {
+        data: await getProfileImportDetails(pool, request.params.importId),
       };
     },
   );
@@ -210,6 +268,23 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
           data,
         }),
       };
+    },
+  );
+
+  fastify.get(
+    "/imports/template",
+    {
+      schema: GetProfileTemplateSchema,
+    },
+    async (_, reply) => {
+      const csvBuffer = getProfileTemplate();
+      return reply
+        .header("Content-Type", "text/csv")
+        .header(
+          "Content-Disposition",
+          'attachment; filename="profile-template.csv"',
+        )
+        .send(csvBuffer);
     },
   );
 

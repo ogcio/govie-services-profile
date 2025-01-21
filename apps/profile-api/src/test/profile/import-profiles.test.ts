@@ -89,7 +89,12 @@ describe("importProfiles", () => {
     });
 
     expect(result).toStrictEqual({ status: ImportStatus.COMPLETED, jobId });
-    expect(createProfileImport).toHaveBeenCalledWith(mockPg, "org-123", "csv");
+    expect(createProfileImport).toHaveBeenCalledWith(
+      mockPg,
+      "org-123",
+      "csv",
+      undefined,
+    );
     expect(createProfileImportDetails).toHaveBeenCalledWith(
       mockPg,
       jobId,
@@ -150,7 +155,12 @@ describe("importProfiles", () => {
     });
 
     expect(result).toStrictEqual({ status: ImportStatus.COMPLETED, jobId });
-    expect(createProfileImport).toHaveBeenCalledWith(mockPg, "org-123", "csv");
+    expect(createProfileImport).toHaveBeenCalledWith(
+      mockPg,
+      "org-123",
+      "csv",
+      undefined,
+    );
     expect(createProfileImportDetails).toHaveBeenCalledWith(
       mockPg,
       jobId,
@@ -307,6 +317,53 @@ describe("importProfiles", () => {
       jobId: "test-job-id",
     });
     expect(mockPg.release).toHaveBeenCalled();
+  });
+
+  it("should process CSV file with metadata", async () => {
+    const mockPg = buildMockPg([
+      [{ in_transaction: false }], // Initial transaction check
+      [], // BEGIN
+      [], // COMMIT
+    ]);
+    mockPg.release = vi.fn();
+
+    const mockPool = {
+      connect: () => Promise.resolve(mockPg),
+    };
+
+    const fileMetadata = {
+      filename: "test.csv",
+      mimetype: "text/csv",
+    };
+
+    (createProfileImport as Mock).mockResolvedValue("test-job-id");
+    (createProfileImportDetails as Mock).mockResolvedValue(["detail-1"]);
+    (lookupProfile as Mock).mockResolvedValue({ exists: false });
+    (createLogtoUsers as Mock).mockResolvedValue([
+      { id: "user-1", primaryEmail: mockProfiles[0].email },
+    ]);
+    (checkImportCompletion as Mock).mockResolvedValue({
+      isComplete: true,
+      finalStatus: ImportStatus.COMPLETED,
+    });
+    (getProfileImportStatus as Mock).mockResolvedValue(ImportStatus.COMPLETED);
+
+    await importProfiles({
+      pool: mockPool as unknown as Pool,
+      logger: mockLogger as unknown as FastifyBaseLogger,
+      profiles: [mockProfiles[0]],
+      organizationId: "org-123",
+      config: mockLogtoConfig,
+      source: "csv",
+      fileMetadata,
+    });
+
+    expect(createProfileImport).toHaveBeenCalledWith(
+      mockPg,
+      "org-123",
+      "csv",
+      fileMetadata,
+    );
   });
 
   it("should throw error if neither profiles nor file provided", async () => {
