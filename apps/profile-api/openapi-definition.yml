@@ -1068,7 +1068,7 @@ paths:
                   - detail
                   - requestId
                   - name
-  /api/v1/profiles/imports/{importId}/details:
+  /api/v1/profiles/imports/{importId}:
     get:
       operationId: getProfileImportDetails
       tags:

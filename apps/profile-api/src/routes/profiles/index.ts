@@ -171,7 +171,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   );
 
   fastify.get(
-    "/imports/:importId/details",
+    "/imports/:importId",
     {
       preValidation: (req, res) =>
         fastify.checkPermissions(req, res, [Permissions.User.Read]),
