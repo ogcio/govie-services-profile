@@ -12,7 +12,6 @@ export const saveRequestFile = async (
   }
 
   if (firstFile.mimetype !== MimeTypes.Csv) {
-    console.log(firstFile.mimetype);
     throw httpErrors.unprocessableEntity("File must be a CSV");
   }
 
