@@ -8,7 +8,6 @@ export interface SavedFileInfo {
   metadata: {
     filename: string;
     mimetype: string;
-    size: number | undefined;
   };
 }
 
@@ -26,14 +25,12 @@ export const saveRequestFile = async (
 
   const saved = await request.saveRequestFiles({ limits: { files: 1 } });
   const file = saved[0];
-  const buffer = await file.toBuffer();
 
   return {
     filepath: file.filepath,
     metadata: {
       filename: file.filename,
       mimetype: file.mimetype,
-      size: buffer.length,
     },
   };
 };

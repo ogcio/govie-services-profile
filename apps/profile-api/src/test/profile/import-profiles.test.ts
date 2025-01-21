@@ -334,7 +334,6 @@ describe("importProfiles", () => {
     const fileMetadata = {
       filename: "test.csv",
       mimetype: "text/csv",
-      size: 1024,
     };
 
     (createProfileImport as Mock).mockResolvedValue("test-job-id");

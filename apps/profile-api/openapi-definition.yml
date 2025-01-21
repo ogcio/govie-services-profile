@@ -909,12 +909,9 @@ paths:
                               type: string
                             mimetype:
                               type: string
-                            size:
-                              type: number
                           required:
                             - filename
                             - mimetype
-                            - size
                         createdAt:
                           format: date-time
                           type: string

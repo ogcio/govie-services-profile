@@ -14,7 +14,6 @@ export const ProfileImportListSchema = Type.Array(
       Type.Object({
         filename: Type.String(),
         mimetype: Type.String(),
-        size: Type.Number(),
       }),
     ),
     createdAt: Type.String({ format: "date-time" }),
