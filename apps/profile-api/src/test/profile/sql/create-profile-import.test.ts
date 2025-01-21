@@ -3,7 +3,7 @@ import { createProfileImport } from "../../../services/profiles/sql/create-profi
 import { buildMockPg } from "../../build-mock-pg.js";
 
 describe("createProfileImport", () => {
-  it("should create profile import and return job ID", async () => {
+  it("should create profile import with default source and return job ID", async () => {
     const mockPg = buildMockPg([[{ id: "import-123" }]]);
 
     const jobId = await createProfileImport(mockPg, "org-123");
@@ -16,11 +16,25 @@ describe("createProfileImport", () => {
     expect(query.sql).toContain("INSERT INTO profile_imports");
     expect(query.sql).toContain("job_id");
     expect(query.sql).toContain("organisation_id");
+    expect(query.sql).toContain("source");
     expect(query.sql).toContain("RETURNING id");
 
     // Verify parameters
     expect(query.values?.[0]).toBe(jobId); // job_id
     expect(query.values?.[1]).toBe("org-123"); // organisation_id
+    expect(query.values?.[2]).toBe("csv"); // default source
+  });
+
+  it("should create profile import with specified source", async () => {
+    const mockPg = buildMockPg([[{ id: "import-123" }]]);
+
+    const jobId = await createProfileImport(mockPg, "org-123", "json");
+
+    // Verify query
+    const query = mockPg.getExecutedQueries()[0];
+    expect(query.values?.[0]).toBe(jobId); // job_id
+    expect(query.values?.[1]).toBe("org-123"); // organisation_id
+    expect(query.values?.[2]).toBe("json"); // specified source
   });
 
   it("should throw error if insert fails", async () => {

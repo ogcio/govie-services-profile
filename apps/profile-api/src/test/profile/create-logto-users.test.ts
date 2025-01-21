@@ -2,6 +2,11 @@ import { getAccessToken } from "@ogcio/api-auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LogtoClient } from "../../clients/logto.js";
 import { createLogtoUsers } from "../../services/profiles/create-logto-users.js";
+import {
+  mockLogtoConfig,
+  mockLogtoUsers,
+  mockProfiles,
+} from "../fixtures/common.js";
 
 // Mock dependencies
 vi.mock("@ogcio/api-auth", () => ({
@@ -15,27 +20,6 @@ vi.mock("../../../clients/logto.js", () => ({
 }));
 
 describe("createLogtoUsers", () => {
-  const mockConfig = {
-    LOGTO_MANAGEMENT_API_ENDPOINT: "http://logto-api",
-    LOGTO_MANAGEMENT_API_RESOURCE_URL: "http://logto-resource",
-    LOGTO_MANAGEMENT_API_CLIENT_ID: "client-123",
-    LOGTO_MANAGEMENT_API_CLIENT_SECRET: "secret-123",
-    LOGTO_OIDC_ENDPOINT: "http://logto-oidc",
-  };
-
-  const sampleProfiles = [
-    {
-      email: "john@example.com",
-      first_name: "John",
-      last_name: "Doe",
-    },
-    {
-      email: "jane@example.com",
-      first_name: "Jane",
-      last_name: "Smith",
-    },
-  ];
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -43,37 +27,31 @@ describe("createLogtoUsers", () => {
   it("should create users in Logto successfully", async () => {
     const mockCreateUser = vi
       .fn()
-      .mockResolvedValueOnce({ id: "user-1", primaryEmail: "john@example.com" })
-      .mockResolvedValueOnce({
-        id: "user-2",
-        primaryEmail: "jane@example.com",
-      });
+      .mockResolvedValueOnce(mockLogtoUsers[0])
+      .mockResolvedValueOnce(mockLogtoUsers[1]);
 
     LogtoClient.prototype.createUser = mockCreateUser;
 
     const results = await createLogtoUsers(
-      sampleProfiles,
-      mockConfig,
+      mockProfiles,
+      mockLogtoConfig,
       "org-123",
       "job-123",
     );
 
-    expect(results).toEqual([
-      { id: "user-1", primaryEmail: "john@example.com" },
-      { id: "user-2", primaryEmail: "jane@example.com" },
-    ]);
+    expect(results).toEqual(mockLogtoUsers);
 
     expect(getAccessToken).toHaveBeenCalledWith({
-      resource: mockConfig.LOGTO_MANAGEMENT_API_RESOURCE_URL,
+      resource: mockLogtoConfig.LOGTO_MANAGEMENT_API_RESOURCE_URL,
       scopes: ["all"],
-      applicationId: mockConfig.LOGTO_MANAGEMENT_API_CLIENT_ID,
-      applicationSecret: mockConfig.LOGTO_MANAGEMENT_API_CLIENT_SECRET,
-      logtoOidcEndpoint: mockConfig.LOGTO_OIDC_ENDPOINT,
+      applicationId: mockLogtoConfig.LOGTO_MANAGEMENT_API_CLIENT_ID,
+      applicationSecret: mockLogtoConfig.LOGTO_MANAGEMENT_API_CLIENT_SECRET,
+      logtoOidcEndpoint: mockLogtoConfig.LOGTO_OIDC_ENDPOINT,
     });
 
     expect(mockCreateUser).toHaveBeenCalledTimes(2);
     expect(mockCreateUser).toHaveBeenCalledWith({
-      primaryEmail: "john@example.com",
+      primaryEmail: mockProfiles[0].email,
       username: "john_doe",
       name: "John Doe",
       customData: { organizationId: "org-123", jobId: "job-123" },
@@ -89,8 +67,8 @@ describe("createLogtoUsers", () => {
     LogtoClient.prototype.createUser = mockCreateUser;
 
     const promise = createLogtoUsers(
-      sampleProfiles,
-      mockConfig,
+      mockProfiles,
+      mockLogtoConfig,
       "org-123",
       "job-123",
     );
@@ -108,8 +86,8 @@ describe("createLogtoUsers", () => {
       .fill(null)
       .map((_, i) => ({
         email: `user${i}@example.com`,
-        first_name: `User${i}`,
-        last_name: "Test",
+        firstName: `User${i}`,
+        lastName: "Test",
       }));
 
     const mockCreateUser = vi.fn().mockImplementation((userData) =>
@@ -123,7 +101,7 @@ describe("createLogtoUsers", () => {
 
     const results = await createLogtoUsers(
       manyProfiles,
-      mockConfig,
+      mockLogtoConfig,
       "org-123",
       "job-123",
     );

@@ -1,4 +1,5 @@
 # Gov-IE Services - Profile
+
 This repository holds the applications used to manage user profiles for Gov-IE.
 
 ## Database
@@ -41,6 +42,7 @@ pnpm dev:api
 ## Testing
 
 ### Unit Tests
+
 Run the following command to run the tests for the frontend and backend applications.
 
 ```bash
@@ -68,4 +70,5 @@ pnpm test:local:api
 ```
 
 ### End-to-End Tests
+
 End-to-end tests are run using Bruno. Download the [Bruno](https://docs.usebruno.com/) application and run the scenarios in the `e2e` folder.

@@ -1,9 +1,10 @@
 import { httpErrors } from "@fastify/sensible";
 import type { Pool } from "pg";
 import type {
-  ProfileWithData,
+  ProfileWithDetails,
   UpdateProfileBody,
 } from "~/schemas/profiles/index.js";
+import { parseProfileDetails } from "~/schemas/profiles/shared.js";
 import { withClient } from "~/utils/index.js";
 import { createUpdateProfileDetails } from "./index.js";
 import {
@@ -16,7 +17,7 @@ export const updateProfile = async (params: {
   profileId: string;
   data: UpdateProfileBody;
   organizationId?: string;
-}): Promise<ProfileWithData | undefined> =>
+}): Promise<ProfileWithDetails> =>
   withClient(params.pool, async (client) => {
     const { profileId, organizationId, data } = params;
 
@@ -30,23 +31,33 @@ export const updateProfile = async (params: {
       throw httpErrors.notFound(`Profile ${profileId} not found`);
     }
 
-    const { email, public_name } = data;
-    const souldUpdateEmail = email && email !== existingProfile.email;
+    const { email, publicName } = data;
+    const shouldUpdateEmail = email && email !== existingProfile.email;
     const shouldUpdatePublicName =
-      public_name && public_name !== existingProfile.public_name;
-    const shouldUpdateProfile = souldUpdateEmail || shouldUpdatePublicName;
+      publicName && publicName !== existingProfile.publicName;
+    const shouldUpdateProfile = shouldUpdateEmail || shouldUpdatePublicName;
 
-    // Update base profile fields if provided
     if (shouldUpdateProfile) {
+      // Update base profile fields if provided
       await updateProfileSql(
         client,
         profileId,
-        public_name ?? existingProfile.public_name,
+        publicName ?? existingProfile.publicName,
         email ?? existingProfile.email,
       );
     }
 
     // Create new profile details with updated data
     await createUpdateProfileDetails(client, organizationId, profileId, data);
-    return await findProfileWithData(client, organizationId, profileId);
+    const updated = await findProfileWithData(
+      client,
+      organizationId,
+      profileId,
+    );
+
+    if (!updated) {
+      throw httpErrors.notFound(`Profile ${profileId} not found after update`);
+    }
+
+    return parseProfileDetails(updated);
   });

@@ -1,7 +1,8 @@
+import { httpErrors } from "@fastify/sensible";
 import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import type { FastifyInstance } from "fastify";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
-import type { LogtoUserCreatedSchema } from "~/schemas/webhooks/index.js";
+import { LogtoUserCreatedSchema } from "~/schemas/webhooks/index.js";
 import { processUserWebhook } from "~/services/webhooks/index.js";
 import { verifySignature } from "~/utils/index.js";
 
@@ -9,6 +10,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   fastify.post(
     "/user-login-wh",
     {
+      schema: LogtoUserCreatedSchema,
       config: {
         rawBody: true,
       },
@@ -19,7 +21,8 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         request.rawBody as Buffer,
         request.headers["logto-signature-sha-256"] as string,
       );
-      if (!isSignatureVerified) throw new Error("Signature not verified...");
+      if (!isSignatureVerified)
+        throw httpErrors.unauthorized("Invalid signature");
       await processUserWebhook({
         body: request.body,
         pool: fastify.pg.pool,

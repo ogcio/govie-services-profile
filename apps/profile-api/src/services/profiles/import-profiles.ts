@@ -2,7 +2,7 @@ import type { FastifyBaseLogger } from "fastify";
 import type { Pool } from "pg";
 import { ImportStatus } from "~/const/index.js";
 import type { EnvConfig } from "~/plugins/external/env.js";
-import type { ImportProfilesBody } from "~/schemas/profiles/index.js";
+import type { KnownProfileDataDetails } from "~/schemas/profiles/index.js";
 import { withClient, withRollback } from "~/utils/index.js";
 import {
   type LogtoError,
@@ -23,16 +23,17 @@ import {
 export const importProfiles = async (params: {
   pool: Pool;
   logger: FastifyBaseLogger;
-  profiles: ImportProfilesBody;
+  profiles: KnownProfileDataDetails[];
   organizationId: string;
   config: EnvConfig;
-}): Promise<string> =>
+  source?: "json" | "csv";
+}): Promise<{ status: ImportStatus; jobId: string }> =>
   withClient(params.pool, async (client) => {
-    const { config, logger, profiles, organizationId } = params;
+    const { config, logger, profiles, organizationId, source = "csv" } = params;
 
     // 1. Create import job and import details
     const { jobId, importDetailsMap } = await withRollback(client, async () => {
-      const jobId = await createProfileImport(client, organizationId);
+      const jobId = await createProfileImport(client, organizationId, source);
       const importDetailsIdList = await createProfileImportDetails(
         client,
         jobId,
@@ -49,7 +50,7 @@ export const importProfiles = async (params: {
 
     // 2. Process profiles
     const failedProfileIds = new Set<string>();
-    const profilesToCreate: ImportProfilesBody = [];
+    const profilesToCreate: KnownProfileDataDetails[] = [];
     for (const profile of profiles) {
       const importDetailsId = importDetailsMap.get(profile.email) as string;
       logger.debug(
@@ -210,5 +211,8 @@ export const importProfiles = async (params: {
     }
 
     // 4. Return current status
-    return await getProfileImportStatus(client, jobId);
+    return {
+      status: await getProfileImportStatus(client, jobId),
+      jobId,
+    };
   });

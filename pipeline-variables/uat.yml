@@ -1,0 +1,8 @@
+variables:
+  awsServiceConnection: life-events-uat-ecr
+  awsRegion: eu-west-1
+  ecrEndpoint: 339713032391.dkr.ecr.eu-west-1.amazonaws.com
+  environment: LifeEvents-uat
+  services: profile, profile-api
+
+  nextPublicProfileServiceEntryPoint: https://profile.uat.blocks.gov.ie

@@ -1,7 +1,7 @@
 import { type Static, Type } from "@sinclair/typebox";
 import { HttpError } from "~/types/index.js";
 import { getGenericResponseSchema } from "~/utils/index.js";
-import { ProfileWithDataSchema } from "./index.js";
+import { AvailableLanguagesSchema, ProfileWithDetailsSchema } from "./index.js";
 import { PROFILES_TAG } from "./shared.js";
 
 export const UpdateProfileSchema = {
@@ -20,20 +20,20 @@ export const UpdateProfileSchema = {
   }),
   body: Type.Object(
     {
-      public_name: Type.Optional(Type.String()),
+      publicName: Type.Optional(Type.String()),
       email: Type.Optional(Type.String({ format: "email" })),
       phone: Type.Optional(Type.String()),
       address: Type.Optional(Type.String()),
       city: Type.Optional(Type.String()),
-      first_name: Type.Optional(Type.String()),
-      last_name: Type.Optional(Type.String()),
-      date_of_birth: Type.Optional(Type.String({ format: "date" })),
-      preferred_language: Type.Optional(Type.String({ enum: ["en", "ga"] })),
+      firstName: Type.Optional(Type.String()),
+      lastName: Type.Optional(Type.String()),
+      dateOfBirth: Type.Optional(Type.String({ format: "date" })),
+      preferredLanguage: Type.Optional(AvailableLanguagesSchema),
     },
     { additionalProperties: false },
   ),
   response: {
-    200: getGenericResponseSchema(ProfileWithDataSchema),
+    200: getGenericResponseSchema(ProfileWithDetailsSchema),
     "4xx": HttpError,
     "5xx": HttpError,
   },

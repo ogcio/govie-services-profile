@@ -9,6 +9,7 @@ export const autoConfig = {
     files: 1, // Max number of file fields
     parts: 1000, // Max number of parts
   },
+  attachFieldsToBody: true,
 };
 
 export default fastifyMultipart;

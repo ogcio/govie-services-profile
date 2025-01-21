@@ -1,0 +1,4 @@
+/src/apps/profile-api/.env.sample:generic-api-key:19
+/src/apps/profile-api/e2e/.env.sample:generic-api-key:2
+/src/apps/profile-api/e2e/.env.sample:generic-api-key:4
+/src/apps/profile-api/e2e/.env.sample:generic-api-key:5

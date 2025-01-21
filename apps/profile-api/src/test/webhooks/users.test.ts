@@ -2,6 +2,7 @@ import type { Pool } from "pg";
 import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import { processUserCreatedOrUpdatedWebhook } from "../../services/webhooks/process-user-created-updated-webhook.js";
 import { processUserWebhook } from "../../services/webhooks/users.js";
+import { mockLogger, mockWebhookBodies } from "../fixtures/common.js";
 
 // Mock the imported function
 vi.mock(
@@ -12,18 +13,6 @@ vi.mock(
 );
 
 describe("processUserWebhook", () => {
-  const mockLogger = {
-    debug: vi.fn(),
-    error: vi.fn(),
-    child: vi.fn(),
-    level: "info",
-    fatal: vi.fn(),
-    warn: vi.fn(),
-    info: vi.fn(),
-    trace: vi.fn(),
-    silent: vi.fn(),
-  };
-
   const mockPool = {} as Pool;
 
   beforeEach(() => {
@@ -31,21 +20,13 @@ describe("processUserWebhook", () => {
   });
 
   it("should process User.Created event", async () => {
-    const webhookBody = {
-      event: "User.Created",
-      data: {
-        id: "user-123",
-        primaryEmail: "test@example.com",
-      },
-    };
-
     (processUserCreatedOrUpdatedWebhook as Mock).mockResolvedValue({
       id: "profile-123",
       status: "success",
     });
 
     const result = await processUserWebhook({
-      body: webhookBody,
+      body: mockWebhookBodies.userCreated,
       pool: mockPool,
       logger: mockLogger,
     });
@@ -57,21 +38,13 @@ describe("processUserWebhook", () => {
   });
 
   it("should process User.Data.Updated event", async () => {
-    const webhookBody = {
-      event: "User.Data.Updated",
-      data: {
-        id: "user-123",
-        primaryEmail: "test@example.com",
-      },
-    };
-
     (processUserCreatedOrUpdatedWebhook as Mock).mockResolvedValue({
       id: "profile-123",
       status: "success",
     });
 
     const result = await processUserWebhook({
-      body: webhookBody,
+      body: mockWebhookBodies.userUpdated,
       pool: mockPool,
       logger: mockLogger,
     });

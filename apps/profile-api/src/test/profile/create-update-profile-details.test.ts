@@ -4,13 +4,14 @@ import {
   createUpdateProfileDetails,
 } from "../../services/profiles/create-update-profile-details.js";
 import { buildMockPg } from "../build-mock-pg.js";
+import { mockDbProfiles, mockProfiles } from "../fixtures/common.js";
 
 describe("createUpdateProfileDetails", () => {
   const testData = {
-    first_name: "John",
-    last_name: "Doe",
-    email: "john@example.com",
-    phone: "123456789",
+    firstName: mockProfiles[0].firstName,
+    lastName: mockProfiles[0].lastName,
+    email: mockProfiles[0].email,
+    phone: mockProfiles[0].phone,
   };
 
   it("should create profile details and return detail ID", async () => {
@@ -27,7 +28,7 @@ describe("createUpdateProfileDetails", () => {
     const result = await createUpdateProfileDetails(
       mockPg,
       "org-123",
-      "profile-123",
+      mockDbProfiles[0].id,
       testData,
     );
 
@@ -45,7 +46,12 @@ describe("createUpdateProfileDetails", () => {
     ]);
 
     await expect(
-      createUpdateProfileDetails(mockPg, "org-123", "profile-123", testData),
+      createUpdateProfileDetails(
+        mockPg,
+        "org-123",
+        mockDbProfiles[0].id,
+        testData,
+      ),
     ).rejects.toThrow(ProfileDetailsError);
   });
 
@@ -59,7 +65,7 @@ describe("createUpdateProfileDetails", () => {
     const error = await createUpdateProfileDetails(
       mockPg,
       "org-123",
-      "profile-123",
+      mockDbProfiles[0].id,
       testData,
     ).catch((e) => e);
 
@@ -79,7 +85,12 @@ describe("createUpdateProfileDetails", () => {
     ]);
 
     await expect(
-      createUpdateProfileDetails(mockPg, "org-123", "profile-123", testData),
+      createUpdateProfileDetails(
+        mockPg,
+        "org-123",
+        mockDbProfiles[0].id,
+        testData,
+      ),
     ).rejects.toThrow();
 
     // Verify rollback was called

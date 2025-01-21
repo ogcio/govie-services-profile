@@ -1,0 +1,8 @@
+variables:
+  awsServiceConnection: building-blocks-shared-ecr
+  awsRegion: eu-west-1
+  ecrEndpoint: 428528001781.dkr.ecr.eu-west-1.amazonaws.com
+  environment: LifeEvents-dev
+  services: profile, profile-api
+
+  nextPublicProfileServiceEntryPoint: https://profile.dev.blocks.gov.ie

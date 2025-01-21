@@ -2,7 +2,7 @@ import { Type } from "@sinclair/typebox";
 import { PaginationParamsSchema } from "~/schemas/pagination.js";
 import { HttpError } from "~/types/http-error.js";
 import { getGenericResponseSchema } from "~/utils/index.js";
-import { ProfileWithDataListSchema } from "./model.js";
+import { ProfileListSchema } from "./index.js";
 import { PROFILES_TAG } from "./shared.js";
 
 export const ProfilesIndexSchema = {
@@ -20,7 +20,7 @@ export const ProfilesIndexSchema = {
     PaginationParamsSchema,
   ]),
   response: {
-    200: getGenericResponseSchema(ProfileWithDataListSchema),
+    200: getGenericResponseSchema(ProfileListSchema),
     "4xx": HttpError,
     "5xx": HttpError,
   },

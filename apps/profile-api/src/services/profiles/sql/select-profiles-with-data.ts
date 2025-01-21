@@ -1,20 +1,21 @@
 import type { PoolClient } from "pg";
-import type { ProfileWithData } from "~/schemas/profiles/index.js";
+import type { ProfileWithDetailsFromDb } from "~/schemas/profiles/index.js";
 
 export const selectProfilesWithData = async (
   client: PoolClient,
   organizationId: string,
   profileIds: string[],
-) => {
-  const result = await client.query<ProfileWithData>(
+): Promise<ProfileWithDetailsFromDb[]> => {
+  const result = await client.query<ProfileWithDetailsFromDb>(
     `
         SELECT 
           p.id,
-          p.public_name,
+          p.public_name as "publicName",
           p.email,
-          p.primary_user_id,
-          p.created_at,
-          p.updated_at,
+          p.primary_user_id as "primaryUserId",
+          p.created_at as "createdAt",
+          p.updated_at as "updatedAt",
+          p.preferred_language as "preferredLanguage",
           (
             SELECT jsonb_object_agg(pdata.name, 
               jsonb_build_object(
