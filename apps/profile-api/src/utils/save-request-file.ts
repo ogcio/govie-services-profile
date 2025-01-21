@@ -3,9 +3,17 @@ import { MimeTypes } from "~/const/mime-types.js";
 import type { ImportProfilesSchema } from "~/schemas/profiles/index.js";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
 
+export interface SavedFileInfo {
+  filepath: string;
+  metadata: {
+    filename: string;
+    mimetype: string;
+  };
+}
+
 export const saveRequestFile = async (
   request: FastifyRequestTypebox<typeof ImportProfilesSchema>,
-): Promise<string> => {
+): Promise<SavedFileInfo> => {
   const firstFile = await request.body.file;
   if (!firstFile) {
     throw httpErrors.unprocessableEntity("File is not a valid one");
@@ -16,6 +24,13 @@ export const saveRequestFile = async (
   }
 
   const saved = await request.saveRequestFiles({ limits: { files: 1 } });
+  const file = saved[0];
 
-  return saved[0].filepath;
+  return {
+    filepath: file.filepath,
+    metadata: {
+      filename: file.filename,
+      mimetype: file.mimetype,
+    },
+  };
 };

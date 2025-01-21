@@ -4,6 +4,7 @@ import { ImportStatus } from "~/const/index.js";
 import type { EnvConfig } from "~/plugins/external/env.js";
 import type { KnownProfileDataDetails } from "~/schemas/profiles/index.js";
 import { withClient, withRollback } from "~/utils/index.js";
+import type { SavedFileInfo } from "~/utils/save-request-file.js";
 import {
   type LogtoError,
   createLogtoUsers,
@@ -27,13 +28,26 @@ export const importProfiles = async (params: {
   organizationId: string;
   config: EnvConfig;
   source?: "json" | "csv";
+  fileMetadata?: SavedFileInfo["metadata"];
 }): Promise<{ status: ImportStatus; jobId: string }> =>
   withClient(params.pool, async (client) => {
-    const { config, logger, profiles, organizationId, source = "csv" } = params;
+    const {
+      config,
+      logger,
+      profiles,
+      organizationId,
+      source = "csv",
+      fileMetadata,
+    } = params;
 
     // 1. Create import job and import details
     const { jobId, importDetailsMap } = await withRollback(client, async () => {
-      const jobId = await createProfileImport(client, organizationId, source);
+      const jobId = await createProfileImport(
+        client,
+        organizationId,
+        source,
+        fileMetadata,
+      );
       const importDetailsIdList = await createProfileImportDetails(
         client,
         jobId,
