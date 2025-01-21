@@ -1,0 +1,22 @@
+meta {
+  name: Public Servant Can Filter Profile Imports
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/api/v1/profiles/imports?source=json
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data[*].source: eq "json"
+  res.body.total: isDefined
+}

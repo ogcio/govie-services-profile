@@ -8,6 +8,8 @@ import {
   FindProfileSchema,
   GetProfileSchema,
   ImportProfilesSchema,
+  type KnownProfileDataDetails,
+  ListProfileImportsSchema,
   type Profile,
   type ProfileWithDetails,
   ProfilesIndexSchema,
@@ -20,6 +22,7 @@ import {
   findProfile,
   getProfile,
   importProfiles,
+  listProfileImports,
   listProfiles,
   selectProfiles,
   updateProfile,
@@ -29,7 +32,10 @@ import {
   sanitizePagination,
   withOrganizationId,
 } from "~/utils/index.js";
-import { saveRequestFile } from "~/utils/save-request-file.js";
+import {
+  type SavedFileInfo,
+  saveRequestFile,
+} from "~/utils/save-request-file.js";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   const {
@@ -72,9 +78,16 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       const isJson = request.headers["content-type"]?.startsWith(
         MimeTypes.Json,
       );
-      const profiles = isJson
-        ? (request.body.profiles ?? [])
-        : await getProfilesFromCsv(await saveRequestFile(request));
+
+      let profiles: KnownProfileDataDetails[];
+      let savedFile: SavedFileInfo | undefined;
+
+      if (isJson) {
+        profiles = request.body.profiles ?? [];
+      } else {
+        savedFile = await saveRequestFile(request);
+        profiles = await getProfilesFromCsv(savedFile.filepath);
+      }
 
       return importProfiles({
         profiles,
@@ -83,6 +96,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         config,
         pool,
         source: isJson ? "json" : "csv",
+        fileMetadata: savedFile?.metadata,
       });
     },
   );
@@ -125,6 +139,30 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
           query: request.query,
         }),
       };
+    },
+  );
+
+  fastify.get(
+    "/imports",
+    {
+      preValidation: (req, res) =>
+        fastify.checkPermissions(req, res, [Permissions.User.Read]),
+      schema: ListProfileImportsSchema,
+    },
+    async (request: FastifyRequestTypebox<typeof ListProfileImportsSchema>) => {
+      const { data, total: totalCount } = await listProfileImports({
+        pool,
+        organisationId: withOrganizationId(request),
+        pagination: sanitizePagination(request.query),
+        source: request.query.source,
+      });
+
+      return formatAPIResponse({
+        data,
+        config,
+        request,
+        totalCount,
+      });
     },
   );
 

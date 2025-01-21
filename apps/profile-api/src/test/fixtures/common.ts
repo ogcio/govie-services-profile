@@ -1,3 +1,4 @@
+import type { Pool } from "pg";
 import { vi } from "vitest";
 import type { EnvConfig } from "../../plugins/external/env.js";
 
@@ -49,6 +50,30 @@ export const mockProfiles = [
     city: "Test Town",
   },
 ];
+
+// Common mock profile imports used in tests
+export const mockProfileImports = [
+  {
+    id: "import-1",
+    jobId: "job-1",
+    organisationId: "org-1",
+    status: "completed",
+    metadata: { totalRows: 100 },
+    source: "csv",
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+  },
+  {
+    id: "import-2",
+    jobId: "job-2",
+    organisationId: "org-1",
+    status: "processing",
+    metadata: { totalRows: 50 },
+    source: "json",
+    createdAt: "2024-01-02T00:00:00Z",
+    updatedAt: "2024-01-02T00:00:00Z",
+  },
+] as const;
 
 // Common mock DB profiles
 export const mockDbProfiles = [
@@ -124,3 +149,15 @@ export const mockWebhookBodies = {
     },
   },
 } as const;
+
+// Common mock DB pool for database tests
+export const createMockPool = (mockQuery = vi.fn()) =>
+  ({
+    query: mockQuery,
+    totalCount: 0,
+    idleCount: 0,
+    waitingCount: 0,
+    expiredCount: 0,
+    end: vi.fn(),
+    connect: vi.fn(),
+  }) as unknown as Pool;

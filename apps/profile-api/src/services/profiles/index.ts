@@ -3,6 +3,7 @@ export * from "./create-update-profile-details.js";
 export * from "./find-profile.js";
 export * from "./get-profile.js";
 export * from "./list-profiles.js";
+export * from "./list-profile-imports.js";
 export * from "./update-profile.js";
 export * from "./import-profiles.js";
 export * from "./select-profiles.js";
