@@ -8,11 +8,12 @@ export const saveRequestFile = async (
 ): Promise<string> => {
   const firstFile = await request.body.file;
   if (!firstFile) {
-    throw httpErrors.badRequest("File is not a valid one");
+    throw httpErrors.unprocessableEntity("File is not a valid one");
   }
 
   if (firstFile.mimetype !== MimeTypes.Csv) {
-    throw httpErrors.badRequest("File must be a CSV");
+    console.log(firstFile.mimetype);
+    throw httpErrors.unprocessableEntity("File must be a CSV");
   }
 
   const saved = await request.saveRequestFiles({ limits: { files: 1 } });
