@@ -20,14 +20,14 @@ describe("updateProfileDetailsToLatest", () => {
     expect(query.sql).toContain("UPDATE profile_details");
     expect(query.sql).toContain("SET is_latest = false");
     expect(query.sql).toContain("WHERE id <> $1");
-    expect(query.sql).toContain("AND organisation_id = $2");
-    expect(query.sql).toContain("AND profile_id = $3");
+    expect(query.sql).toContain("AND organisation_id = $3");
+    expect(query.sql).toContain("AND profile_id = $2");
 
     // Verify parameters
     expect(query.values).toEqual([
       "detail-123", // id
-      "org-123", // organisation_id
       mockDbProfiles[0].id, // profile_id
+      "org-123", // organisation_id
     ]);
   });
 

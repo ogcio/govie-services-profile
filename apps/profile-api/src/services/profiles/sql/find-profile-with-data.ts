@@ -6,6 +6,12 @@ export const findProfileWithData = async (
   organizationId: string | undefined,
   profileId: string,
 ): Promise<ProfileWithDetailsFromDb | undefined> => {
+  let organizationClause = " IS NULL ";
+  const values = [profileId];
+  if (organizationId !== undefined) {
+    organizationClause = " = $2 ";
+    values.push(organizationId);
+  }
   const result = await client.query<ProfileWithDetailsFromDb>(
     `
         SELECT 
@@ -26,14 +32,14 @@ export const findProfileWithData = async (
             FROM profile_data pdata
             INNER JOIN profile_details pd ON pd.id = pdata.profile_details_id
             WHERE pd.profile_id = p.id 
-            AND pd.organisation_id = $1
+            AND pd.organisation_id ${organizationClause}
             AND pd.is_latest = true
         ) as details
         FROM profiles p
-        WHERE p.id = $2
+        WHERE p.id = $1
         AND p.deleted_at IS NULL
         `,
-    [organizationId, profileId],
+    values,
   );
 
   return result.rows?.[0];

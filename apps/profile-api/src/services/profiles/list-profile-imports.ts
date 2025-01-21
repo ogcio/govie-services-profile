@@ -3,7 +3,7 @@ import type { PaginationParams } from "~/schemas/pagination.js";
 
 interface ListProfileImportsParams {
   pool: Pool;
-  organisationId?: string;
+  organisationId: string;
   source?: "csv" | "json";
   pagination: Required<PaginationParams>;
 }
@@ -21,14 +21,12 @@ export async function listProfileImports({
   let paramIndex = 3;
   let countParamIndex = 1;
 
-  if (organisationId) {
-    conditions.push(`organisation_id = $${paramIndex}::text`);
-    countConditions.push(`organisation_id = $${countParamIndex}::text`);
-    params.push(organisationId);
-    countParams.push(organisationId);
-    paramIndex++;
-    countParamIndex++;
-  }
+  conditions.push(`organisation_id = $${paramIndex}::text`);
+  countConditions.push(`organisation_id = $${countParamIndex}::text`);
+  params.push(organisationId);
+  countParams.push(organisationId);
+  paramIndex++;
+  countParamIndex++;
 
   conditions.push(`source = $${paramIndex}::text`);
   countConditions.push(`source = $${countParamIndex}::text`);

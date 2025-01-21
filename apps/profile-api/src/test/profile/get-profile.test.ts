@@ -22,8 +22,8 @@ describe("getProfile", () => {
 
     expect(result).toEqual(mockProfile);
     expect(mockPg.getExecutedQueries()[0].values).toEqual([
-      "org-123",
       mockDbProfiles[0].id,
+      "org-123",
     ]);
   });
 
@@ -41,7 +41,6 @@ describe("getProfile", () => {
 
     expect(result).toEqual(mockProfile);
     expect(mockPg.getExecutedQueries()[0].values).toEqual([
-      undefined,
       mockDbProfiles[0].id,
     ]);
   });
@@ -63,8 +62,8 @@ describe("getProfile", () => {
       }),
     ).rejects.toThrow(mockError);
     expect(mockPg.getExecutedQueries()[0].values).toEqual([
-      "org-123",
       "nonexistent-profile",
+      "org-123",
     ]);
   });
 

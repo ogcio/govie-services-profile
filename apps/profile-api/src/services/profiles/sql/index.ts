@@ -17,3 +17,4 @@ export * from "./find-profile-with-data.js";
 export * from "./select-profiles-with-data.js";
 export * from "./update-profile.js";
 export * from "./update-profile-import-status-by-job-id.js";
+export * from "./check-if-profile-exists-by-id.js";

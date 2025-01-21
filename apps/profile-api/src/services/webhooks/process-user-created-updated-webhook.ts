@@ -3,11 +3,15 @@ import type { FastifyBaseLogger } from "fastify";
 import type { Pool } from "pg";
 import { ImportStatus } from "~/const/index.js";
 import {
+  type AvailableLanguages,
   DEFAULT_LANGUAGE,
   type KnownProfileDataDetails,
 } from "~/schemas/profiles/model.js";
 import type { LogtoUserCreatedBody } from "~/schemas/webhooks/index.js";
-import { createUpdateProfileDetails } from "~/services/profiles/index.js";
+import {
+  createUpdateProfileDetails,
+  updateProfile,
+} from "~/services/profiles/index.js";
 import {
   checkImportCompletion,
   createProfile,
@@ -18,6 +22,7 @@ import {
   updateProfileImportStatusByJobId,
 } from "~/services/profiles/sql/index.js";
 import { withClient, withRollback } from "~/utils/index.js";
+import { checkIfProfileExists } from "../profiles/sql/check-if-profile-exists-by-id.js";
 import { type WebhookUser, webhookBodyToUser } from "./index.js";
 
 interface WebhookResponse {
@@ -205,27 +210,40 @@ async function processUserForDirectSignin(params: {
           publicName = user.email;
         }
 
-        const profileId = await createProfile(client, {
+        const importDetail: KnownProfileDataDetails = {
+          email: user.email,
+          firstName: user.details?.firstName ?? "N/D",
+          lastName: user.details?.lastName ?? "N/D",
+        };
+
+        const profileData = {
           id: user.id,
           email: user.email,
           publicName,
           primaryUserId: user.primaryUserId,
           safeLevel: 0,
-        });
-        const importDetail: KnownProfileDataDetails = {
-          email: user.email,
-          firstName: user.details?.firstName ?? "N/D",
-          lastName: user.details?.lastName ?? "N/D",
-          preferredLanguage: DEFAULT_LANGUAGE,
+          preferredLanguage: DEFAULT_LANGUAGE as AvailableLanguages,
         };
+
+        if (await checkIfProfileExists(client, user.id)) {
+          await updateProfile({
+            profileId: user.id,
+            data: profileData,
+            pool,
+          });
+
+          return { profileId: user.id };
+        }
+        await createProfile(client, profileData);
+
         await createUpdateProfileDetails(
           client,
           undefined,
-          profileId,
+          user.id,
           importDetail,
         );
 
-        return { profileId };
+        return { profileId: user.id };
       });
 
       return { id: result.profileId, status: "success" };
