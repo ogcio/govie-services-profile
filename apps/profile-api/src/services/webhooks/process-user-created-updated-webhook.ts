@@ -2,6 +2,10 @@ import { httpErrors } from "@fastify/sensible";
 import type { FastifyBaseLogger } from "fastify";
 import type { Pool } from "pg";
 import { ImportStatus } from "~/const/index.js";
+import {
+  DEFAULT_LANGUAGE,
+  type KnownProfileDataDetails,
+} from "~/schemas/profiles/model.js";
 import type { LogtoUserCreatedBody } from "~/schemas/webhooks/index.js";
 import { createUpdateProfileDetails } from "~/services/profiles/index.js";
 import {
@@ -14,7 +18,7 @@ import {
   updateProfileImportStatusByJobId,
 } from "~/services/profiles/sql/index.js";
 import { withClient, withRollback } from "~/utils/index.js";
-import { webhookBodyToUser } from "./index.js";
+import { type WebhookUser, webhookBodyToUser } from "./index.js";
 
 interface WebhookResponse {
   id: string | undefined;
@@ -26,10 +30,22 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
   body: LogtoUserCreatedBody;
   pool: Pool;
   logger: FastifyBaseLogger;
-}): Promise<WebhookResponse> =>
-  withClient(params.pool, async (client) => {
-    const user = webhookBodyToUser(params.body.data);
+}): Promise<WebhookResponse> => {
+  const user = webhookBodyToUser(params.body.data);
+  if (user.jobId) {
+    return processUserForJob({ user, ...params });
+  }
 
+  return processUserForDirectSignin({ user, ...params });
+};
+
+async function processUserForJob(params: {
+  user: WebhookUser;
+  pool: Pool;
+  logger: FastifyBaseLogger;
+}): Promise<WebhookResponse> {
+  const { user, pool, logger } = params;
+  return withClient(pool, async (client) => {
     try {
       const jobId = user.jobId ?? null;
 
@@ -88,9 +104,7 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
 
       // Second transaction: Check completion and update overall status
       await withRollback(client, async () => {
-        params.logger.debug(
-          `[Webhook] Checking completion for job ${result.jobId}`,
-        );
+        logger.debug(`[Webhook] Checking completion for job ${result.jobId}`);
         const { isComplete, finalStatus } = await checkImportCompletion(
           client,
           result.jobId,
@@ -101,16 +115,14 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
         });
 
         if (isComplete) {
-          params.logger.debug(
-            `[Webhook] Updating overall status to ${finalStatus}`,
-          );
+          logger.debug(`[Webhook] Updating overall status to ${finalStatus}`);
           await updateProfileImportStatusByJobId(
             client,
             result.jobId,
             finalStatus,
           );
         } else {
-          params.logger.debug(
+          logger.debug(
             "[Webhook] Import not complete yet, staying in processing state",
           );
         }
@@ -118,14 +130,12 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
 
       return { id: result.profileId, status: "success" };
     } catch (error) {
-      params.logger.error("[Webhook] Error processing webhook:", error);
+      logger.error("[Webhook] Error processing webhook:", error);
       // If there's an error, mark the profile as failed but don't fail the entire import
       if (user.jobId) {
         // First transaction: Mark profile as failed
         await withRollback(client, async () => {
-          params.logger.debug(
-            `[Webhook] Marking profile ${user.email} as failed`,
-          );
+          logger.debug(`[Webhook] Marking profile ${user.email} as failed`);
           const profileImportId = await findProfileImportByJobId(
             client,
             user.jobId as string,
@@ -172,3 +182,64 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
       };
     }
   });
+}
+
+async function processUserForDirectSignin(params: {
+  user: WebhookUser;
+  pool: Pool;
+  logger: FastifyBaseLogger;
+}): Promise<WebhookResponse> {
+  const { user, pool, logger } = params;
+  return withClient(pool, async (client) => {
+    try {
+      // First transaction: Create profile and update status
+      const result = await withRollback(client, async () => {
+        let publicName = [
+          user.details?.firstName ?? "",
+          user.details?.lastName ?? "",
+        ]
+          .join(" ")
+          .trim();
+
+        if (publicName.length === 0) {
+          publicName = user.email;
+        }
+
+        const profileId = await createProfile(client, {
+          id: user.id,
+          email: user.email,
+          publicName,
+          primaryUserId: user.primaryUserId,
+          safeLevel: 0,
+        });
+        const importDetail: KnownProfileDataDetails = {
+          email: user.email,
+          firstName: user.details?.firstName ?? "N/D",
+          lastName: user.details?.lastName ?? "N/D",
+          preferredLanguage: DEFAULT_LANGUAGE,
+        };
+        await createUpdateProfileDetails(
+          client,
+          undefined,
+          profileId,
+          importDetail,
+        );
+
+        return { profileId };
+      });
+
+      return { id: result.profileId, status: "success" };
+    } catch (error) {
+      logger.error(
+        "[Webhook] Error processing webhook for direct signin:",
+        error,
+      );
+      return {
+        id: undefined,
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+        status: "error",
+      };
+    }
+  });
+}
