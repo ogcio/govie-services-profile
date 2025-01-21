@@ -2003,6 +2003,110 @@ paths:
                   - detail
                   - requestId
                   - name
+  /api/v1/profiles/imports/template:
+    get:
+      operationId: getProfileTemplate
+      tags:
+        - Profiles
+      responses:
+        "200":
+          description: Default Response
+          content:
+            text/csv:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - Buffer
+                  data:
+                    type: array
+                    items:
+                      type: number
+                required:
+                  - type
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            text/csv:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: Code used to categorize the error
+                    type: string
+                  detail:
+                    description: Description of the error
+                    type: string
+                  requestId:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
+                    type: string
+                  name:
+                    description: Name of the error type
+                    type: string
+                  validation:
+                    description: List of the validation errors
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            text/csv:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: Code used to categorize the error
+                    type: string
+                  detail:
+                    description: Description of the error
+                    type: string
+                  requestId:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
+                    type: string
+                  name:
+                    description: Name of the error type
+                    type: string
+                  validation:
+                    description: List of the validation errors
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
   /user-login-wh:
     post:
       operationId: logtoUserCreated

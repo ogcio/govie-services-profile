@@ -8,6 +8,7 @@ import {
   FindProfileSchema,
   GetProfileImportDetailsSchema,
   GetProfileSchema,
+  GetProfileTemplateSchema,
   ImportProfilesSchema,
   type KnownProfileDataDetails,
   ListProfileImportsSchema,
@@ -23,6 +24,7 @@ import {
   findProfile,
   getProfile,
   getProfileImportDetails,
+  getProfileTemplate,
   importProfiles,
   listProfileImports,
   listProfiles,
@@ -266,6 +268,23 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
           data,
         }),
       };
+    },
+  );
+
+  fastify.get(
+    "/imports/template",
+    {
+      schema: GetProfileTemplateSchema,
+    },
+    async (_, reply) => {
+      const csvBuffer = getProfileTemplate();
+      return reply
+        .header("Content-Type", "text/csv")
+        .header(
+          "Content-Disposition",
+          'attachment; filename="profile-template.csv"',
+        )
+        .send(csvBuffer);
     },
   );
 
