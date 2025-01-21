@@ -1,6 +1,6 @@
 import { type HttpError, httpErrors } from "@fastify/sensible";
 import type { PoolClient } from "pg";
-import type { ImportProfilesBody } from "~/schemas/profiles/index.js";
+import type { KnownProfileDataDetails } from "~/schemas/profiles/index.js";
 
 export class ProfileImportDetailNotFoundError implements HttpError {
   status = 404;
@@ -18,7 +18,7 @@ export const getProfileImportDetailDataByEmail = async (
   client: PoolClient,
   profileImportId: string,
   email: string,
-): Promise<ImportProfilesBody[number]> => {
+): Promise<KnownProfileDataDetails> => {
   if (!profileImportId) {
     throw httpErrors.badRequest("Profile import ID is required");
   }
@@ -26,7 +26,7 @@ export const getProfileImportDetailDataByEmail = async (
     throw httpErrors.badRequest("Email is required");
   }
 
-  const result = await client.query<{ profile: ImportProfilesBody[0] }>(
+  const result = await client.query<{ profile: KnownProfileDataDetails }>(
     `
     SELECT data as profile
     FROM profile_import_details

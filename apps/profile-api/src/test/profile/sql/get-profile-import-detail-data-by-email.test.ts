@@ -4,16 +4,17 @@ import {
   getProfileImportDetailDataByEmail,
 } from "../../../services/profiles/sql/get-profile-import-detail-data-by-email.js";
 import { buildMockPg } from "../../build-mock-pg.js";
+import { mockProfiles } from "../../fixtures/common.js";
 
 describe("getProfileImportDetailDataByEmail", () => {
   const sampleProfile = {
-    firstName: "John",
-    lastName: "Doe",
-    email: "john@example.com",
-    phone: "123456789",
-    address: "123 Main St",
-    city: "Dublin",
-    dateOfBirth: "1990-01-01",
+    firstName: mockProfiles[0].firstName,
+    lastName: mockProfiles[0].lastName,
+    email: mockProfiles[0].email,
+    phone: mockProfiles[0].phone,
+    address: mockProfiles[0].address,
+    city: mockProfiles[0].city,
+    dateOfBirth: mockProfiles[0].dateOfBirth,
   };
 
   it("should return profile data when found", async () => {
@@ -22,7 +23,7 @@ describe("getProfileImportDetailDataByEmail", () => {
     const result = await getProfileImportDetailDataByEmail(
       mockPg,
       "import-123",
-      "john@example.com",
+      mockProfiles[0].email,
     );
 
     expect(result).toEqual(sampleProfile);
@@ -32,14 +33,14 @@ describe("getProfileImportDetailDataByEmail", () => {
     expect(query.sql).toContain("FROM profile_import_details");
     expect(query.sql).toContain("WHERE profile_import_id = $1");
     expect(query.sql).toContain("AND data->>'email' = $2");
-    expect(query.values).toEqual(["import-123", "john@example.com"]);
+    expect(query.values).toEqual(["import-123", mockProfiles[0].email]);
   });
 
   it("should throw error if profile import ID is missing", async () => {
     const mockPg = buildMockPg([]);
 
     await expect(
-      getProfileImportDetailDataByEmail(mockPg, "", "john@example.com"),
+      getProfileImportDetailDataByEmail(mockPg, "", mockProfiles[0].email),
     ).rejects.toThrow("Profile import ID is required");
   });
 
@@ -58,7 +59,7 @@ describe("getProfileImportDetailDataByEmail", () => {
       getProfileImportDetailDataByEmail(
         mockPg,
         "import-123",
-        "john@example.com",
+        mockProfiles[0].email,
       ),
     ).rejects.toThrow(ProfileImportDetailNotFoundError);
   });
@@ -70,7 +71,7 @@ describe("getProfileImportDetailDataByEmail", () => {
       getProfileImportDetailDataByEmail(
         mockPg,
         "import-123",
-        "john@example.com",
+        mockProfiles[0].email,
       ),
     ).rejects.toThrow(ProfileImportDetailNotFoundError);
   });

@@ -1,14 +1,10 @@
 import type { FastifyRequest } from "fastify";
 import { describe, expect, it } from "vitest";
-import type { EnvConfig } from "../../plugins/external/env.js";
 import type { PaginationDetails } from "../../types/index.js";
 import { formatAPIResponse } from "../../utils/format-api-response.js";
+import { mockApiConfig } from "../fixtures/common.js";
 
 describe("formatAPIResponse", () => {
-  const mockConfig: EnvConfig = {
-    HOST_URL: "http://api.example.com",
-  } as EnvConfig;
-
   const mockData = [
     { id: 1, name: "Test 1" },
     { id: 2, name: "Test 2" },
@@ -18,7 +14,7 @@ describe("formatAPIResponse", () => {
     it("should return data without metadata when no pagination or request is provided", () => {
       const response = formatAPIResponse({
         data: mockData,
-        config: mockConfig,
+        config: mockApiConfig,
         totalCount: 2,
       });
 
@@ -30,7 +26,7 @@ describe("formatAPIResponse", () => {
 
   describe("With Pagination Details", () => {
     it("should include metadata with pagination links when pagination details are provided", () => {
-      const pagination: PaginationDetails = {
+      const pagination = {
         url: new URL("http://api.example.com/items"),
         limit: 10,
         offset: 0,
@@ -38,7 +34,7 @@ describe("formatAPIResponse", () => {
 
       const response = formatAPIResponse({
         data: mockData,
-        config: mockConfig,
+        config: mockApiConfig,
         pagination,
         totalCount: 15,
       });
@@ -58,7 +54,7 @@ describe("formatAPIResponse", () => {
     });
 
     it("should handle pagination with no next page", () => {
-      const pagination: PaginationDetails = {
+      const pagination = {
         url: new URL("http://api.example.com/items"),
         limit: 10,
         offset: 10,
@@ -66,7 +62,7 @@ describe("formatAPIResponse", () => {
 
       const response = formatAPIResponse({
         data: mockData,
-        config: mockConfig,
+        config: mockApiConfig,
         pagination,
         totalCount: 15,
       });
@@ -84,7 +80,7 @@ describe("formatAPIResponse", () => {
 
       const response = formatAPIResponse({
         data: mockData,
-        config: mockConfig,
+        config: mockApiConfig,
         request: mockRequest,
         totalCount: 15,
       });
@@ -110,7 +106,7 @@ describe("formatAPIResponse", () => {
 
       const response = formatAPIResponse({
         data: mockData,
-        config: mockConfig,
+        config: mockApiConfig,
         request: mockRequest,
         totalCount: 2,
       });
@@ -131,7 +127,7 @@ describe("formatAPIResponse", () => {
 
       const response = formatAPIResponse({
         data: mockData,
-        config: mockConfig,
+        config: mockApiConfig,
         request: mockRequest,
         totalCount: 15,
       });
@@ -147,7 +143,7 @@ describe("formatAPIResponse", () => {
     it("should handle empty data array", () => {
       const response = formatAPIResponse({
         data: [],
-        config: mockConfig,
+        config: mockApiConfig,
         totalCount: 0,
       });
 
@@ -165,7 +161,7 @@ describe("formatAPIResponse", () => {
 
       const response = formatAPIResponse({
         data: mockData,
-        config: mockConfig,
+        config: mockApiConfig,
         pagination,
         totalCount: 2,
       });
@@ -186,7 +182,7 @@ describe("formatAPIResponse", () => {
 
       const response = formatAPIResponse({
         data: mockData,
-        config: mockConfig,
+        config: mockApiConfig,
         pagination,
         totalCount: 4,
       });
@@ -210,7 +206,7 @@ describe("formatAPIResponse", () => {
 
       const response = formatAPIResponse({
         data: mockData,
-        config: mockConfig,
+        config: mockApiConfig,
         pagination,
         request: mockRequest,
         totalCount: 15,

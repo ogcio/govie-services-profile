@@ -1,0 +1,16 @@
+{
+  "bafcda898c4d928d1d6a4f3aa1158e61_0": {
+    "author": "Matteo La Cognata",
+    "false_positive": true,
+    "ignored_at": "2025-01-20T16:18:07Z"
+  },
+  "c442a1a3842f075617b18c78553258ea_0": {
+    "author": "Matteo La Cognata",
+    "false_positive": true,
+    "ignored_at": "2025-01-20T16:19:26Z"
+  },
+  "test/profile/import-profiles.test.ts": {
+    "false_positive": false,
+    "ignored_at": ""
+  }
+}

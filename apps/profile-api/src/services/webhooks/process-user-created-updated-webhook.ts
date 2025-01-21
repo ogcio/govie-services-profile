@@ -2,7 +2,6 @@ import { httpErrors } from "@fastify/sensible";
 import type { FastifyBaseLogger } from "fastify";
 import type { Pool } from "pg";
 import { ImportStatus } from "~/const/index.js";
-import type { ImportProfilesBody } from "~/schemas/profiles/index.js";
 import type { LogtoUserCreatedBody } from "~/schemas/webhooks/index.js";
 import { createUpdateProfileDetails } from "~/services/profiles/index.js";
 import {
@@ -69,7 +68,7 @@ export const processUserCreatedOrUpdatedWebhook = async (params: {
           client,
           user.organizationId,
           profileId,
-          importDetail as ImportProfilesBody[0],
+          importDetail,
         );
 
         const importDetailsId = await findProfileImportDetailByEmail(

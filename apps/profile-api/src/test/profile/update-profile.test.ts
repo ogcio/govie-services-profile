@@ -5,25 +5,12 @@ import {
   updateProfile,
 } from "../../../src/services/profiles/index.js";
 import { buildMockPg } from "../../test/build-mock-pg.js";
+import { mockDbProfiles } from "../fixtures/common.js";
 
 // vi.mock("../../../src/services/profiles/create-update-profile-details.js");
 
 describe("updateProfile", () => {
-  const existingProfile = {
-    id: "profile-123",
-    publicName: "Test User",
-    email: "test@example.com",
-    primaryUserId: "user-123",
-    createdAt: "2024-01-15T12:00:00Z",
-    updatedAt: "2024-01-15T12:00:00Z",
-    preferredLanguage: "en",
-    details: {
-      firstName: { value: "Test", type: "string" },
-      lastName: { value: "User", type: "string" },
-      phone: { value: "1234567890", type: "string" },
-      email: { value: "abc@com.it", type: "string" },
-    },
-  };
+  const existingProfile = mockDbProfiles[0];
 
   it("should update profile with new email and public name", async () => {
     const mockPg = buildMockPg([
@@ -50,7 +37,7 @@ describe("updateProfile", () => {
     };
     const result = await updateProfile({
       pool: mockPool as unknown as Pool,
-      profileId: "profile-123",
+      profileId: existingProfile.id,
       organizationId: "org-123",
       data: {
         email: "new@example.com",
@@ -67,7 +54,7 @@ describe("updateProfile", () => {
     // Verify initial profile check
     expect(queries[0].sql).toContain("SELECT");
     expect(queries[0].sql).toContain("FROM profiles p");
-    expect(queries[0].values).toEqual(["org-123", "profile-123"]);
+    expect(queries[0].values).toEqual(["org-123", existingProfile.id]);
 
     // Verify profile update
     expect(queries[1].sql).toBe(
@@ -75,7 +62,7 @@ describe("updateProfile", () => {
     );
     expect(queries[1].values?.[0]).toBe("New Name");
     expect(queries[1].values?.[1]).toBe("new@example.com");
-    expect(queries[1].values?.[4]).toBe("profile-123");
+    expect(queries[1].values?.[4]).toBe(existingProfile.id);
   });
 
   it("should update profile details only", async () => {
@@ -105,7 +92,7 @@ describe("updateProfile", () => {
 
     const result = await updateProfile({
       pool: mockPool as unknown as Pool,
-      profileId: "profile-123",
+      profileId: existingProfile.id,
       organizationId: "org-123",
       data: {
         phone: "9876543210",
@@ -154,7 +141,7 @@ describe("updateProfile", () => {
     await expect(
       updateProfile({
         pool: mockPool as unknown as Pool,
-        profileId: "profile-123",
+        profileId: existingProfile.id,
         organizationId: "org-123",
         data: {
           email: "new@example.com",
@@ -188,7 +175,7 @@ describe("updateProfile", () => {
 
     const result = await updateProfile({
       pool: mockPool as unknown as Pool,
-      profileId: "profile-123",
+      profileId: existingProfile.id,
       organizationId: "org-123",
       data: {
         email: "new@example.com",

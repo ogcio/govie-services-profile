@@ -1,34 +1,12 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ImportStatus } from "../../../const/profile.js";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { mockProfiles } from "../../fixtures/common.js";
 import { build } from "../../test-server-builder.js";
 
-describe("/profiles/import-profiles", () => {
+describe("POST /api/v1/profiles/import-profiles", () => {
   let app: FastifyInstance;
-  const url = "/api/v1/profiles/import-profiles";
 
-  const profiles = [
-    {
-      address: "123 Test St",
-      city: "Testville",
-      firstName: "Test",
-      lastName: "User",
-      email: "test1@example.com",
-      phone: "1234567890",
-      dateOfBirth: "1990-01-01",
-    },
-    {
-      address: "456 Test St",
-      city: "Testville",
-      firstName: "Test",
-      lastName: "User",
-      email: "test2@example.com",
-      phone: "1234567890",
-      dateOfBirth: "1990-01-01",
-    },
-  ];
-
-  beforeEach(async () => {
+  beforeAll(async () => {
     app = await build();
     app.addHook("onRequest", async (req: FastifyRequest) => {
       // Override the request decorator
@@ -50,62 +28,113 @@ describe("/profiles/import-profiles", () => {
     });
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
-    vi.clearAllMocks();
   });
 
-  it("should handle valid profiles import", async () => {
-    const response = await app.inject({
-      method: "POST",
-      url,
-      payload: profiles,
-      headers: {
-        "content-type": "application/json",
-      },
-    });
-
-    expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.payload)).toEqual({
-      status: ImportStatus.FAILED,
-    });
-  });
-
-  it("should reject empty profiles array", async () => {
-    const response = await app.inject({
-      method: "POST",
-      url,
-      payload: [],
-      headers: {
-        "content-type": "application/json",
-      },
-    });
-
-    expect(response.statusCode).toBe(422);
-    const payload = JSON.parse(response.payload);
-    expect(payload).toHaveProperty("code", "VALIDATION_ERROR");
-    expect(payload).toHaveProperty(
-      "detail",
-      "body must NOT have fewer than 1 items",
-    );
-  });
-
-  it("should validate profile data structure", async () => {
-    const response = await app.inject({
-      method: "POST",
-      url,
-      payload: [
-        {
-          invalidField: "value",
+  describe("Input validation", () => {
+    it("should reject empty profiles array", async () => {
+      const response = await app.inject({
+        method: "POST",
+        url: "/api/v1/profiles/import-profiles",
+        payload: {
+          profiles: [],
         },
-      ],
-      headers: {
-        "content-type": "application/json",
-      },
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+
+      expect(response.statusCode).toBe(422);
     });
 
-    expect(response.statusCode).toBe(422);
-    const payload = JSON.parse(response.payload);
-    expect(payload).toHaveProperty("code", "VALIDATION_ERROR");
+    it("should reject profiles with missing required fields", async () => {
+      const { lastName, email, ...invalidProfile } = mockProfiles[0];
+
+      const response = await app.inject({
+        method: "POST",
+        url: "/api/v1/profiles/import-profiles",
+        payload: {
+          profiles: [invalidProfile],
+        },
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+
+      expect(response.statusCode).toBe(422);
+    });
+
+    it("should reject profiles with invalid email format", async () => {
+      const invalidProfile = { ...mockProfiles[0], email: "invalid-email" };
+
+      const response = await app.inject({
+        method: "POST",
+        url: "/api/v1/profiles/import-profiles",
+        payload: {
+          profiles: [invalidProfile],
+        },
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+
+      expect(response.statusCode).toBe(422);
+    });
+
+    it("should reject profiles with invalid date format", async () => {
+      const invalidProfile = {
+        ...mockProfiles[0],
+        dateOfBirth: "invalid-date",
+      };
+
+      const response = await app.inject({
+        method: "POST",
+        url: "/api/v1/profiles/import-profiles",
+        payload: {
+          profiles: [invalidProfile],
+        },
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+
+      expect(response.statusCode).toBe(422);
+    });
+
+    it("should reject invalid file type for CSV upload", async () => {
+      const form = new FormData();
+      const file = new File(["test"], "test.txt", { type: "text/plain" });
+      form.append("file", file);
+
+      const boundary = "----formdata-boundary";
+      const response = await app.inject({
+        method: "POST",
+        url: "/api/v1/profiles/import-profiles",
+        payload: form,
+        headers: {
+          "content-type": `multipart/form-data; boundary=${boundary}`,
+        },
+      });
+
+      expect(response.statusCode).toBe(422);
+    });
+  });
+
+  describe("Valid requests", () => {
+    it("should accept valid profiles array", async () => {
+      const response = await app.inject({
+        method: "POST",
+        url: "/api/v1/profiles/import-profiles",
+        payload: {
+          profiles: mockProfiles,
+        },
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+
+      expect(response.statusCode).toBe(200);
+    });
   });
 });
