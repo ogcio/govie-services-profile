@@ -1089,36 +1089,38 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: object
-                    properties:
-                      email:
-                        format: email
-                        type: string
-                      firstName:
-                        type: string
-                      lastName:
-                        type: string
-                      city:
-                        type: string
-                      address:
-                        type: string
-                      phone:
-                        type: string
-                      dateOfBirth:
-                        format: date
-                        type: string
-                      ppsn:
-                        type: string
-                      preferredLanguage:
-                        type: string
-                        enum:
-                          - en
-                          - ga
-                        default: en
-                    required:
-                      - email
-                      - firstName
-                      - lastName
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        email:
+                          format: email
+                          type: string
+                        firstName:
+                          type: string
+                        lastName:
+                          type: string
+                        city:
+                          type: string
+                        address:
+                          type: string
+                        phone:
+                          type: string
+                        dateOfBirth:
+                          format: date
+                          type: string
+                        ppsn:
+                          type: string
+                        preferredLanguage:
+                          type: string
+                          enum:
+                            - en
+                            - ga
+                          default: en
+                      required:
+                        - email
+                        - firstName
+                        - lastName
                   metadata:
                     type: object
                     properties:

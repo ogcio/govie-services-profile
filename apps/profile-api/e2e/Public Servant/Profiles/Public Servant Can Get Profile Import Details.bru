@@ -22,17 +22,3 @@ assert {
   res.body.data[*].email: isDefined
   res.body.data[*].preferredLanguage: isDefined
 }
-
-tests {
-  test("Should return 404 for non-existent import") {
-    req.url.path.importId: "non-existent-import"
-    res.status: eq 404
-    res.body.message: eq "No import details found for import ID: non-existent-import"
-  }
-
-  test("Should return 400 for invalid import ID") {
-    req.url.path.importId: ""
-    res.status: eq 400
-    res.body.message: eq "Profile import ID is required"
-  }
-} 

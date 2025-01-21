@@ -12,7 +12,7 @@ export const GetProfileImportDetailsSchema = {
     importId: Type.String(),
   }),
   response: {
-    200: getGenericResponseSchema(KnownProfileDataDetailsSchema),
+    200: getGenericResponseSchema(Type.Array(KnownProfileDataDetailsSchema)),
     "4xx": HttpError,
     "5xx": HttpError,
   },
