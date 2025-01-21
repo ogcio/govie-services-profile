@@ -2119,19 +2119,33 @@ paths:
               type: object
               properties:
                 hookId:
-                  type: string
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 event:
-                  type: string
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 sessionId:
-                  type: string
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 userAgent:
-                  type: string
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 ip:
-                  type: string
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 path:
-                  type: string
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 method:
-                  type: string
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 status:
                   type: number
                 createdAt:
@@ -2143,7 +2157,9 @@ paths:
                     id:
                       type: string
                     username:
-                      type: string
+                      anyOf:
+                        - type: string
+                        - type: "null"
                     primaryEmail:
                       format: email
                       type: string
@@ -2152,7 +2168,9 @@ paths:
                         - type: string
                         - type: "null"
                     name:
-                      type: string
+                      anyOf:
+                        - type: string
+                        - type: "null"
                     avatar:
                       anyOf:
                         - type: string
@@ -2161,12 +2179,13 @@ paths:
                       type: object
                       properties:
                         jobId:
-                          type: string
+                          anyOf:
+                            - type: string
+                            - type: "null"
                         organizationId:
-                          type: string
-                      required:
-                        - jobId
-                        - organizationId
+                          anyOf:
+                            - type: string
+                            - type: "null"
                     identities:
                       type: object
                       additionalProperties:
@@ -2176,13 +2195,18 @@ paths:
                             type: object
                             properties:
                               email:
-                                type: string
+                                anyOf:
+                                  - type: string
+                                  - type: "null"
                               rawData:
                                 type: object
                                 additionalProperties:
-                                  type: string
+                                  anyOf:
+                                    - type: string
+                                    - type: "null"
+                                    - type: number
+                                    - type: boolean
                             required:
-                              - email
                               - rawData
                         required:
                           - details
@@ -2209,28 +2233,9 @@ paths:
                     - id
                     - username
                     - primaryEmail
-                    - primaryPhone
-                    - name
-                    - avatar
                     - customData
                     - identities
-                    - lastSignInAt
-                    - createdAt
-                    - updatedAt
-                    - profile
-                    - applicationId
-                    - isSuspended
-                    - hasPassword
               required:
-                - hookId
-                - event
-                - sessionId
-                - userAgent
-                - ip
-                - path
-                - method
-                - status
-                - createdAt
                 - data
         required: true
       responses:

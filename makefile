@@ -13,15 +13,15 @@ init: init-packages init-env
 
 ## Migrations
 create-db:
-	pnpm dev:api db:create
+	pnpm --filter "profile-api" db:create
 migrate:
-	pnpm dev:api db:migrate
+	pnpm --filter "profile-api" db:migrate 
 
 start-services:
 	pnpm dev
 	
 kill-services:
-	sleep 2 && lsof -ti:8001,3001 | xargs sudo kill -9
+	sleep 2 && lsof -ti:8003,3003 | xargs sudo kill -9
 
 start-migrate: 
 	concurrently \

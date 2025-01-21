@@ -4,10 +4,15 @@ import { getCurrentUTCDate } from "~/utils/index.js";
 export const webhookBodyToUser = (bodyData: {
   identities: Record<
     string,
-    { details: { email: string; rawData: Record<string, string> } }
+    {
+      details: {
+        email?: string | null;
+        rawData: Record<string, string | number | boolean | null>;
+      };
+    }
   >;
   id: string;
-  customData?: { organizationId: string; jobId: string };
+  customData?: { organizationId?: string | null; jobId?: string | null };
   primaryEmail: string;
 }) => {
   // From MyGovid

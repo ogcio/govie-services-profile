@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "pnpm -r dev",
-    "dev:www": "pnpm --filter profile dev:frontend",
+    "dev:www": "pnpm --filter profile dev",
     "dev:api": "pnpm --filter profile-api dev",
     "build": "pnpm -r build",
     "build:www": "pnpm --filter profile build",
