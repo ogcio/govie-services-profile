@@ -18,8 +18,8 @@
     "db:drop": "tsx --env-file=.env ./src/migrations/scripts/run-drop-database.ts",
     "db:migrate": "tsx --env-file=.env ./src/migrations/scripts/run-migrate-database.ts",
     "db:rollback": "tsx --env-file=.env ./src/migrations/scripts/run-migrate-database.ts -- version=0",
-    "db:create-ci": "node --env-file=.env ./dist/migrations/scripts/run-create-database.js",
-    "db:migrate-ci": "node --env-file=.env ./dist/migrations/scripts/run-migrate-database.js",
+    "db:create-ci": "node ./dist/migrations/scripts/run-create-database.js",
+    "db:migrate-ci": "node ./dist/migrations/scripts/run-migrate-database.js",
 
     "preinstall": "npx only-allow pnpm"
   },
