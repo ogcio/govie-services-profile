@@ -23,11 +23,15 @@ start-services:
 kill-services:
 	sleep 2 && lsof -ti:8003,3003 | xargs sudo kill -9
 
-start-migrate: 
+start-migrate-all: 
 	concurrently \
 	"$(MAKE) start-services" \
 	"sleep 5 && $(MAKE) create-db && $(MAKE) migrate"
-start: init start-migrate
+start: init start-migrate-all
+
+start-migrate-api: 
+	$(MAKE) create-db && $(MAKE) migrate && pnpm dev:api
+start-api: init start-migrate-api
 
 security-privacy-report: 
 	docker run --rm -v $(shell pwd):/tmp/scan bearer/bearer:latest scan --report privacy -f html /tmp/scan > bearer-privacy-report.html
