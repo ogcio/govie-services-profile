@@ -1,10 +1,18 @@
 import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { getLoggingConfiguration } from "@ogcio/fastify-logging-wrapper";
 import closeWithGrace from "close-with-grace";
-import fastify from "fastify";
+import fastify, { type FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
 import { writeFile } from "fs/promises";
 import buildServer from "./server.js";
+
+const writeOpenApiDefinition = async (app: FastifyInstance) => {
+  try {
+    await writeFile("./openapi-definition.yml", app.swagger({ yaml: true }));
+  } catch (e) {
+    app.log.warn(e, "Error writing open api definition file");
+  }
+};
 
 export async function initializeServer() {
   const server = fastify({
@@ -21,8 +29,8 @@ export async function initializeServer() {
 
   server.register(fp(buildServer));
   await server.ready();
-  await server.swagger();
-  await writeFile("./openapi-definition.yml", server.swagger({ yaml: true }));
+  server.swagger();
+  await writeOpenApiDefinition(server);
 
   closeWithGrace(
     { delay: server.config.FASTIFY_CLOSE_GRACE_DELAY },
