@@ -54,7 +54,7 @@ describe("updateProfile", () => {
     // Verify initial profile check
     expect(queries[0].sql).toContain("SELECT");
     expect(queries[0].sql).toContain("FROM profiles p");
-    expect(queries[0].values).toEqual(["org-123", existingProfile.id]);
+    expect(queries[0].values).toEqual([existingProfile.id, "org-123"]);
 
     // Verify profile update
     expect(queries[1].sql).toBe(

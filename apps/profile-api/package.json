@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "FASTIFY_AUTOLOAD_TYPESCRIPT=1 node --watch --import tsx src/index.ts",
-    "build": "rm -rf dist && tsc -p tsconfig.prod.json && tsc-alias -p tsconfig.prod.json && cp -R src/public dist/public",
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json && tsc-alias -p tsconfig.prod.json && cp -R src/public dist/public && cp -R src/migrations/sql dist/migrations/sql",
     "check:formatting": "biome format",
     "fix:formatting": "biome format --write",
     "check:linting": "biome lint",
@@ -18,6 +18,9 @@
     "db:drop": "tsx --env-file=.env ./src/migrations/scripts/run-drop-database.ts",
     "db:migrate": "tsx --env-file=.env ./src/migrations/scripts/run-migrate-database.ts",
     "db:rollback": "tsx --env-file=.env ./src/migrations/scripts/run-migrate-database.ts -- version=0",
+    "db:create-ci": "node ./dist/migrations/scripts/run-create-database.js",
+    "db:migrate-ci": "node ./dist/migrations/scripts/run-migrate-database.js",
+
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {

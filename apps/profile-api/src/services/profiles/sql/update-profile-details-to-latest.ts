@@ -6,10 +6,20 @@ export const updateProfileDetailsToLatest = async (
   organizationId: string | undefined,
   profileId: string,
 ): Promise<void> => {
-  const query =
-    "UPDATE profile_details SET is_latest = false WHERE id <> $1 AND organisation_id = $2 AND profile_id = $3;";
+  let organizationClause = " IS NULL ";
+  const values = [profileDetailId, profileId];
+  if (organizationId !== undefined) {
+    organizationClause = "= $3 ";
+    values.push(organizationId);
+  }
 
-  const values = [profileDetailId, organizationId, profileId];
+  const query = `
+    UPDATE profile_details 
+      SET is_latest = false 
+      WHERE id <> $1 
+      AND profile_id = $2
+      AND organisation_id ${organizationClause};
+      `;
 
   await client.query(query, values);
 };

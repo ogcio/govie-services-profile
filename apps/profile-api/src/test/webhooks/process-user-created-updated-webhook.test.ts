@@ -125,6 +125,7 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
     const mockPg = buildMockPg([
       [{ in_transaction: false }],
       [], // BEGIN
+      [], // CHECK IF PROFILE EXISTS
       [], // COMMIT
     ]);
 
@@ -134,7 +135,7 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
 
     // Mock functions if needed (depends on how your code calls them)
     (webhookBodyToUser as Mock).mockReturnValue({
-      id: "user-123",
+      id: "profile-123",
       email: "test@example.com",
       details: {
         firstName: "Name",
@@ -152,7 +153,7 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
 
     const webhookBody = {
       data: {
-        id: "user-123",
+        id: "profile-123",
         primaryEmail: "test@example.com",
       },
     };

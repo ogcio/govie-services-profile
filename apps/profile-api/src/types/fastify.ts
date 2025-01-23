@@ -1,5 +1,5 @@
 import type {
-  FastifyLoggerInstance,
+  FastifyBaseLogger,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerBase,
@@ -16,7 +16,7 @@ declare module "fastify" {
     RawReply extends
       RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
     // biome-ignore lint/correctness/noUnusedVariables: <explanation>
-    Logger = FastifyLoggerInstance,
+    Logger = FastifyBaseLogger,
   > {
     checkPermissions: (
       request: FastifyRequest,
