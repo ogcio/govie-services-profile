@@ -39,7 +39,7 @@ export const getProfileImportDetails = async (
     if (!isValidProfileData(row.data)) {
       throw httpErrors.badRequest("Invalid profile data format");
     }
-    console.dir(row.data, { depth: null });
+
     return row.data;
   });
 };
