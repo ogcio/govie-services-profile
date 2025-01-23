@@ -15,4 +15,5 @@ export const HttpError = Type.Object({
     ),
   ),
   validationContext: Type.Optional(Type.String()),
+  statusCode: Type.Number(),
 });
