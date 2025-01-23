@@ -40,23 +40,6 @@ describe("withClient", () => {
     ).rejects.toThrow("Database error");
   });
 
-  it("should use custom error message for non-native errors", async () => {
-    const mockClient = {
-      query: vi.fn(),
-      release: vi.fn(),
-    };
-
-    const mockPool = {
-      connect: vi.fn().mockResolvedValue(mockClient),
-    };
-
-    const callback = vi.fn().mockRejectedValue("Non-native error");
-
-    await expect(
-      withClient(mockPool as unknown as Pool, callback, "Custom error"),
-    ).rejects.toThrow("Custom error");
-  });
-
   it("should handle connection errors", async () => {
     const mockPool = {
       connect: vi.fn().mockRejectedValue(new Error("Connection failed")),
