@@ -74,16 +74,11 @@ export default async function RootLayout({
                   </a>
                 ),
               })}</PhaseBanner>
-            <div className={styles.content_wrapper}>
-              <PageMenu userName={userName} topItems={[
-                <PageMenuItem href="/messaging" icon="mail">{tHome("messaging")}</PageMenuItem>,
-                <PageMenuItem href="/" icon="person" isSelected>{tHome("profile")}</PageMenuItem>,
-                <PageMenuItem href="/notification-preferences" icon="candlestick_chart">{tHome("notificationPreferences")}</PageMenuItem>
-              ]} />
-              <div className={[styles.flex_1, styles.flex_col, styles.gap_2].join(" ")}>
-                {children}
-              </div>
+            {/* <div className={styles.content_wrapper}> */}
+            <div className={[styles.flex_1, styles.flex_col, styles.gap_2].join(" ")}>
+              {children}
             </div>
+            {/* </div> */}
           </Container>
         </main>
         <Footer />

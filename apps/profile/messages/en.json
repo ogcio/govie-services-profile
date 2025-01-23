@@ -184,6 +184,9 @@
     "gender": "Gender",
     "contactDetails": "Contact details",
     "phone": "Phone",
-    "email": "Email"
+    "email": "Email",
+    "emptyPublicName": "You cannot remove your public name - please enter a name",
+    "publicNameUpdatedToast": "Public Name has been updated",
+    "publicNameFailedUpdatedToast": "Public Name failed to update"
   }
 }

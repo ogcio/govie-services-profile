@@ -9,29 +9,24 @@ export type NextPageProps = {
   };
 };
 
-
-type ProfileDataItem = {
-  value: string
-  type: string
-}
 export type ApiProfileUser = {
-  id: string,
-  publicName: string,
-  email: string,
-  primaryUserId: string,
-  safeLevel: number,
-  preferredLanguage: "en" | "ga",
-  createdAt: string,
-  updatedAt: string,
+  id: string;
+  publicName: string;
+  email: string;
+  primaryUserId: string;
+  safeLevel?: number;
+  preferredLanguage: "en" | "ga";
+  createdAt?: string;
+  updatedAt?: string;
   details?: {
-    email: string; // Must be a valid email
+    email: string;
     firstName: string;
     lastName: string;
     city?: string;
     address?: string;
     phone?: string;
-    dateOfBirth?: string; // Assuming date is a string in the "date" format
+    dateOfBirth?: string;
     ppsn?: string;
-    preferredLanguage?: "en" | "ga";
-  }
+    preferredLanguage: "en" | "ga";
+  };
 };

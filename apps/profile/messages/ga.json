@@ -29,6 +29,9 @@
     "gender": "Inscne",
     "contactDetails": "Sonraí teagmhála",
     "phone": "Guthán",
-    "email": "Ríomhphost"
+    "email": "Ríomhphost",
+    "emptyPublicName": "Ní féidir leat do ainm poiblí a bhaint - le do thoil, cuir isteach ainm",
+    "publicNameUpdatedToast": "Tugadh nuashonrú ar an Ainm Poiblí",
+    "publicNameFailedUpdatedToast": "Theastaigh nuashonrú ainm poiblí, ach níor éirigh leis"
   }
 }
