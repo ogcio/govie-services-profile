@@ -178,11 +178,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
         5XX:
           description: Default Response
           content:
@@ -218,11 +221,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
   /api/v1/profiles/import-profiles:
     post:
       operationId: importProfiles
@@ -321,11 +327,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
         5XX:
           description: Default Response
           content:
@@ -361,11 +370,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
   /api/v1/profiles/select-profiles:
     get:
       operationId: selectProfiles
@@ -546,11 +558,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
         5XX:
           description: Default Response
           content:
@@ -586,11 +601,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
   /api/v1/profiles/find-profile:
     get:
       operationId: findProfile
@@ -787,11 +805,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
         5XX:
           description: Default Response
           content:
@@ -827,11 +848,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
   /api/v1/profiles/imports:
     get:
       tags:
@@ -1020,11 +1044,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
         5XX:
           description: Default Response
           content:
@@ -1060,11 +1087,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
   /api/v1/profiles/imports/{importId}:
     get:
       operationId: getProfileImportDetails
@@ -1213,11 +1243,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
         5XX:
           description: Default Response
           content:
@@ -1253,11 +1286,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
   /api/v1/profiles/{profileId}:
     get:
       operationId: getProfile
@@ -1440,11 +1476,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
         5XX:
           description: Default Response
           content:
@@ -1480,11 +1519,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
     put:
       operationId: updateProfilePut
       tags: &a2
@@ -1698,11 +1740,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
         5XX:
           description: Default Response
           content:
@@ -1738,11 +1783,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
     patch:
       operationId: updateProfilePatch
       tags: *a2
@@ -1955,11 +2003,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
         5XX:
           description: Default Response
           content:
@@ -1995,11 +2046,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
   /api/v1/profiles/imports/template:
     get:
       operationId: getProfileTemplate
@@ -2059,11 +2113,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
         5XX:
           description: Default Response
           content:
@@ -2099,11 +2156,14 @@ paths:
                         - message
                   validationContext:
                     type: string
+                  statusCode:
+                    type: number
                 required:
                   - code
                   - detail
                   - requestId
                   - name
+                  - statusCode
   /user-login-wh:
     post:
       operationId: logtoUserCreated
