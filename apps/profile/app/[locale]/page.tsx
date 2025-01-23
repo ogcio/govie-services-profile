@@ -28,18 +28,19 @@ export default async function RootPage(props: NextPageProps) {
     details: {
       address: undefined,
       city: undefined,
-      date_of_birth: undefined,
-      email: undefined,
-      first_name: undefined,
-      last_name: undefined,
+      dateOfBirth: undefined,
+      email: "",
+      firstName: "",
+      lastName: "",
       phone: undefined
     },
     id: "",
-    primary_user_id: "",
-    public_name: "",
-    created_at: "", preferred_language: "en",
-    safe_level: 0,
-    updated_at: "",
+    primaryUserId: "",
+    publicName: "",
+    createdAt: "",
+    preferredLanguage: "en",
+    safeLevel: 0,
+    updatedAt: "",
     email: ""
   }
 
@@ -47,27 +48,26 @@ export default async function RootPage(props: NextPageProps) {
   try {
     const { id } = await AuthenticationFactory.getInstance().getUser()
     userId = id
-    const h: any = {}
-    headers().forEach((v, k) => (h[k] = v))
-
 
     const res = await fetch(
       new URL(
         "/api/token",
         process.env.NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT as string,
       ),
-      { headers: { cookie: h.cookie } },
+      { headers: { cookie: headers().get("cookie")! } }
     );
     const { token } = await res.json();
     console.log({ token })
-    const hahaha = await fetch(`http://localhost:8003/api/v1/profiles/${id}?organizationId=ogcio`, { headers: { Authorization: `Bearer ${token}`, ...h } })
+    const hahaha = await fetch(`http://localhost:8003/api/v1/profiles/${id}`, { headers: { Authorization: `Bearer ${token}` } })
     const hahajson = await hahaha.json()
+
+    Object.assign(profileUser, hahajson.data)
 
   } catch (err) {
     console.log(err)
   }
 
-  const { day, month, year } = getDayMonthYear(profileUser.details?.date_of_birth?.value || "")
+  const { day, month, year } = getDayMonthYear(profileUser.details?.dateOfBirth || "")
 
   return (
     <>
@@ -83,7 +83,7 @@ export default async function RootPage(props: NextPageProps) {
           label={tProfile("firstName")}
         >
           <SummaryListValue>
-            {profileUser.details.first_name?.value}
+            {profileUser.details?.firstName}
           </SummaryListValue>
         </SummaryListRow>
         <SummaryListRow
@@ -91,7 +91,7 @@ export default async function RootPage(props: NextPageProps) {
           label={tProfile("lastName")}
         >
           <SummaryListValue>
-            {profileUser.details.last_name?.value}
+            {profileUser.details?.lastName}
           </SummaryListValue>
         </SummaryListRow>
       </SummaryList>
@@ -131,14 +131,15 @@ export default async function RootPage(props: NextPageProps) {
           label="PPSN"
         >
           <SummaryListValue>
-            {props.searchParams?.ppsn === "1" ? "{profileUser.details.ppsn.value}" : stringToAsterisk("ppsn")}
+            {/* {props.searchParams?.ppsn === "1" ? "{profileUser.details.ppsn.value}" : stringToAsterisk("ppsn")} */}
+            {null}
           </SummaryListValue>
           <dd className="gi-summary-list-actions">
-            {true ?
+            {/* {true ?
               props.searchParams?.ppsn === "1" ?
                 <Link href={"?ppsn="} className="gi-link">{tProfile("clickToHide")}</Link> :
                 <Link href={"?ppsn=1"} className="gi-link">{tProfile("clickToReveal")}</Link>
-              : null}
+              : null} */}
           </dd>
         </SummaryListRow>
       </SummaryList>
@@ -150,7 +151,7 @@ export default async function RootPage(props: NextPageProps) {
           label={tProfile("gender")}
         >
           <SummaryListValue>
-            {"{profileUser.gender}"}
+            {null}
           </SummaryListValue>
         </SummaryListRow>
       </SummaryList>
@@ -162,7 +163,7 @@ export default async function RootPage(props: NextPageProps) {
           label={tProfile("phone")}
         >
           <SummaryListValue>
-            {profileUser.details.phone?.value}
+            {profileUser.details?.phone}
           </SummaryListValue>
         </SummaryListRow>
         <SummaryListRow
