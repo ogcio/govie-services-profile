@@ -1,9 +1,10 @@
 import dayjs from "dayjs";
+import { pgpool } from "./postgres";
 
 export type Error = {
   messageKey: string;
   field: string;
-  errorValue?: string;
+  errorValue: string;
 };
 
 export const errorTranslationKeys = {
@@ -148,15 +149,43 @@ export async function insertErrors(
   userId: string,
   slug: string,
 ) {
-  return {
-    error: "Not implemented",
+  "use server";
+  let i = 1;
+  const values: string[] = [];
+  for (const _ of formErrors) {
+    values.push(`($1, $2, $${2 + i}, $${3 + i}, $${4 + i})`);
+    i += 3;
   }
+
+  await pgpool.query(
+    `
+      INSERT INTO form_errors(user_id, slug, field, error_message, error_value)
+      VALUES ${values.join(", ")}
+      `,
+    [
+      userId,
+      slug,
+      ...formErrors
+        .map((error) => [error.field, error.messageKey, error.errorValue])
+        .flat(),
+    ],
+  );
 }
 
 export async function getErrorsQuery(userId: string, slug: string) {
   "use server";
 
-  return {
-    rows: [] as {field:string, messageKey: string, errorValue: string}[],
-  };
+  const result = await pgpool.query<
+    { field: string; messageKey: string; errorValue: string },
+    string[]
+  >(
+    `
+      DELETE FROM form_errors
+      WHERE "user_id" = $1 AND "slug" = $2
+      RETURNING field, error_message AS "messageKey", error_value AS "errorValue"
+    `,
+    [userId, slug],
+  );
+
+  return result;
 }

@@ -4,17 +4,17 @@ import {
 import { headers } from "next/headers";
 
 export const getSDKs = () => getBuildingBlockSDK({
-    services: {
-      profile: { baseUrl: process.env.HOST_URL ?? "" },
-    },
-    getTokenFn: async (serviceName: string) => {
-      if (serviceName === "profile") {
-        return invokeTokenApi();
-      }
+  services: {
+    profile: { baseUrl: process.env.PROFILE_BACKEND_URL ?? "" },
+  },
+  getTokenFn: async (serviceName: string) => {
+    if (serviceName === "profile") {
+      return invokeTokenApi();
+    }
 
-      throw new Error(`Not valid service ${serviceName}`);
-    },
-  });
+    throw new Error(`Not valid service ${serviceName}`);
+  },
+});
 
 const invokeTokenApi = async (): Promise<string> => {
   // call a route handler that retrieves the cached token

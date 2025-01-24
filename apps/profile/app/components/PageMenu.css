@@ -1,0 +1,48 @@
+.main-content-page-menu {
+  width: 192px;
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+
+  .menu-icon {
+    color: #00703c;
+  }
+
+  .user-name {
+    background: rgba(163, 145, 97, 0.15);
+    padding-left: 12px;
+    margin-bottom: 12px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+  }
+
+  li {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 12px;
+  }
+
+  a{
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    white-space: normal;
+    display: block;
+    max-width: 75%;
+  }
+
+  li:not(:last-child) {
+    margin-bottom: 6px;
+  }
+
+  li:hover {
+    background: rgba(163, 145, 97, 0.03);
+  }
+
+  li.selected-menu-item {
+    background: rgba(163, 145, 97, 0.15);
+  }
+}
