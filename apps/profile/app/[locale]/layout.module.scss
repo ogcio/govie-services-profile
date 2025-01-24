@@ -11,18 +11,6 @@
   flex: auto;
 }
 
-.content_wrapper {
-  padding: var(--gieds-space-9) 0 var(--gieds-space-9) 0;
-  display: flex;
-  flex-direction: row;
-  gap: var(--gieds-space-9);
-  flex-wrap: wrap;
-
-  @media (max-width: var(--gieds-screen-sm)) {
-    flex-direction: column;
-  }
-}
-
 .flex_row {
   display: flex;
 }
@@ -50,4 +38,8 @@
 
 .text_input {
   min-width: calc(var(--gieds-screen-sm) / 2);
+}
+
+.padd_top_1 {
+  padding-top: var(--gieds-space-3);
 }
