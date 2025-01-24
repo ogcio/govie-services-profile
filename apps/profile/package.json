@@ -1,5 +1,5 @@
 {
-  "name": "profile",
+  "name": "@govie-services/profile",
   "private": true,
   "scripts": {
     "dev": "nodemon",

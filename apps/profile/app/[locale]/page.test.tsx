@@ -1,9 +1,8 @@
 
-import { act, render, screen, waitFor, within } from "@testing-library/react"
 import React from "react"
+import { act, render, screen, waitFor, within } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import Page from "./page"
-import { getMessages } from "next-intl/server"
 
 const getProfile = vi.hoisted(vi.fn)
 vi.mock("../utils/authentication-factory", () => ({
