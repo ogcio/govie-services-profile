@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from "vitest"
 import updateProfileUserAction from "./action"
 import { AuthenticationFactory } from "../../utils/authentication-factory"
 import { beforeEach } from "vitest"
-import { getCommonLogger } from "@ogcio/nextjs-logging-wrapper/common-logger"
 
 
 vi.mock("../../utils/authentication-factory", () => ({

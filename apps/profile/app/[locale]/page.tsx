@@ -1,3 +1,4 @@
+import React from "react"
 import { Metadata } from "next";
 import { NextPageProps, ApiProfileUser } from "../../types";
 import { getMessages, getTranslations } from "next-intl/server";
@@ -52,7 +53,6 @@ export default async function RootPage(props: NextPageProps) {
 
     const profileClient = await AuthenticationFactory.getProfileClient()
     const profile = await profileClient.getProfile(id)
-
     if (profile.error) {
       throw profile.error
     }
@@ -69,7 +69,7 @@ export default async function RootPage(props: NextPageProps) {
     <>
       <Heading as="h1" size="xl">{tProfile("profile")}</Heading>
       <Heading as="h2" size="md">{tProfile("publicName")}</Heading>
-      <NextIntlClientProvider messages={await getMessages()}>
+      <NextIntlClientProvider locale={props.params.locale} messages={await getMessages()}>
         <PublicNameForm publicName={profileUser.publicName} userId={userId} />
       </NextIntlClientProvider>
       <Heading as="h2" size="md">{tProfile("name")}</Heading>

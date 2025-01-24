@@ -1,8 +1,8 @@
 import React from "react"
-import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest"
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { describe, expect, it, Mock, vi } from "vitest"
+import { render, screen, waitFor } from "@testing-library/react"
 import PublicNameForm from "./PublicNameForm"
-import { useFormState, useFormStatus } from "react-dom"
+import { useFormState } from "react-dom"
 
 vi.mock("../../utils/authentication-factory", () => ({
     AuthenticationFactory: {
