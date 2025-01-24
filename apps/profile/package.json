@@ -25,6 +25,7 @@
   "dependencies": {
     "@govie-ds/react": "^0.33.1",
     "@govie-ds/theme-govie": "^0.5.0",
+    "@logto/next": "^4.1.0",
     "@ogcio/building-blocks-sdk": "^0.2.0",
     "@ogcio/life-events-ds": "^0.1.1",
     "@ogcio/nextjs-auth": "3.5.0",
