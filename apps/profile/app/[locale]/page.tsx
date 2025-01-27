@@ -73,7 +73,7 @@ export default async function RootPage(props: NextPageProps) {
         <PublicNameForm publicName={profileUser.publicName} userId={userId} />
       </NextIntlClientProvider>
       <Heading as="h2" size="md">{tProfile("name")}</Heading>
-      {profileUser.details?.firstName || profileUser.details?.firstName && <SummaryList>
+      {(profileUser.details?.firstName || profileUser.details?.firstName) && <SummaryList>
         {profileUser.details.firstName ? <SummaryListRow
           withBorder
           label={tProfile("firstName")}
