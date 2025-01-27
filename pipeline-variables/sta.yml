@@ -6,3 +6,5 @@ variables:
   services: profile, profile-api
 
   nextPublicProfileServiceEntryPoint: https://profile.sta.blocks.gov.ie
+  nextPublicMessagingServiceEntryPoint: https://messaging.sta.blocks.gov.ie
+  nextPublicDashboardServiceEntryPoint: https://dashboard.sta.blocks.gov.ie
