@@ -46,9 +46,6 @@ export default async function RootLayout({
       ? tHome("gaeilgeMenuLabel")
       : tHome("englishMenuLabel")
 
-  const languages = [
-    { href: languageToggleUrl.href, label: oppositeLanguageLabel },
-  ]
 
   try {
     const { name, id } = await AuthenticationFactory.getInstance().getUser()
@@ -58,6 +55,9 @@ export default async function RootLayout({
     redirect("/login")
   }
 
+  const languages = { href: languageToggleUrl.href, label: oppositeLanguageLabel }
+  const nameAndLogout = { href: "/signout", label: tHome("nameAndLogout", { name: userName }) }
+
   return (
     <html lang={locale}>
       <body
@@ -65,7 +65,7 @@ export default async function RootLayout({
       >
         <Header
           title={tHome("profile")}
-          secondaryLinks={languages}
+          secondaryLinks={[nameAndLogout, languages]}
           items={[{
             itemType: "slot",
             icon: "menu",

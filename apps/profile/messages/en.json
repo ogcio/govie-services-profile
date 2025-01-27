@@ -169,7 +169,8 @@
     "dashboard": "Dashboard",
     "viewMyProfile": "View my Profile",
     "logout": "Logout",
-    "menu": "Menu"
+    "menu": "Menu",
+    "nameAndLogout": "Hi, {name} (Logout)"
   },
   "Profile": {
     "profile": "Profile",

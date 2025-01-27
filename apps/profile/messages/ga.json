@@ -14,7 +14,8 @@
     "dashboard": "Painéal rialaithe",
     "viewMyProfile": "Féach ar mo Phróifíl",
     "logout": "Logáil Amach",
-    "menu": "Biachlár"
+    "menu": "Biachlár",
+    "nameAndLogout": "Haigh, {name} (Logáil Amach)"
   },
   "Profile": {
     "profile": "Próifíl",
