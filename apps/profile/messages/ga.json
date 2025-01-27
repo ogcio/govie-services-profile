@@ -11,7 +11,10 @@
     "bannerText": "Is seirbhís nua í seo - cabhróidh <url>d'aiseolas</url> linn é a fheabhsú.",
     "messaging": "Teachtaireachtaí",
     "profile": "Próifíl",
-    "notificationPreferences" : "Sainroghanna Fógraí"
+    "dashboard": "Painéal rialaithe",
+    "viewMyProfile": "Féach ar mo Phróifíl",
+    "logout": "Logáil Amach",
+    "menu": "Biachlár"
   },
   "Profile": {
     "profile": "Próifíl",

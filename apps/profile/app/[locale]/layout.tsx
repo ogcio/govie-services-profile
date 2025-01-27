@@ -2,8 +2,7 @@ import "@govie-ds/theme-govie/theme.css";
 import "@govie-ds/react/styles.css";
 
 import styles from "./layout.module.scss";
-import { Container, Footer, Header, PhaseBanner } from "@govie-ds/react";
-import PageMenu, { PageMenuItem } from "../components/PageMenu";
+import { Container, Footer, Header, Link, PhaseBanner } from "@govie-ds/react";
 import { redirect } from "next/navigation";
 import { AuthenticationFactory } from "../utils/authentication-factory";
 import { Metadata } from "next";
@@ -11,6 +10,7 @@ import favicon from "../../public/favicon.ico"
 import { LANG_EN, LANG_GA } from "../utils/locale";
 import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
+import DrawerMenuContent from "../components/DrawerMenuContent/DrawerMenuContent";
 
 export function generateMetadata(): Metadata {
   const m: Metadata = {
@@ -63,7 +63,24 @@ export default async function RootLayout({
       <body
         className={styles.body}
       >
-        <Header title={tHome("profile")} languages={languages} />
+        <Header
+          title={tHome("profile")}
+          secondaryLinks={languages}
+          items={[{
+            itemType: "slot",
+            icon: "menu",
+            label: tHome("menu"),
+            showItemMode: "always",
+            details: {
+              component: <DrawerMenuContent name={userName} selfHref="/" selfLabel={tHome("viewMyProfile")} signoutLabel={tHome("logout")}>
+                <Link noUnderline noColor size="md" href={process.env.NEXT_PUBLIC_DASHBOARD_SERVICE_ENTRY_POINT}>{tHome("dashboard")}</Link>
+                <Link noUnderline noColor size="md" href={process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT}>{tHome("messaging")}</Link>
+                <Link noUnderline noColor size="md" href={languageToggleUrl.href}>{oppositeLanguageLabel}</Link>
+              </DrawerMenuContent>,
+              drawerPosition: "right",
+              slotAppearance: "drawer"
+            }
+          }]} />
         <main className={styles.main}>
           <Container>
             <PhaseBanner level="beta">

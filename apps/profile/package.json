@@ -23,7 +23,7 @@
     "exec": "next dev -p 3003"
   },
   "dependencies": {
-    "@govie-ds/react": "^0.33.1",
+    "@govie-ds/react": "^0.35.0",
     "@govie-ds/theme-govie": "^0.5.0",
     "@logto/next": "^3.5.0",
     "@ogcio/building-blocks-sdk": "^0.2.0",

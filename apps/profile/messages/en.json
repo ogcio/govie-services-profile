@@ -166,7 +166,10 @@
     "bannerText": "This is a new service - your <url>feedback</url> will help us to improve it.",
     "messaging": "Messaging",
     "profile": "Profile",
-    "notificationPreferences" : "Notification Preferences"
+    "dashboard": "Dashboard",
+    "viewMyProfile": "View my Profile",
+    "logout": "Logout",
+    "menu": "Menu"
   },
   "Profile": {
     "profile": "Profile",

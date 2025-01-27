@@ -48,8 +48,8 @@ importers:
   apps/profile:
     dependencies:
       '@govie-ds/react':
-        specifier: ^0.33.1
-        version: 0.33.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.30.1)
+        specifier: ^0.35.0
+        version: 0.35.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.30.1)
       '@govie-ds/theme-govie':
         specifier: ^0.5.0
         version: 0.5.0
@@ -925,8 +925,8 @@ packages:
   '@formatjs/intl-localematcher@0.5.10':
     resolution: {integrity: sha512-af3qATX+m4Rnd9+wHcjJ4w2ijq+rAVP3CCinJQvFv1kgSu1W6jypUmvleJxcewdxmutM8dmIRZFxO/IQBZmP2Q==}
 
-  '@govie-ds/react@0.33.1':
-    resolution: {integrity: sha512-enlrXoyeF4LUpU2+NigQuNZtWOPwMEMla2I1h84zJRObAVijWAXE7nLe7pS2j2vTFv1CNw9PtJcgyHanfkXscw==}
+  '@govie-ds/react@0.35.0':
+    resolution: {integrity: sha512-43BXSQYktD3Dxr6HC+hyCvGc7bN2Ohf9X3ruLO2+1hLx8jmJwlxJe9V8DznCUpCkeIpfvOfP7RyyBEDEzKuc/A==}
     peerDependencies:
       react: '*'
       react-dom: '*'
@@ -4976,7 +4976,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@govie-ds/react@0.33.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.30.1)':
+  '@govie-ds/react@0.35.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.30.1)':
     dependencies:
       '@govie-ds/tokens': 0.7.0
       clsx: 2.1.1
