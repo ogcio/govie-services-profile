@@ -18,7 +18,7 @@ export const ExecuteJobReqSchema = {
     "5xx": HttpError,
     "4xx": HttpError,
   },
-  params: Type.Object({ jobId: Type.String({ format: "uuid" }) }),
+  params: Type.Object({ profileImportId: Type.String({ format: "uuid" }) }),
 };
 
 export type ExecuteJobParams = Static<typeof ExecuteJobReqSchema.params>;

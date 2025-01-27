@@ -5,7 +5,7 @@ import { ImportStatus } from "../../const/profile.js";
 import type { LogtoUserCreatedBody } from "../../schemas/webhooks/logto-user-created.js";
 import { createUpdateProfileDetails } from "../../services/profiles/create-update-profile-details.js";
 import {
-  checkImportCompletion,
+  checkProfileImportCompletion,
   createProfile,
   findProfileImportByJobId,
   findProfileImportDetailByEmail,
@@ -88,7 +88,7 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
     });
     (createProfile as Mock).mockResolvedValue("profile-123");
     (createUpdateProfileDetails as Mock).mockResolvedValue("detail-123");
-    (checkImportCompletion as Mock).mockResolvedValue({
+    (checkProfileImportCompletion as Mock).mockResolvedValue({
       isComplete: true,
       finalStatus: ImportStatus.COMPLETED,
     });
@@ -146,7 +146,7 @@ describe("processUserCreatedOrUpdatedWebhook", () => {
 
     (createProfile as Mock).mockResolvedValue("profile-123");
     (createUpdateProfileDetails as Mock).mockResolvedValue("detail-123");
-    (checkImportCompletion as Mock).mockResolvedValue({
+    (checkProfileImportCompletion as Mock).mockResolvedValue({
       isComplete: true,
       finalStatus: ImportStatus.COMPLETED,
     });

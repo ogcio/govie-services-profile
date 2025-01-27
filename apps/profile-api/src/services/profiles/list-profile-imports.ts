@@ -42,7 +42,6 @@ export async function listProfileImports({
     `
     SELECT 
       id,
-      job_id as "jobId",
       organisation_id as "organisationId",
       status,
       metadata,

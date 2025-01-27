@@ -11,6 +11,120 @@ components:
       bearerFormat: JWT
   schemas: {}
 paths:
+  /api/v1/jobs/{profileImportId}:
+    post:
+      tags:
+        - Jobs
+      description: Executes the requested job
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  description: The security token used to ensure you are allowed to execute this
+                    job
+                  type: string
+              required:
+                - token
+        required: true
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: profileImportId
+          required: true
+      responses:
+        "202":
+          description: Default Response
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: Code used to categorize the error
+                    type: string
+                  detail:
+                    description: Description of the error
+                    type: string
+                  requestId:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
+                    type: string
+                  name:
+                    description: Name of the error type
+                    type: string
+                  validation:
+                    description: List of the validation errors
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                  statusCode:
+                    type: number
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+                  - statusCode
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: Code used to categorize the error
+                    type: string
+                  detail:
+                    description: Description of the error
+                    type: string
+                  requestId:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
+                    type: string
+                  name:
+                    description: Name of the error type
+                    type: string
+                  validation:
+                    description: List of the validation errors
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                  statusCode:
+                    type: number
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+                  - statusCode
   /api/v1/profiles/:
     get:
       operationId: indexProfiles
@@ -287,11 +401,11 @@ paths:
                 properties:
                   status:
                     type: string
-                  jobId:
+                  profileImportId:
                     type: string
                 required:
                   - status
-                  - jobId
+                  - profileImportId
         4XX:
           description: Default Response
           content:
@@ -912,8 +1026,6 @@ paths:
                         id:
                           format: uuid
                           type: string
-                        jobId:
-                          type: string
                         organisationId:
                           type: string
                         status:
@@ -944,7 +1056,6 @@ paths:
                           type: string
                       required:
                         - id
-                        - jobId
                         - status
                         - source
                         - createdAt
@@ -2235,7 +2346,7 @@ paths:
                     customData:
                       type: object
                       properties:
-                        jobId:
+                        profileImportId:
                           anyOf:
                             - type: string
                             - type: "null"

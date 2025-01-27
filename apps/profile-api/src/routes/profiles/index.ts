@@ -10,7 +10,6 @@ import {
   GetProfileSchema,
   GetProfileTemplateSchema,
   ImportProfilesSchema,
-  type KnownProfileDataDetails,
   ListProfileImportsSchema,
   type Profile,
   type ProfileWithDetails,
@@ -19,15 +18,15 @@ import {
   UpdateProfileSchema,
 } from "~/schemas/profiles/index.js";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
-import { getProfilesFromCsv } from "~/services/profiles/get-profiles-from-csv.js";
 import {
+  executeImportProfiles,
   findProfile,
   getProfile,
   getProfileImportDetails,
   getProfileTemplate,
-  importProfiles,
   listProfileImports,
   listProfiles,
+  scheduleImportProfiles,
   selectProfiles,
   updateProfile,
 } from "~/services/profiles/index.js";
@@ -36,10 +35,7 @@ import {
   sanitizePagination,
   withOrganizationId,
 } from "~/utils/index.js";
-import {
-  type SavedFileInfo,
-  saveRequestFile,
-} from "~/utils/save-request-file.js";
+import { saveRequestFile } from "~/utils/save-request-file.js";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   const {
@@ -83,22 +79,30 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         MimeTypes.Json,
       );
 
-      let profiles: KnownProfileDataDetails[];
-      let savedFile: SavedFileInfo | undefined;
-
       if (isJson) {
-        profiles = request.body.profiles ?? [];
-      } else {
-        savedFile = await saveRequestFile(request);
-        profiles = await getProfilesFromCsv(savedFile.filepath);
+        const profiles = request.body.profiles ?? [];
+        const { profileImportId } = await scheduleImportProfiles({
+          pool,
+          logger: request.log,
+          organizationId: withOrganizationId(request),
+          config,
+          source: "json",
+          immediate: true,
+        });
+        return executeImportProfiles({
+          pool,
+          logger: request.log,
+          profileImportId,
+          config,
+          profiles,
+        });
       }
-
-      return importProfiles({
-        profiles,
-        organizationId: withOrganizationId(request),
-        logger: request.log,
-        config,
+      const savedFile = await saveRequestFile(request);
+      return scheduleImportProfiles({
         pool,
+        logger: request.log,
+        organizationId: withOrganizationId(request),
+        config,
         source: isJson ? "json" : "csv",
         fileMetadata: savedFile?.metadata,
       });

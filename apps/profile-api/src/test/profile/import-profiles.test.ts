@@ -13,7 +13,7 @@ import { createLogtoUsers } from "../../services/profiles/create-logto-users.js"
 import { createUpdateProfileDetails } from "../../services/profiles/create-update-profile-details.js";
 import { importProfiles } from "../../services/profiles/import-profiles.js";
 import {
-  checkImportCompletion,
+  checkProfileImportCompletion,
   createProfileImport,
   createProfileImportDetails,
   getProfileImportStatus,
@@ -57,7 +57,7 @@ describe("importProfiles", () => {
       // Final status update
       [{ in_transaction: false }], // Fourth withRollback check
       [], // BEGIN
-      [], // checkImportCompletion
+      [], // checkProfileImportCompletion
       [], // updateProfileImportStatusByJobId
       [], // COMMIT
     ]);
@@ -69,7 +69,7 @@ describe("importProfiles", () => {
       { id: "user-1", primaryEmail: mockProfiles[0].email },
       { id: "user-2", primaryEmail: mockProfiles[1].email },
     ]);
-    (checkImportCompletion as Mock).mockResolvedValue({
+    (checkProfileImportCompletion as Mock).mockResolvedValue({
       isComplete: true,
       finalStatus: ImportStatus.COMPLETED,
     });
@@ -124,7 +124,7 @@ describe("importProfiles", () => {
       // Final status update
       [{ in_transaction: false }], // Fourth withRollback check
       [], // BEGIN
-      [], // checkImportCompletion
+      [], // checkProfileImportCompletion
       [], // updateProfileImportStatusByJobId
       [], // COMMIT
     ]);
@@ -135,7 +135,7 @@ describe("importProfiles", () => {
       exists: true,
       profileId: "profile-123",
     });
-    (checkImportCompletion as Mock).mockResolvedValue({
+    (checkProfileImportCompletion as Mock).mockResolvedValue({
       isComplete: true,
       finalStatus: ImportStatus.COMPLETED,
     });
@@ -189,7 +189,7 @@ describe("importProfiles", () => {
       // Final status update
       [{ in_transaction: false }], // Fourth withRollback check
       [], // BEGIN
-      [], // checkImportCompletion
+      [], // checkProfileImportCompletion
       [], // updateProfileImportStatusByJobId
       [], // COMMIT
     ]);
@@ -205,7 +205,7 @@ describe("importProfiles", () => {
     (createProfileImportDetails as Mock).mockResolvedValue(importDetailsIds);
     (lookupProfile as Mock).mockResolvedValue({ exists: false });
     (createLogtoUsers as Mock).mockRejectedValue(logtoError);
-    (checkImportCompletion as Mock).mockResolvedValue({
+    (checkProfileImportCompletion as Mock).mockResolvedValue({
       isComplete: true,
       finalStatus: ImportStatus.FAILED,
     });
@@ -253,7 +253,7 @@ describe("importProfiles", () => {
     (createLogtoUsers as Mock).mockResolvedValue([
       { id: "user-1", primaryEmail: mockProfiles[0].email },
     ]);
-    (checkImportCompletion as Mock).mockResolvedValue({
+    (checkProfileImportCompletion as Mock).mockResolvedValue({
       isComplete: true,
       finalStatus: ImportStatus.COMPLETED,
     });
@@ -297,7 +297,7 @@ describe("importProfiles", () => {
     (createLogtoUsers as Mock).mockResolvedValue([
       { id: "user-1", primaryEmail: mockProfiles[0].email },
     ]);
-    (checkImportCompletion as Mock).mockResolvedValue({
+    (checkProfileImportCompletion as Mock).mockResolvedValue({
       isComplete: true,
       finalStatus: ImportStatus.COMPLETED,
     });
@@ -342,7 +342,7 @@ describe("importProfiles", () => {
     (createLogtoUsers as Mock).mockResolvedValue([
       { id: "user-1", primaryEmail: mockProfiles[0].email },
     ]);
-    (checkImportCompletion as Mock).mockResolvedValue({
+    (checkProfileImportCompletion as Mock).mockResolvedValue({
       isComplete: true,
       finalStatus: ImportStatus.COMPLETED,
     });

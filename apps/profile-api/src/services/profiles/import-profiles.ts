@@ -3,23 +3,96 @@ import type { Pool } from "pg";
 import { ImportStatus } from "~/const/index.js";
 import type { EnvConfig } from "~/plugins/external/env.js";
 import type { KnownProfileDataDetails } from "~/schemas/profiles/index.js";
-import { withClient, withRollback } from "~/utils/index.js";
+import { getSchedulerSdk, withClient, withRollback } from "~/utils/index.js";
 import type { SavedFileInfo } from "~/utils/save-request-file.js";
 import {
   type LogtoError,
   createLogtoUsers,
   createUpdateProfileDetails,
+  getProfilesFromCsv,
 } from "./index.js";
+import { getProfileImport } from "./sql/get-profile-import.js";
 import {
-  checkImportCompletion,
+  checkProfileImportCompletion,
   createProfileImport,
   createProfileImportDetails,
   getProfileImportStatus,
   lookupProfile,
   updateProfileImportDetails,
   updateProfileImportDetailsStatus,
-  updateProfileImportStatusByJobId,
+  updateProfileImportStatus,
 } from "./sql/index.js";
+
+export const scheduleImportProfiles = async (params: {
+  pool: Pool;
+  logger: FastifyBaseLogger;
+  organizationId: string;
+  config: EnvConfig;
+  source?: "json" | "csv";
+  fileMetadata?: SavedFileInfo["metadata"];
+  immediate?: boolean;
+}): Promise<{ status: ImportStatus; profileImportId: string }> =>
+  withClient(params.pool, async (client) => {
+    const { organizationId, source, fileMetadata } = params;
+
+    const { profileImportId } = await withRollback(client, async () => {
+      const { jobToken, profileImportId } = await createProfileImport(
+        client,
+        organizationId,
+        source,
+        fileMetadata,
+      );
+      if (params.immediate) {
+        return { status: ImportStatus.PENDING, profileImportId };
+      }
+
+      const schedulerSdk = await getSchedulerSdk(
+        params.logger,
+        organizationId,
+        params.config,
+      );
+      // 1 minute from now
+      // TODO: Make this back-off depending on the number of imports currently running
+      const scheduleDate = new Date(Date.now() + 60 * 1000);
+      await schedulerSdk.scheduleTasks([
+        {
+          executeAt: scheduleDate.toISOString(),
+          webhookUrl: `${params.config.HOST_URL}/api/v1/jobs/${profileImportId}`,
+          webhookAuth: jobToken,
+        },
+      ]);
+      return { profileImportId };
+    });
+
+    return { status: ImportStatus.PENDING, profileImportId };
+  });
+
+export const executeImportProfiles = async (params: {
+  pool: Pool;
+  logger: FastifyBaseLogger;
+  profileImportId: string;
+  config: EnvConfig;
+  profiles?: KnownProfileDataDetails[];
+}): Promise<{ status: ImportStatus; profileImportId: string }> =>
+  withClient(params.pool, async (client) => {
+    return await withRollback(client, async () => {
+      const { organisationId, metadata } = await getProfileImport(
+        client,
+        params.profileImportId,
+      );
+      const profiles =
+        params.profiles ?? (await getProfilesFromCsv(metadata.filepath));
+
+      return await importProfiles({
+        pool: params.pool,
+        logger: params.logger,
+        profiles,
+        organizationId: organisationId,
+        config: params.config,
+        profileImportId: params.profileImportId,
+      });
+    });
+  });
 
 export const importProfiles = async (params: {
   pool: Pool;
@@ -27,30 +100,17 @@ export const importProfiles = async (params: {
   profiles: KnownProfileDataDetails[];
   organizationId: string;
   config: EnvConfig;
-  source?: "json" | "csv";
-  fileMetadata?: SavedFileInfo["metadata"];
-}): Promise<{ status: ImportStatus; jobId: string }> =>
+  profileImportId: string;
+}): Promise<{ status: ImportStatus; profileImportId: string }> =>
   withClient(params.pool, async (client) => {
-    const {
-      config,
-      logger,
-      profiles,
-      organizationId,
-      source = "csv",
-      fileMetadata,
-    } = params;
+    const { config, logger, profiles, organizationId, profileImportId } =
+      params;
 
     // 1. Create import job and import details
-    const { jobId, importDetailsMap } = await withRollback(client, async () => {
-      const jobId = await createProfileImport(
-        client,
-        organizationId,
-        source,
-        fileMetadata,
-      );
+    const { importDetailsMap } = await withRollback(client, async () => {
       const importDetailsIdList = await createProfileImportDetails(
         client,
-        jobId,
+        profileImportId,
         profiles,
       );
       const importDetailsMap = new Map(
@@ -59,7 +119,7 @@ export const importProfiles = async (params: {
           importDetailsIdList[index],
         ]),
       );
-      return { jobId, importDetailsMap };
+      return { importDetailsMap };
     });
 
     // 2. Process profiles
@@ -129,7 +189,7 @@ export const importProfiles = async (params: {
           profilesToCreate,
           config,
           organizationId,
-          jobId,
+          profileImportId,
         );
 
         // Mark successful profiles as pending (for webhook)
@@ -191,12 +251,10 @@ export const importProfiles = async (params: {
         await withRollback(client, async () => {
           // Check completion and update overall status
           logger.debug(
-            `[Process-Import] Checking completion after error for job ${jobId}`,
+            `[Process-Import] Checking completion after error for profile import ${profileImportId}`,
           );
-          const { isComplete, finalStatus } = await checkImportCompletion(
-            client,
-            jobId,
-          );
+          const { isComplete, finalStatus } =
+            await checkProfileImportCompletion(client, profileImportId);
 
           logger.debug("[Process-Import] Completion check result:", {
             isComplete,
@@ -207,7 +265,11 @@ export const importProfiles = async (params: {
             logger.debug(
               `[Process-Import] Updating overall status to ${finalStatus} after error`,
             );
-            await updateProfileImportStatusByJobId(client, jobId, finalStatus);
+            await updateProfileImportStatus(
+              client,
+              profileImportId,
+              finalStatus,
+            );
           } else {
             logger.debug(
               `[Process-Import] Import is not complete yet. Current status: ${finalStatus}`,
@@ -217,16 +279,16 @@ export const importProfiles = async (params: {
       }
     } else {
       // Set the status to completed if there are no profiles to create
-      await updateProfileImportStatusByJobId(
+      await updateProfileImportStatus(
         client,
-        jobId,
+        profileImportId,
         ImportStatus.COMPLETED,
       );
     }
 
     // 4. Return current status
     return {
-      status: await getProfileImportStatus(client, jobId),
-      jobId,
+      status: await getProfileImportStatus(client, profileImportId),
+      profileImportId,
     };
   });

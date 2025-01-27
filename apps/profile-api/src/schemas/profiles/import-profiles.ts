@@ -6,7 +6,7 @@ import { PROFILES_TAG } from "./shared.js";
 
 export const ImportProfilesResponseSchema = Type.Object({
   status: Type.String(),
-  jobId: Type.String(),
+  profileImportId: Type.String(),
 });
 
 export const ImportProfileFromJsonSchema = Type.Array(
