@@ -117,7 +117,7 @@ stages:
               dockerfile: apps/${{ serviceName }}/Dockerfile
               dependencies: "base-deps"
               # TODO: Use arguments per service
-              buildArguments: '--build-arg "NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT=$(nextPublicProfileServiceEntryPoint)"'
+              buildArguments: '--build-arg "NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT=$(nextPublicProfileServiceEntryPoint)" --build-arg "NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT=$(nextPublicMessagingServiceEntryPoint)" --build-arg "NEXT_PUBLIC_DASHBOARD_SERVICE_ENTRY_POINT=$(nextPublicDashboardServiceEntryPoint)"'
       - stage: Push_${{ replace(serviceName, '-', '_') }}
         displayName: Push ${{ serviceName }} to ECR
         pool:
