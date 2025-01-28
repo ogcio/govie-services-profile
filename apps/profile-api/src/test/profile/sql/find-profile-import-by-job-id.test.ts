@@ -1,19 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { findProfileImportByJobId } from "../../../services/profiles/sql/get-job-token-for-profile-import.js";
+import { getJobTokenForProfileImport } from "../../../services/profiles/sql/index.js";
 import { buildMockPg } from "../../build-mock-pg.js";
 
-describe("findProfileImportByJobId", () => {
+describe("getJobTokenForProfileImport", () => {
   it("should return profile import ID when found", async () => {
-    const mockPg = buildMockPg([[{ id: "import-123" }]]);
+    const mockPg = buildMockPg([[{ job_token: "import-123" }]]);
 
-    const result = await findProfileImportByJobId(mockPg, "job-123");
+    const result = await getJobTokenForProfileImport(mockPg, "job-123");
 
     expect(result).toBe("import-123");
 
     // Verify query
     const query = mockPg.getExecutedQueries()[0];
-    expect(query.sql).toContain("SELECT id FROM profile_imports");
-    expect(query.sql).toContain("WHERE job_id = $1");
+    expect(query.sql).toContain("SELECT job_token FROM profile_imports");
+    expect(query.sql).toContain("WHERE id = $1");
     expect(query.values).toEqual(["job-123"]);
   });
 
@@ -22,7 +22,10 @@ describe("findProfileImportByJobId", () => {
       [], // Empty result
     ]);
 
-    const result = await findProfileImportByJobId(mockPg, "non-existent-job");
+    const result = await getJobTokenForProfileImport(
+      mockPg,
+      "non-existent-job",
+    );
 
     expect(result).toBeUndefined();
   });
@@ -30,7 +33,7 @@ describe("findProfileImportByJobId", () => {
   it("should use parameterized query for safety", async () => {
     const mockPg = buildMockPg([[{ id: "import-123" }]]);
 
-    await findProfileImportByJobId(mockPg, "job-123");
+    await getJobTokenForProfileImport(mockPg, "job-123");
 
     const query = mockPg.getExecutedQueries()[0];
     expect(query.sql).not.toContain("job-123");

@@ -52,7 +52,8 @@
     "@testcontainers/postgresql": "^10.17.1",
     "@types/http-errors": "^2.0.4",
     "@types/pg": "^8.11.10",
-    "tsc-alias": "^1.8.10"
+    "tsc-alias": "^1.8.10",
+    "vitest": "^3.0.4"
   },
   "engines": {
     "node": ">=22.0.0"

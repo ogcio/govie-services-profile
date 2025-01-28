@@ -14,12 +14,11 @@ import { createUpdateProfileDetails } from "../../services/profiles/create-updat
 import { importProfiles } from "../../services/profiles/import-profiles.js";
 import {
   checkProfileImportCompletion,
-  createProfileImport,
-  createProfileImportDetails,
   getProfileImportStatus,
   lookupProfile,
+  selectProfileImportDetails,
   updateProfileImportDetails,
-  updateProfileImportStatusByJobId,
+  updateProfileImportStatus,
 } from "../../services/profiles/sql/index.js";
 import { buildMockPg } from "../build-mock-pg.js";
 import {
@@ -29,7 +28,7 @@ import {
 } from "../fixtures/common.js";
 
 describe("importProfiles", () => {
-  const jobId = "job-123";
+  const profileImportId = "import-123";
   const importDetailsIds = ["detail-1", "detail-2"];
 
   afterEach(() => {
@@ -58,12 +57,11 @@ describe("importProfiles", () => {
       [{ in_transaction: false }], // Fourth withRollback check
       [], // BEGIN
       [], // checkProfileImportCompletion
-      [], // updateProfileImportStatusByJobId
+      [], // updateProfileImportStatus
       [], // COMMIT
     ]);
 
-    (createProfileImport as Mock).mockResolvedValue(jobId);
-    (createProfileImportDetails as Mock).mockResolvedValue(importDetailsIds);
+    (selectProfileImportDetails as Mock).mockResolvedValue(importDetailsIds);
     (lookupProfile as Mock).mockResolvedValue({ exists: false });
     (createLogtoUsers as Mock).mockResolvedValue([
       { id: "user-1", primaryEmail: mockProfiles[0].email },
@@ -86,25 +84,18 @@ describe("importProfiles", () => {
       profiles: mockProfiles,
       organizationId: "org-123",
       config: mockLogtoConfig,
+      profileImportId,
     });
 
-    expect(result).toStrictEqual({ status: ImportStatus.COMPLETED, jobId });
-    expect(createProfileImport).toHaveBeenCalledWith(
-      mockPg,
-      "org-123",
-      "csv",
-      undefined,
-    );
-    expect(createProfileImportDetails).toHaveBeenCalledWith(
-      mockPg,
-      jobId,
-      mockProfiles,
-    );
+    expect(result).toStrictEqual({
+      status: ImportStatus.COMPLETED,
+      profileImportId,
+    });
     expect(createLogtoUsers).toHaveBeenCalledWith(
       mockProfiles,
       mockLogtoConfig,
       "org-123",
-      jobId,
+      profileImportId,
     );
   });
 
@@ -125,12 +116,11 @@ describe("importProfiles", () => {
       [{ in_transaction: false }], // Fourth withRollback check
       [], // BEGIN
       [], // checkProfileImportCompletion
-      [], // updateProfileImportStatusByJobId
+      [], // updateProfileImportStatus
       [], // COMMIT
     ]);
 
-    (createProfileImport as Mock).mockResolvedValue(jobId);
-    (createProfileImportDetails as Mock).mockResolvedValue(importDetailsIds);
+    (selectProfileImportDetails as Mock).mockResolvedValue(importDetailsIds);
     (lookupProfile as Mock).mockResolvedValue({
       exists: true,
       profileId: "profile-123",
@@ -152,20 +142,13 @@ describe("importProfiles", () => {
       profiles: mockProfiles,
       organizationId: "org-123",
       config: mockLogtoConfig,
+      profileImportId,
     });
 
-    expect(result).toStrictEqual({ status: ImportStatus.COMPLETED, jobId });
-    expect(createProfileImport).toHaveBeenCalledWith(
-      mockPg,
-      "org-123",
-      "csv",
-      undefined,
-    );
-    expect(createProfileImportDetails).toHaveBeenCalledWith(
-      mockPg,
-      jobId,
-      mockProfiles,
-    );
+    expect(result).toStrictEqual({
+      status: ImportStatus.COMPLETED,
+      profileImportId,
+    });
     expect(createLogtoUsers).not.toHaveBeenCalled();
   });
 
@@ -190,7 +173,7 @@ describe("importProfiles", () => {
       [{ in_transaction: false }], // Fourth withRollback check
       [], // BEGIN
       [], // checkProfileImportCompletion
-      [], // updateProfileImportStatusByJobId
+      [], // updateProfileImportStatus
       [], // COMMIT
     ]);
 
@@ -201,8 +184,7 @@ describe("importProfiles", () => {
     const logtoError = new Error("Logto error") as LogtoError;
     logtoError.successfulEmails = [mockProfiles[0].email];
 
-    (createProfileImport as Mock).mockResolvedValue(jobId);
-    (createProfileImportDetails as Mock).mockResolvedValue(importDetailsIds);
+    (selectProfileImportDetails as Mock).mockResolvedValue(importDetailsIds);
     (lookupProfile as Mock).mockResolvedValue({ exists: false });
     (createLogtoUsers as Mock).mockRejectedValue(logtoError);
     (checkProfileImportCompletion as Mock).mockResolvedValue({
@@ -221,24 +203,30 @@ describe("importProfiles", () => {
       profiles: mockProfiles,
       organizationId: "org-123",
       config: mockLogtoConfig,
+      profileImportId,
     });
 
     expect(result).toStrictEqual({
       status: ImportStatus.FAILED,
-      jobId,
+      profileImportId,
     });
     expect(updateProfileImportDetails).toHaveBeenCalled();
-    expect(updateProfileImportStatusByJobId).toHaveBeenCalledWith(
+    expect(updateProfileImportStatus).toHaveBeenCalledWith(
       mockPg,
-      jobId,
+      profileImportId,
       ImportStatus.FAILED,
     );
   });
 
-  it("should process JSON profiles array", async () => {
+  it("should handle empty profiles array with completed status", async () => {
     const mockPg = buildMockPg([
       [{ in_transaction: false }], // Initial transaction check
       [], // BEGIN
+      [], // COMMIT
+      // Final status update
+      [{ in_transaction: false }], // Fourth withRollback check
+      [], // BEGIN
+      [], // updateProfileImportStatus
       [], // COMMIT
     ]);
     mockPg.release = vi.fn();
@@ -247,12 +235,7 @@ describe("importProfiles", () => {
       connect: () => Promise.resolve(mockPg),
     };
 
-    (createProfileImport as Mock).mockResolvedValue("test-job-id");
-    (createProfileImportDetails as Mock).mockResolvedValue(["detail-1"]);
-    (lookupProfile as Mock).mockResolvedValue({ exists: false });
-    (createLogtoUsers as Mock).mockResolvedValue([
-      { id: "user-1", primaryEmail: mockProfiles[0].email },
-    ]);
+    (selectProfileImportDetails as Mock).mockResolvedValue([]);
     (checkProfileImportCompletion as Mock).mockResolvedValue({
       isComplete: true,
       finalStatus: ImportStatus.COMPLETED,
@@ -262,135 +245,20 @@ describe("importProfiles", () => {
     const result = await importProfiles({
       pool: mockPool as unknown as Pool,
       logger: mockLogger as unknown as FastifyBaseLogger,
-      profiles: [mockProfiles[0]],
+      profiles: [],
       organizationId: "test-org",
       config: mockLogtoConfig,
-      source: "json",
+      profileImportId,
     });
 
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       status: ImportStatus.COMPLETED,
-      jobId: "test-job-id",
+      profileImportId,
     });
-    expect(mockPg.release).toHaveBeenCalled();
-  });
-
-  it("should process CSV file upload", async () => {
-    const mockPg = buildMockPg([
-      [{ in_transaction: false }], // Initial transaction check
-      [], // BEGIN
-      [], // COMMIT
-    ]);
-    mockPg.release = vi.fn();
-
-    const mockPool = {
-      connect: () => Promise.resolve(mockPg),
-    };
-
-    const csvContent =
-      "firstName,lastName,email,phone,dateOfBirth,address,city\nJohn,Doe,john@example.com,1234567890,1990-01-01,123 Test St,Test City";
-    const csvData = Buffer.from(csvContent).toString("base64");
-
-    (createProfileImport as Mock).mockResolvedValue("test-job-id");
-    (createProfileImportDetails as Mock).mockResolvedValue(["detail-1"]);
-    (lookupProfile as Mock).mockResolvedValue({ exists: false });
-    (createLogtoUsers as Mock).mockResolvedValue([
-      { id: "user-1", primaryEmail: mockProfiles[0].email },
-    ]);
-    (checkProfileImportCompletion as Mock).mockResolvedValue({
-      isComplete: true,
-      finalStatus: ImportStatus.COMPLETED,
-    });
-    (getProfileImportStatus as Mock).mockResolvedValue(ImportStatus.COMPLETED);
-
-    const result = await importProfiles({
-      pool: mockPool as unknown as Pool,
-      logger: mockLogger as unknown as FastifyBaseLogger,
-      profiles: [{ data: csvData }],
-      organizationId: "test-org",
-      config: mockLogtoConfig,
-      source: "csv",
-    });
-
-    expect(result).toEqual({
-      status: ImportStatus.COMPLETED,
-      jobId: "test-job-id",
-    });
-    expect(mockPg.release).toHaveBeenCalled();
-  });
-
-  it("should process CSV file with metadata", async () => {
-    const mockPg = buildMockPg([
-      [{ in_transaction: false }], // Initial transaction check
-      [], // BEGIN
-      [], // COMMIT
-    ]);
-    mockPg.release = vi.fn();
-
-    const mockPool = {
-      connect: () => Promise.resolve(mockPg),
-    };
-
-    const fileMetadata = {
-      filename: "test.csv",
-      mimetype: "text/csv",
-    };
-
-    (createProfileImport as Mock).mockResolvedValue("test-job-id");
-    (createProfileImportDetails as Mock).mockResolvedValue(["detail-1"]);
-    (lookupProfile as Mock).mockResolvedValue({ exists: false });
-    (createLogtoUsers as Mock).mockResolvedValue([
-      { id: "user-1", primaryEmail: mockProfiles[0].email },
-    ]);
-    (checkProfileImportCompletion as Mock).mockResolvedValue({
-      isComplete: true,
-      finalStatus: ImportStatus.COMPLETED,
-    });
-    (getProfileImportStatus as Mock).mockResolvedValue(ImportStatus.COMPLETED);
-
-    await importProfiles({
-      pool: mockPool as unknown as Pool,
-      logger: mockLogger as unknown as FastifyBaseLogger,
-      profiles: [mockProfiles[0]],
-      organizationId: "org-123",
-      config: mockLogtoConfig,
-      source: "csv",
-      fileMetadata,
-    });
-
-    expect(createProfileImport).toHaveBeenCalledWith(
+    expect(updateProfileImportStatus).toHaveBeenCalledWith(
       mockPg,
-      "org-123",
-      "csv",
-      fileMetadata,
+      profileImportId,
+      ImportStatus.COMPLETED,
     );
-  });
-
-  it("should throw error if neither profiles nor file provided", async () => {
-    const mockPg = buildMockPg([
-      [{ in_transaction: false }], // Initial transaction check
-      [], // BEGIN
-      [], // ROLLBACK - needed when error occurs
-    ]);
-    mockPg.release = vi.fn();
-
-    const mockPool = {
-      connect: () => Promise.resolve(mockPg),
-    };
-
-    // Set up the error case
-    (createProfileImport as Mock).mockRejectedValue(
-      new Error("Either profiles or file must be provided"),
-    );
-
-    await expect(
-      importProfiles({
-        pool: mockPool as unknown as Pool,
-        logger: mockLogger as unknown as FastifyBaseLogger,
-        profiles: [],
-        organizationId: "test-org",
-        config: mockLogtoConfig,
-      }),
-    ).rejects.toThrow("Either profiles or file must be provided");
   });
 });
