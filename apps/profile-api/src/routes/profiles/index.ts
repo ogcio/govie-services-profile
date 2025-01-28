@@ -20,7 +20,6 @@ import {
 } from "~/schemas/profiles/index.js";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
 import {
-  executeImportProfiles,
   findProfile,
   getProfile,
   getProfileImportDetails,
@@ -94,31 +93,14 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         profiles = await getProfilesFromCsv(savedFile.filepath);
       }
 
-      if (isJson) {
-        const { profileImportId } = await scheduleImportProfiles({
-          pool,
-          logger: request.log,
-          organizationId: withOrganizationId(request),
-          config,
-          profiles,
-          source: "json",
-          immediate: true,
-        });
-        return executeImportProfiles({
-          pool,
-          logger: request.log,
-          profileImportId,
-          config,
-        });
-      }
       return scheduleImportProfiles({
         pool,
         logger: request.log,
         organizationId: withOrganizationId(request),
         config,
         profiles,
-        source: "csv",
-        fileMetadata: savedFile?.metadata,
+        source: isJson ? "json" : "csv",
+        immediate: isJson,
       });
     },
   );

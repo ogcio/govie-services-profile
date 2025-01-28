@@ -37,7 +37,7 @@ export const scheduleImportProfiles = async (params: {
   withClient(params.pool, async (client) => {
     const { organizationId } = params;
 
-    const { profileImportId } = await withRollback(client, async () => {
+    const { profileImportId, status } = await withRollback(client, async () => {
       const { jobToken, profileImportId } = await createProfileImportAndDetails(
         {
           client,
@@ -45,7 +45,12 @@ export const scheduleImportProfiles = async (params: {
         },
       );
       if (params.immediate) {
-        return { profileImportId };
+        return executeImportProfiles({
+          pool: params.pool,
+          logger: params.logger,
+          profileImportId,
+          config: params.config,
+        });
       }
 
       const schedulerSdk = await getSchedulerSdk(
@@ -61,10 +66,10 @@ export const scheduleImportProfiles = async (params: {
           webhookAuth: jobToken,
         },
       ]);
-      return { profileImportId };
+      return { status: ImportStatus.PENDING, profileImportId };
     });
 
-    return { status: ImportStatus.PENDING, profileImportId };
+    return { status, profileImportId };
   });
 
 export const executeImportProfiles = async (params: {
