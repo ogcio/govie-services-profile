@@ -3,10 +3,11 @@ import type { FastifyBaseLogger } from "fastify";
 import type { Pool } from "pg";
 import { ImportStatus } from "~/const/index.js";
 import {
-  type AvailableLanguages,
   DEFAULT_LANGUAGE,
   type KnownProfileDataDetails,
+  type Profile,
 } from "~/schemas/profiles/model.js";
+import type { UpdateProfileBody } from "~/schemas/profiles/update.js";
 import type { LogtoUserCreatedBody } from "~/schemas/webhooks/index.js";
 import {
   createUpdateProfileDetails,
@@ -214,18 +215,15 @@ async function processUserForDirectSignin(params: {
           email: user.email,
           firstName: user.details?.firstName ?? "N/D",
           lastName: user.details?.lastName ?? "N/D",
-        };
-
-        const profileData = {
-          id: user.id,
-          email: user.email,
-          publicName,
-          primaryUserId: user.primaryUserId,
-          safeLevel: 0,
-          preferredLanguage: DEFAULT_LANGUAGE as AvailableLanguages,
+          phone: user.details?.phone,
+          dateOfBirth: user.details?.dateOfBirth,
         };
 
         if (await checkIfProfileExists(client, user.id)) {
+          const profileData: UpdateProfileBody = {
+            preferredLanguage: DEFAULT_LANGUAGE,
+            ...importDetail,
+          };
           await updateProfile({
             profileId: user.id,
             data: profileData,
@@ -234,7 +232,15 @@ async function processUserForDirectSignin(params: {
 
           return { profileId: user.id };
         }
-        await createProfile(client, profileData);
+
+        const profileDataToCreate: Profile = {
+          id: user.id,
+          primaryUserId: user.primaryUserId,
+          safeLevel: 0,
+          email: user.email,
+          publicName: publicName,
+        };
+        await createProfile(client, profileDataToCreate);
 
         await createUpdateProfileDetails(
           client,

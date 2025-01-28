@@ -7,6 +7,8 @@ export type WebhookUser = {
     firstName: string;
     lastName: string;
     email: string;
+    dateOfBirth?: string;
+    phone?: string;
   };
   email: string;
   primaryUserId: string;
@@ -32,7 +34,6 @@ export const webhookBodyToUser = (bodyData: {
   // From MyGovid
   if (bodyData.identities[MY_GOV_ID_IDENTITY]) {
     const identity = bodyData.identities[MY_GOV_ID_IDENTITY].details;
-
     return {
       id: bodyData.id as string,
       details: {
@@ -41,6 +42,12 @@ export const webhookBodyToUser = (bodyData: {
         lastName: (identity.rawData.lastName ??
           identity.rawData.surname) as string,
         email: (identity.email ?? bodyData.primaryEmail) as string,
+        dateOfBirth: identity.rawData.BirthDate
+          ? (identity.rawData.BirthDate as string)
+          : undefined,
+        phone: identity.rawData.mobile
+          ? (identity.rawData.mobile as string)
+          : undefined,
       },
       email: (identity.email ?? bodyData.primaryEmail) as string,
       primaryUserId: bodyData.id,

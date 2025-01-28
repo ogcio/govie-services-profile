@@ -1,5 +1,7 @@
 import type { HttpError } from "@fastify/sensible";
+import { Value } from "@sinclair/typebox/value";
 import type { PoolClient } from "pg";
+import { KnownProfileDataDetailsSchema } from "~/schemas/profiles/index.js";
 import { withRollback } from "~/utils/index.js";
 import {
   createProfileDataForProfileDetail,
@@ -25,19 +27,13 @@ export const createUpdateProfileDetails = async (
   organizationId: string | undefined,
   profileId: string,
   data: Record<string, string | number>,
-): Promise<string> => {
+): Promise<string | undefined> => {
   try {
     return await withRollback(client, async () => {
       const profileWithData = await findProfileWithData(
         client,
         organizationId,
         profileId,
-      );
-
-      const profileDetailId = await createProfileDetails(
-        client,
-        profileId,
-        organizationId,
       );
 
       let previousProfileDetails = {};
@@ -50,11 +46,26 @@ export const createUpdateProfileDetails = async (
           ]),
         );
       }
+      const toSetDetails = checkIfProfileDetailsNeedToBeUpdated(
+        previousProfileDetails,
+        { ...previousProfileDetails, ...data },
+      );
 
-      await createProfileDataForProfileDetail(client, profileDetailId, {
-        ...previousProfileDetails,
-        ...data,
-      });
+      if (!toSetDetails.needsUpdate) {
+        return;
+      }
+
+      const profileDetailId = await createProfileDetails(
+        client,
+        profileId,
+        organizationId,
+      );
+
+      await createProfileDataForProfileDetail(
+        client,
+        profileDetailId,
+        toSetDetails.newDetails,
+      );
 
       await updateProfileDetailsToLatest(
         client,
@@ -75,4 +86,43 @@ export const createUpdateProfileDetails = async (
       `Failed to create/update profile details: ${message}`,
     );
   }
+};
+
+const checkIfProfileDetailsNeedToBeUpdated = (
+  previousProfileDetails: Record<string, string>,
+  newDetails: Record<string, string | number>,
+): { needsUpdate: boolean; newDetails: Record<string, string | number> } => {
+  const noEmptyDetails = Object.fromEntries(
+    Object.entries(newDetails).filter(
+      ([, v]) =>
+        !(
+          (typeof v === "string" && !v.length) ||
+          v === null ||
+          typeof v === "undefined"
+        ),
+    ),
+  );
+
+  const cleanedDetails = Value.Clean(
+    KnownProfileDataDetailsSchema,
+    noEmptyDetails,
+  ) as Record<string, string | number>;
+
+  if (
+    JSON.stringify(Object.keys(cleanedDetails).sort()) !==
+    JSON.stringify(Object.keys(previousProfileDetails).sort())
+  ) {
+    return { needsUpdate: true, newDetails: cleanedDetails };
+  }
+
+  for (const newKey in cleanedDetails) {
+    if (
+      !previousProfileDetails[newKey] ||
+      cleanedDetails[newKey] !== previousProfileDetails[newKey]
+    ) {
+      return { needsUpdate: true, newDetails: cleanedDetails };
+    }
+  }
+
+  return { needsUpdate: false, newDetails: cleanedDetails };
 };
