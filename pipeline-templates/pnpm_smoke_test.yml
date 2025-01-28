@@ -31,7 +31,7 @@ jobs:
       - task: CmdLine@2
         displayName: Install Playwright browsers
         inputs:
-          script: npx playwright install
+          script: pnpm --filter ${{ parameters.serviceName }} exec playwright install
       - task: CmdLine@2
         displayName: 'Run E2E smoke tests for ${{ parameters.serviceName }}'
         inputs:
