@@ -1,7 +1,8 @@
 import { type Static, Type } from "@sinclair/typebox";
 import { HttpError } from "~/types/index.js";
+import { ImportProfilesResponseSchema } from "./profiles/import-profiles.js";
 
-const ExecuteJobResponseSchema = Type.Null();
+const ExecuteJobResponseSchema = ImportProfilesResponseSchema;
 export type ExecuteJobResponse = Static<typeof ExecuteJobResponseSchema>;
 
 export const ExecuteJobReqSchema = {

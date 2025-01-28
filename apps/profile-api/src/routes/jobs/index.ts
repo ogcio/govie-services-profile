@@ -11,9 +11,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
     "/:profileImportId",
     {
       schema: ExecuteJobReqSchema,
-      config: {
-        rawBody: true,
-      },
     },
     async (request: FastifyRequestTypebox<typeof ExecuteJobReqSchema>) => {
       const { profileImportId } = request.params;
