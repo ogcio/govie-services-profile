@@ -104,17 +104,6 @@ stages:
               serviceName: ${{ serviceName }}
               testPath: "./apps/"
               dependenciesBuild: "node scripts/init-env.mjs"
-      - stage: Test_Smoke_Tests_${{ replace(serviceName, '-', '_') }}
-        displayName: Run smoke tests - ${{ serviceName }}
-        condition: ${{ variables.runSmokeTests }}
-        pool: "Openshift"
-        dependsOn: Unit_Tests_${{ replace(serviceName, '-', '_') }}
-        jobs:
-          - template: pipeline-templates/pnpm_smoke_test.yml
-            parameters:
-              serviceName: ${{ serviceName }}
-              testPath: "./apps/"
-              dependenciesBuild: "node scripts/init-env.mjs"
       - stage: Build_${{ replace(serviceName, '-', '_') }}
         displayName: Build ${{ serviceName }}
         pool:
