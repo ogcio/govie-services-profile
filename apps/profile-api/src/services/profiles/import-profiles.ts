@@ -57,7 +57,7 @@ export const scheduleImportProfiles = async (params: {
       await schedulerSdk.scheduleTasks([
         {
           executeAt: scheduleDate.toISOString(),
-          webhookUrl: `${params.config.HOST_URL}/api/v1/jobs/${profileImportId}`,
+          webhookUrl: `${params.config.HOST_URL}/api/v1/jobs/import-profiles/${profileImportId}`,
           webhookAuth: jobToken,
         },
       ]);

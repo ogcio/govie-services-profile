@@ -8,7 +8,7 @@ import { executeImportProfiles } from "~/services/profiles/import-profiles.js";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   fastify.post(
-    "/:profileImportId",
+    "/import-profiles/:profileImportId",
     {
       schema: ExecuteJobReqSchema,
     },
