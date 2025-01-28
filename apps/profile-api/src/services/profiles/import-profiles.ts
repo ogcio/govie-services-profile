@@ -53,9 +53,7 @@ export const scheduleImportProfiles = async (params: {
         organizationId,
         params.config,
       );
-      // 1 minute from now
-      // TODO: Make this back-off depending on the number of imports currently running
-      const scheduleDate = new Date(Date.now() + 60 * 1000);
+      const scheduleDate = new Date();
       await schedulerSdk.scheduleTasks([
         {
           executeAt: scheduleDate.toISOString(),
