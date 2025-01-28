@@ -10,6 +10,7 @@ import {
   GetProfileSchema,
   GetProfileTemplateSchema,
   ImportProfilesSchema,
+  type KnownProfileDataDetails,
   ListProfileImportsSchema,
   type Profile,
   type ProfileWithDetails,
@@ -36,7 +37,10 @@ import {
   sanitizePagination,
   withOrganizationId,
 } from "~/utils/index.js";
-import { saveRequestFile } from "~/utils/save-request-file.js";
+import {
+  type SavedFileInfo,
+  saveRequestFile,
+} from "~/utils/save-request-file.js";
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
   const {
@@ -80,9 +84,15 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         MimeTypes.Json,
       );
 
-      const profiles = isJson
-        ? (request.body.profiles ?? [])
-        : await getProfilesFromCsv((await saveRequestFile(request)).filepath);
+      let profiles: KnownProfileDataDetails[] = [];
+      let savedFile: SavedFileInfo | undefined;
+
+      if (isJson) {
+        profiles = request.body.profiles ?? [];
+      } else {
+        savedFile = await saveRequestFile(request);
+        profiles = await getProfilesFromCsv(savedFile.filepath);
+      }
 
       if (isJson) {
         const { profileImportId } = await scheduleImportProfiles({
@@ -101,7 +111,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
           config,
         });
       }
-      const savedFile = await saveRequestFile(request);
       return scheduleImportProfiles({
         pool,
         logger: request.log,
