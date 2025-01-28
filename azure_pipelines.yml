@@ -14,12 +14,12 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-    default: ["dev", "sta", "uat"]
+    default: ["dev", "sta", "uat", "chore/24924-pipeline-smoke-test"]
 
   - name: validEnvironments
     type: object
     displayName: List of valid environments to deploy (do not change)
-    default: ["dev", "sta", "uat", "prd", "chore/24924-pipeline-smoke-test"]
+    default: ["dev", "sta", "uat", "prd"]
 
   - name: vmImage
     type: string
