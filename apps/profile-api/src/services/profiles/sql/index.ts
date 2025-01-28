@@ -18,3 +18,6 @@ export * from "./select-profiles-with-data.js";
 export * from "./update-profile.js";
 export * from "./update-profile-import-status.js";
 export * from "./check-if-profile-exists-by-id.js";
+export * from "./get-profile-import-details.js";
+export * from "./get-profile-import.js";
+export * from "./select-profile-import-details.js";

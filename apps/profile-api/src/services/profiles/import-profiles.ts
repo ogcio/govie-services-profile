@@ -1,5 +1,5 @@
 import type { FastifyBaseLogger } from "fastify";
-import type { Pool } from "pg";
+import type { Pool, PoolClient } from "pg";
 import { ImportStatus } from "~/const/index.js";
 import type { EnvConfig } from "~/plugins/external/env.js";
 import type { KnownProfileDataDetails } from "~/schemas/profiles/index.js";
@@ -9,15 +9,16 @@ import {
   type LogtoError,
   createLogtoUsers,
   createUpdateProfileDetails,
-  getProfilesFromCsv,
 } from "./index.js";
-import { getProfileImport } from "./sql/get-profile-import.js";
 import {
   checkProfileImportCompletion,
   createProfileImport,
   createProfileImportDetails,
+  getProfileImport,
+  getProfileImportDetails,
   getProfileImportStatus,
   lookupProfile,
+  selectProfileImportDetails,
   updateProfileImportDetails,
   updateProfileImportDetailsStatus,
   updateProfileImportStatus,
@@ -28,19 +29,20 @@ export const scheduleImportProfiles = async (params: {
   logger: FastifyBaseLogger;
   organizationId: string;
   config: EnvConfig;
-  source?: "json" | "csv";
+  source: "json" | "csv";
   fileMetadata?: SavedFileInfo["metadata"];
+  profiles: KnownProfileDataDetails[];
   immediate?: boolean;
 }): Promise<{ status: ImportStatus; profileImportId: string }> =>
   withClient(params.pool, async (client) => {
-    const { organizationId, source, fileMetadata } = params;
+    const { organizationId } = params;
 
     const { profileImportId } = await withRollback(client, async () => {
-      const { jobToken, profileImportId } = await createProfileImport(
-        client,
-        organizationId,
-        source,
-        fileMetadata,
+      const { jobToken, profileImportId } = await createProfileImportAndDetails(
+        {
+          client,
+          ...params,
+        },
       );
       if (params.immediate) {
         return { profileImportId };
@@ -72,16 +74,19 @@ export const executeImportProfiles = async (params: {
   logger: FastifyBaseLogger;
   profileImportId: string;
   config: EnvConfig;
-  profiles?: KnownProfileDataDetails[];
 }): Promise<{ status: ImportStatus; profileImportId: string }> =>
   withClient(params.pool, async (client) =>
     withRollback(client, async () => {
-      const { organisationId, metadata } = await getProfileImport(
+      const { organisationId } = await getProfileImport(
         client,
         params.profileImportId,
       );
-      const profiles =
-        params.profiles ?? (await getProfilesFromCsv(metadata.filepath));
+
+      // Get the profiles data from the database
+      const profiles = await getProfileImportDetails(
+        client,
+        params.profileImportId,
+      );
 
       return await importProfiles({
         pool: params.pool,
@@ -93,6 +98,27 @@ export const executeImportProfiles = async (params: {
       });
     }),
   );
+
+const createProfileImportAndDetails = async (params: {
+  client: PoolClient;
+  profiles: KnownProfileDataDetails[];
+  organizationId: string;
+  source: "json" | "csv";
+  fileMetadata?: SavedFileInfo["metadata"];
+}): Promise<{ jobToken: string; profileImportId: string }> => {
+  const { client, profiles, organizationId, source, fileMetadata } = params;
+  return withRollback(client, async () => {
+    const { jobToken, profileImportId } = await createProfileImport(
+      client,
+      organizationId,
+      source,
+      fileMetadata,
+    );
+
+    await createProfileImportDetails(client, profileImportId, profiles);
+    return { jobToken, profileImportId };
+  });
+};
 
 export const importProfiles = async (params: {
   pool: Pool;
@@ -106,21 +132,16 @@ export const importProfiles = async (params: {
     const { config, logger, profiles, organizationId, profileImportId } =
       params;
 
-    // 1. Create import job and import details
-    const { importDetailsMap } = await withRollback(client, async () => {
-      const importDetailsIdList = await createProfileImportDetails(
-        client,
-        profileImportId,
-        profiles,
-      );
-      const importDetailsMap = new Map(
-        profiles.map((profile, index) => [
-          profile.email,
-          importDetailsIdList[index],
-        ]),
-      );
-      return { importDetailsMap };
-    });
+    const importDetailsIdList = await selectProfileImportDetails(
+      client,
+      profileImportId,
+    );
+    const importDetailsMap = new Map(
+      profiles.map((profile, index) => [
+        profile.email,
+        importDetailsIdList[index],
+      ]),
+    );
 
     // 2. Process profiles
     const failedProfileIds = new Set<string>();

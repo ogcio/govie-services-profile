@@ -8,7 +8,6 @@ export interface SavedFileInfo {
   metadata: {
     filename: string;
     mimetype: string;
-    filepath: string;
   };
 }
 
@@ -32,7 +31,6 @@ export const saveRequestFile = async (
     metadata: {
       filename: file.filename,
       mimetype: file.mimetype,
-      filepath: file.filepath,
     },
   };
 };

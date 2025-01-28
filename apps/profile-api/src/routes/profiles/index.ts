@@ -24,6 +24,7 @@ import {
   getProfile,
   getProfileImportDetails,
   getProfileTemplate,
+  getProfilesFromCsv,
   listProfileImports,
   listProfiles,
   scheduleImportProfiles,
@@ -79,13 +80,17 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         MimeTypes.Json,
       );
 
+      const profiles = isJson
+        ? (request.body.profiles ?? [])
+        : await getProfilesFromCsv((await saveRequestFile(request)).filepath);
+
       if (isJson) {
-        const profiles = request.body.profiles ?? [];
         const { profileImportId } = await scheduleImportProfiles({
           pool,
           logger: request.log,
           organizationId: withOrganizationId(request),
           config,
+          profiles,
           source: "json",
           immediate: true,
         });
@@ -94,7 +99,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
           logger: request.log,
           profileImportId,
           config,
-          profiles,
         });
       }
       const savedFile = await saveRequestFile(request);
@@ -103,6 +107,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         logger: request.log,
         organizationId: withOrganizationId(request),
         config,
+        profiles,
         source: "csv",
         fileMetadata: savedFile?.metadata,
       });
