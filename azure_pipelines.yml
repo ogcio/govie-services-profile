@@ -19,7 +19,7 @@ parameters:
   - name: validEnvironments
     type: object
     displayName: List of valid environments to deploy (do not change)
-    default: ["dev", "sta", "uat", "prd"]
+    default: ["dev", "sta", "uat", "prd", "chore/24924-pipeline-smoke-test"]
 
   - name: vmImage
     type: string
