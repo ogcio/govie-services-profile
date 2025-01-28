@@ -43,7 +43,7 @@ export const scheduleImportProfiles = async (params: {
         fileMetadata,
       );
       if (params.immediate) {
-        return { status: ImportStatus.PENDING, profileImportId };
+        return { profileImportId };
       }
 
       const schedulerSdk = await getSchedulerSdk(
@@ -74,8 +74,8 @@ export const executeImportProfiles = async (params: {
   config: EnvConfig;
   profiles?: KnownProfileDataDetails[];
 }): Promise<{ status: ImportStatus; profileImportId: string }> =>
-  withClient(params.pool, async (client) => {
-    return await withRollback(client, async () => {
+  withClient(params.pool, async (client) =>
+    withRollback(client, async () => {
       const { organisationId, metadata } = await getProfileImport(
         client,
         params.profileImportId,
@@ -91,8 +91,8 @@ export const executeImportProfiles = async (params: {
         config: params.config,
         profileImportId: params.profileImportId,
       });
-    });
-  });
+    }),
+  );
 
 export const importProfiles = async (params: {
   pool: Pool;

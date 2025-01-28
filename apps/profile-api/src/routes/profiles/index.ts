@@ -103,7 +103,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         logger: request.log,
         organizationId: withOrganizationId(request),
         config,
-        source: isJson ? "json" : "csv",
+        source: "csv",
         fileMetadata: savedFile?.metadata,
       });
     },

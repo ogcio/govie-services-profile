@@ -30,7 +30,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         throw httpErrors.unauthorized("Invalid token");
       }
       // Execute job
-      return await executeImportProfiles({
+      return executeImportProfiles({
         pool: fastify.pg.pool,
         logger: fastify.log,
         profileImportId,
