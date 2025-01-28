@@ -104,7 +104,7 @@ stages:
               serviceName: ${{ serviceName }}
               testPath: "./apps/"
               dependenciesBuild: "node scripts/init-env.mjs"
-      - stage: Smoke_Tests_${{ replace(serviceName, '-', '_') }}
+      - stage: Test_Smoke_Tests_${{ replace(serviceName, '-', '_') }}
         displayName: Run smoke tests - ${{ serviceName }}
         condition: ${{ variables.runSmokeTests }}
         pool: "Openshift"
