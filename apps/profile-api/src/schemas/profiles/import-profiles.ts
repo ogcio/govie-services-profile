@@ -1,8 +1,8 @@
 import { type Static, Type } from "@sinclair/typebox";
 import { MimeTypes } from "~/const/mime-types.js";
 import { HttpError } from "~/types/index.js";
+import { PROFILES_TAG } from "./constants.js";
 import { KnownProfileDataDetailsSchema } from "./model.js";
-import { PROFILES_TAG } from "./shared.js";
 
 export const ImportProfilesResponseSchema = Type.Object({
   status: Type.String(),

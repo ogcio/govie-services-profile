@@ -1,8 +1,8 @@
 import { type Static, Type } from "@sinclair/typebox";
 import { HttpError } from "~/types/index.js";
 import { getGenericResponseSchema } from "~/utils/index.js";
+import { PROFILES_TAG } from "./constants.js";
 import { AvailableLanguagesSchema, ProfileWithDetailsSchema } from "./index.js";
-import { PROFILES_TAG } from "./shared.js";
 
 export const UpdateProfileSchema = {
   tags: [PROFILES_TAG],

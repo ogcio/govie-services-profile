@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "~/types/index.js";
-import { PROFILES_TAG } from "./shared.js";
+import { PROFILES_TAG } from "./constants.js";
 
 export const GetProfileTemplateSchema = {
   tags: [PROFILES_TAG],
