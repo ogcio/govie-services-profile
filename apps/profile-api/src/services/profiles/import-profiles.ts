@@ -86,7 +86,7 @@ export const executeImportProfiles = async (params: {
         params.profileImportId,
       );
 
-      return await importProfiles({
+      return importProfiles({
         pool: params.pool,
         logger: params.logger,
         profiles,
