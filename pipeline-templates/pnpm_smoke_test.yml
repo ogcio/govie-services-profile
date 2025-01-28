@@ -1,0 +1,43 @@
+parameters:
+  - name: serviceName
+    default: ""
+  - name: testPath
+    default: ""
+  - name: dependenciesBuild
+    default: ""
+
+jobs:
+  - job: Run_unit_tests
+    displayName: Run unit tests for ${{ parameters.serviceName }}
+    pool:
+      vmImage: "ubuntu-22.04"
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: "22.x"
+      - template: pnpm_install.yaml
+      - task: CmdLine@2
+        displayName: "pnpm install --frozen-lockfile"
+        inputs:
+          script: pnpm install --frozen-lockfile
+      - task: CmdLine@2
+        displayName: "Build dependencies"
+        inputs:
+          script: ${{ parameters.dependenciesBuild }}
+      - task: CmdLine@2
+        displayName: "pnpm install --frozen-lockfile"
+        inputs:
+          script: pnpm install --frozen-lockfile
+      - task: CmdLine@2
+        displayName: Install Playwright browsers
+        inputs:
+          script: npx playwright install
+      - task: CmdLine@2
+        displayName: 'Run E2E smoke tests for ${{ parameters.serviceName }}'
+        inputs:
+          script: pnpm --filter ${{ parameters.serviceName }} run test:smoke:e2e
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFiles: '${{ parameters.testPath }}${{ parameters.serviceName }}/e2e/test-results/results.xml'
+          testRunTitle: 'Smoke test results for ${{ parameters.serviceName }}:$(Build.BuildId)'
+        condition: succeededOrFailed()

@@ -176,7 +176,8 @@ stages:
         pool: "Openshift"
         dependsOn: Deploy_Openshift_${{ replace(serviceName, '-', '_') }}
         jobs:
-          - template: test/smoke_test.yml@pipeline-templates
+          - template: pipeline-templates/pnpm_smoke_test.yml
             parameters:
               serviceName: ${{ serviceName }}
               testPath: "./apps/"
+              dependenciesBuild: "node scripts/init-env.mjs"
