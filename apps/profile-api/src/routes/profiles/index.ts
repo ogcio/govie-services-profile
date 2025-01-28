@@ -101,6 +101,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         profiles,
         source: isJson ? "json" : "csv",
         immediate: isJson,
+        fileMetadata: savedFile?.metadata,
       });
     },
   );
