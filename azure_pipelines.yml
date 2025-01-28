@@ -14,7 +14,7 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-    default: ["dev", "sta", "uat", "chore/24924-pipeline-smoke-test"]
+    default: ["dev", "sta", "uat"]
 
   - name: validEnvironments
     type: object
@@ -100,6 +100,17 @@ stages:
           - BuildDeps
         jobs:
           - template: pipeline-templates/pnpm_unit_test.yml
+            parameters:
+              serviceName: ${{ serviceName }}
+              testPath: "./apps/"
+              dependenciesBuild: "node scripts/init-env.mjs"
+      - stage: Smoke_Tests_${{ replace(serviceName, '-', '_') }}
+        displayName: Run smoke tests - ${{ serviceName }}
+        condition: ${{ variables.runSmokeTests }}
+        pool: "Openshift"
+        dependsOn: Unit_Tests_${{ replace(serviceName, '-', '_') }}
+        jobs:
+          - template: pipeline-templates/pnpm_smoke_test.yml
             parameters:
               serviceName: ${{ serviceName }}
               testPath: "./apps/"
