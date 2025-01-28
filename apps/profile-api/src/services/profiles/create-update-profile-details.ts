@@ -92,6 +92,7 @@ const checkIfProfileDetailsNeedToBeUpdated = (
   previousProfileDetails: Record<string, string>,
   newDetails: Record<string, string | number>,
 ): { needsUpdate: boolean; newDetails: Record<string, string | number> } => {
+  // ensure we don't have any empty value there
   const noEmptyDetails = Object.fromEntries(
     Object.entries(newDetails).filter(
       ([, v]) =>
