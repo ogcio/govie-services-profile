@@ -14,6 +14,11 @@
     "fix:linting": "biome lint --write",
     "test:local": "NODE_OPTIONS='--import tsx' vitest",
     "test": "NODE_OPTIONS='--import tsx' vitest run --reporter junit --reporter default --coverage --outputFile=results.xml",
+    "test:e2e": "echo \"Error: no test specified\" && exit 0",
+    "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
+    "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
+    "test:nf": "echo \"Error: no test specified\" && exit 0",
+    "test:nf:local": "echo \"Error: no test specified\" && exit 0",
     "db:create": "tsx --env-file=.env ./src/migrations/scripts/run-create-database.ts",
     "db:drop": "tsx --env-file=.env ./src/migrations/scripts/run-drop-database.ts",
     "db:migrate": "tsx --env-file=.env ./src/migrations/scripts/run-migrate-database.ts",
@@ -49,6 +54,7 @@
     "fast-csv": "^5.0.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.49.0",
     "@testcontainers/postgresql": "^10.17.1",
     "@types/http-errors": "^2.0.4",
     "@types/pg": "^8.11.10",
