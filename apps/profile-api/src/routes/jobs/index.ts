@@ -19,7 +19,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       // Verify token
       const isTokenVerified = await verifyToken({
         pool: fastify.pg.pool,
-        logger: fastify.log,
+        logger: request.log,
         profileImportId,
         token,
       });
@@ -29,7 +29,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
       // Execute job
       return executeImportProfiles({
         pool: fastify.pg.pool,
-        logger: fastify.log,
+        logger: request.log,
         profileImportId,
         config: fastify.config,
       });
