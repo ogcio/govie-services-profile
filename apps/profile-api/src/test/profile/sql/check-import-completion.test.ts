@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { ImportStatus } from "../../../const/profile.js";
-import { checkImportCompletion } from "../../../services/profiles/sql/check-import-completion.js";
+import { checkProfileImportCompletion } from "../../../services/profiles/sql/check-profile-import-completion.js";
 import { buildMockPg } from "../../build-mock-pg.js";
 
-describe("checkImportCompletion", () => {
+describe("checkProfileImportCompletion", () => {
   it("should return not complete when there are pending profiles", async () => {
     const mockPg = buildMockPg([
       [{ total: 10, completed: 3, failed: 2, pending: 5 }],
     ]);
 
-    const result = await checkImportCompletion(mockPg, "job-123");
+    const result = await checkProfileImportCompletion(mockPg, "job-123");
 
     expect(result).toEqual({
       isComplete: false,
@@ -22,7 +22,7 @@ describe("checkImportCompletion", () => {
       [{ total: 10, completed: 10, failed: 0, pending: 0 }],
     ]);
 
-    const result = await checkImportCompletion(mockPg, "job-123");
+    const result = await checkProfileImportCompletion(mockPg, "job-123");
 
     expect(result).toEqual({
       isComplete: true,
@@ -35,7 +35,7 @@ describe("checkImportCompletion", () => {
       [{ total: 10, completed: 0, failed: 10, pending: 0 }],
     ]);
 
-    const result = await checkImportCompletion(mockPg, "job-123");
+    const result = await checkProfileImportCompletion(mockPg, "job-123");
 
     expect(result).toEqual({
       isComplete: true,
@@ -48,7 +48,7 @@ describe("checkImportCompletion", () => {
       [{ total: 10, completed: 7, failed: 3, pending: 0 }],
     ]);
 
-    const result = await checkImportCompletion(mockPg, "job-123");
+    const result = await checkProfileImportCompletion(mockPg, "job-123");
 
     expect(result).toEqual({
       isComplete: true,
@@ -61,7 +61,7 @@ describe("checkImportCompletion", () => {
       [{ total: 0, completed: 0, failed: 0, pending: 0 }],
     ]);
 
-    const result = await checkImportCompletion(mockPg, "job-123");
+    const result = await checkProfileImportCompletion(mockPg, "job-123");
 
     expect(result).toEqual({
       isComplete: true,

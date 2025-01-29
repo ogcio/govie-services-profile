@@ -1,9 +1,9 @@
 import type { PoolClient } from "pg";
 import { ImportStatus } from "~/const/index.js";
 
-export const checkImportCompletion = async (
+export const checkProfileImportCompletion = async (
   client: PoolClient,
-  jobId: string,
+  profileImportId: string,
 ): Promise<{ isComplete: boolean; finalStatus: ImportStatus }> => {
   // Get total count and count of profiles in final states
   const result = await client.query<{
@@ -20,10 +20,10 @@ export const checkImportCompletion = async (
       "    COUNT(*) FILTER (WHERE d.status = 'pending')::INTEGER as pending " +
       "  FROM profile_import_details d " +
       "  JOIN profile_imports i ON i.id = d.profile_import_id " +
-      "  WHERE i.job_id = $1" +
+      "  WHERE i.id = $1" +
       ") " +
       "SELECT * FROM counts",
-    [jobId],
+    [profileImportId],
   );
 
   const { total, completed, failed, pending } = result.rows[0];

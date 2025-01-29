@@ -14,7 +14,7 @@ export type WebhookUser = {
   primaryUserId: string;
   createdAt: string;
   organizationId?: string | null;
-  jobId?: string | null;
+  profileImportId?: string | null;
 };
 
 export const webhookBodyToUser = (bodyData: {
@@ -28,7 +28,10 @@ export const webhookBodyToUser = (bodyData: {
     }
   >;
   id: string;
-  customData?: { organizationId?: string | null; jobId?: string | null };
+  customData?: {
+    organizationId?: string | null;
+    profileImportId?: string | null;
+  };
   primaryEmail: string;
 }): WebhookUser => {
   // From MyGovid
@@ -61,6 +64,6 @@ export const webhookBodyToUser = (bodyData: {
     primaryUserId: bodyData.id,
     createdAt: getCurrentUTCDate(),
     organizationId: bodyData.customData?.organizationId,
-    jobId: bodyData.customData?.jobId,
+    profileImportId: bodyData.customData?.profileImportId,
   };
 };

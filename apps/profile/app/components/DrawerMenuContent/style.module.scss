@@ -12,4 +12,16 @@
         width: calc(100% - var(--gieds-space-8));
         display: block;
     }
+
+    h2 {
+        margin: 0;
+    }
+
+    div {
+        width: 100%;
+    }
+}
+
+.menu-link-bold {
+    font-weight: var(--gieds-font-weight-700);
 }

@@ -31,7 +31,7 @@ describe("webhookBodyToUser", () => {
       },
       customData: {
         organizationId: "org-123",
-        jobId: "job-123",
+        profileImportId: "job-123",
       },
     };
 
@@ -83,7 +83,7 @@ describe("webhookBodyToUser", () => {
       identities: {},
       customData: {
         organizationId: "org-123",
-        jobId: "job-123",
+        profileImportId: "job-123",
       },
     };
 
@@ -95,7 +95,7 @@ describe("webhookBodyToUser", () => {
       primaryUserId: "user-123",
       createdAt: mockDate,
       organizationId: "org-123",
-      jobId: "job-123",
+      profileImportId: "job-123",
     });
   });
 
@@ -109,6 +109,6 @@ describe("webhookBodyToUser", () => {
     const result = webhookBodyToUser(webhookBody);
 
     expect(result.organizationId).toBeUndefined();
-    expect(result.jobId).toBeUndefined();
+    expect(result.profileImportId).toBeUndefined();
   });
 });

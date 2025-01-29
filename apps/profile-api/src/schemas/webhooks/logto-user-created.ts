@@ -24,7 +24,7 @@ export const LogtoUserCreatedSchema = {
       name: Type.Optional(NullableString),
       avatar: Type.Optional(NullableString),
       customData: Type.Object({
-        jobId: Type.Optional(NullableString),
+        profileImportId: Type.Optional(NullableString),
         organizationId: Type.Optional(NullableString),
       }),
       identities: Type.Record(

@@ -22,7 +22,7 @@ export const createLogtoUsers = async (
   profiles: Pick<KnownProfileDataDetails, "email" | "firstName" | "lastName">[],
   config: EnvConfig,
   organizationId: string,
-  jobId: string,
+  profileImportId: string,
 ): Promise<LogtoUserResult[]> => {
   const client = new LogtoClient(
     config.LOGTO_MANAGEMENT_API_ENDPOINT,
@@ -48,7 +48,7 @@ export const createLogtoUsers = async (
           name: [profile.firstName, profile.lastName].join(" "),
           customData: {
             organizationId,
-            jobId,
+            profileImportId,
           },
         });
         return { success: true, result };

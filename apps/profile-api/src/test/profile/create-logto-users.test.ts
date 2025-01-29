@@ -54,7 +54,7 @@ describe("createLogtoUsers", () => {
       primaryEmail: mockProfiles[0].email,
       username: "john_doe",
       name: "John Doe",
-      customData: { organizationId: "org-123", jobId: "job-123" },
+      customData: { organizationId: "org-123", profileImportId: "job-123" },
     });
   });
 

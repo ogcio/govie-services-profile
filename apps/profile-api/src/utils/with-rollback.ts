@@ -4,7 +4,7 @@ const isInTransaction = async (client: PoolClient): Promise<boolean> => {
   const result = await client.query(
     "SELECT pg_current_xact_id_if_assigned() IS NOT NULL as in_transaction",
   );
-  return result.rows[0].in_transaction;
+  return result.rows[0]?.in_transaction ?? false;
 };
 
 export const withRollback = async <T>(

@@ -19,15 +19,15 @@ import {
   UpdateProfileSchema,
 } from "~/schemas/profiles/index.js";
 import type { FastifyRequestTypebox } from "~/schemas/shared.js";
-import { getProfilesFromCsv } from "~/services/profiles/get-profiles-from-csv.js";
 import {
   findProfile,
   getProfile,
   getProfileImportDetails,
   getProfileTemplate,
-  importProfiles,
+  getProfilesFromCsv,
   listProfileImports,
   listProfiles,
+  scheduleImportProfiles,
   selectProfiles,
   updateProfile,
 } from "~/services/profiles/index.js";
@@ -83,7 +83,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         MimeTypes.Json,
       );
 
-      let profiles: KnownProfileDataDetails[];
+      let profiles: KnownProfileDataDetails[] = [];
       let savedFile: SavedFileInfo | undefined;
 
       if (isJson) {
@@ -93,13 +93,14 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify: FastifyInstance) => {
         profiles = await getProfilesFromCsv(savedFile.filepath);
       }
 
-      return importProfiles({
-        profiles,
-        organizationId: withOrganizationId(request),
-        logger: request.log,
-        config,
+      return scheduleImportProfiles({
         pool,
+        logger: request.log,
+        organizationId: withOrganizationId(request),
+        config,
+        profiles,
         source: isJson ? "json" : "csv",
+        immediate: isJson,
         fileMetadata: savedFile?.metadata,
       });
     },

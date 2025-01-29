@@ -8,13 +8,12 @@ describe("createProfileImportDetails", () => {
 
   it("should insert profile details and return IDs", async () => {
     const mockPg = buildMockPg([
-      [{ id: "import-123" }], // Response for findProfileImportByJobId
       [{ id: "detail-1" }, { id: "detail-2" }], // Response for createProfileImportDetails
     ]);
 
     const result = await createProfileImportDetails(
       mockPg,
-      "job-123",
+      "import-123",
       sampleProfiles,
     );
 
@@ -23,10 +22,10 @@ describe("createProfileImportDetails", () => {
 
     // Verify queries
     const queries = mockPg.getExecutedQueries();
-    expect(queries).toHaveLength(2);
+    expect(queries).toHaveLength(1);
 
     // Verify import details query
-    const detailsQuery = queries[1];
+    const detailsQuery = queries[0];
     expect(detailsQuery.sql).toContain("INSERT INTO profile_import_details");
     expect(detailsQuery.sql).toContain("VALUES ($1, $2),($1, $3)");
     expect(detailsQuery.sql).toContain("RETURNING id");
@@ -41,22 +40,16 @@ describe("createProfileImportDetails", () => {
 
   it("should handle empty profiles array", async () => {
     const mockPg = buildMockPg([
-      [{ id: "import-123" }], // Response for findProfileImportByJobId
       [], // Empty response for empty insert
     ]);
 
-    const result = await createProfileImportDetails(mockPg, "job-123", []);
+    const result = await createProfileImportDetails(mockPg, "import-123", []);
 
     expect(result).toEqual([]);
-  });
 
-  it("should throw error if profile import not found", async () => {
-    const mockPg = buildMockPg([
-      [], // No profile import found
-    ]);
-
-    await expect(
-      createProfileImportDetails(mockPg, "job-123", sampleProfiles),
-    ).rejects.toThrow();
+    // Verify no query was executed for empty profiles
+    const queries = mockPg.getExecutedQueries();
+    expect(queries).toHaveLength(1);
+    expect(queries[0].values).toEqual(["import-123"]);
   });
 });
