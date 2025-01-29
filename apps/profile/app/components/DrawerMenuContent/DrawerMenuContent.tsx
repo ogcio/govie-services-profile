@@ -1,20 +1,19 @@
-import { Heading, Link, Stack, SectionBreak } from "@govie-ds/react";
+import { Heading, Link, Stack } from "@govie-ds/react";
 import styles from "./style.module.scss"
+import MenuLink from "./MenuLink";
+
 
 export default function DrawerMenuContent(props: React.PropsWithChildren<{ name: string, selfHref: string, selfLabel: string; signoutLabel: string }>) {
     return (
         <div className={styles["drawer-menu"]}>
-            <Stack direction="column" gap={12}>
-                <Stack direction="column" gap={3}>
+            <Stack direction="column" gap={8}>
+                <div>
                     <Heading as="h2" size="md">{props.name}</Heading>
-                    <Stack direction="column" gap={3} hasDivider>
-                        <Link noColor noUnderline href={props.selfHref} size="md">{props.selfLabel}</Link>
-                        <div />
-                    </Stack>
-                </Stack>
-                <Stack direction="column" gap={3} hasDivider>
+                    <MenuLink bold href={props.selfHref}>{props.selfLabel}</MenuLink>
+                </div>
+                <div>
                     {props.children}
-                </Stack>
+                </div>
             </Stack>
 
             <Link href="/signout" asButton={{

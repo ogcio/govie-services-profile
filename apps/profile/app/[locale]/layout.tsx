@@ -11,6 +11,7 @@ import { LANG_EN, LANG_GA } from "../utils/locale";
 import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import DrawerMenuContent from "../components/DrawerMenuContent/DrawerMenuContent";
+import MenuLink from "../components/DrawerMenuContent/MenuLink";
 
 export function generateMetadata(): Metadata {
   const m: Metadata = {
@@ -73,9 +74,9 @@ export default async function RootLayout({
             showItemMode: "always",
             details: {
               component: <DrawerMenuContent name={userName} selfHref="/" selfLabel={tHome("viewMyProfile")} signoutLabel={tHome("logout")}>
-                <Link noUnderline noColor size="md" href={process.env.NEXT_PUBLIC_DASHBOARD_SERVICE_ENTRY_POINT}>{tHome("dashboard")}</Link>
-                <Link noUnderline noColor size="md" href={process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT}>{tHome("messaging")}</Link>
-                <Link noUnderline noColor size="md" href={languageToggleUrl.href}>{oppositeLanguageLabel}</Link>
+                <MenuLink bold href={process.env.NEXT_PUBLIC_DASHBOARD_SERVICE_ENTRY_POINT || "/"}>{tHome("dashboard")}</MenuLink>
+                <MenuLink bold href={process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT || "/"}>{tHome("messaging")}</MenuLink>
+                <MenuLink href={languageToggleUrl.href}>{oppositeLanguageLabel}</MenuLink>
               </DrawerMenuContent>,
               drawerPosition: "right",
               slotAppearance: "drawer"
