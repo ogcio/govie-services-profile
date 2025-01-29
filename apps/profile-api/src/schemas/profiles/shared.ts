@@ -11,8 +11,6 @@ import {
   type ProfileWithDetailsFromDb,
 } from "./index.js";
 
-export const PROFILES_TAG = "Profiles";
-
 export function parseProfilesDetails(
   inputItems: ProfileWithDetailsFromDb[],
 ): ProfileWithDetails[] {

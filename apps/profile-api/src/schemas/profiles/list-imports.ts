@@ -6,7 +6,6 @@ import { getGenericResponseSchema } from "~/utils/index.js";
 export const ProfileImportListSchema = Type.Array(
   Type.Object({
     id: Type.String({ format: "uuid" }),
-    jobId: Type.String(),
     organisationId: Type.Optional(Type.String()),
     status: Type.String(),
     source: Type.Union([Type.Literal("csv"), Type.Literal("json")]),

@@ -1,8 +1,8 @@
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "~/types/index.js";
 import { getGenericResponseSchema } from "~/utils/index.js";
-import { ProfileWithDetailsSchema } from "./index.js";
-import { PROFILES_TAG } from "./shared.js";
+import { PROFILES_TAG } from "./constants.js";
+import { ProfileWithDetailsSchema } from "./model.js";
 
 export const GetProfileSchema = {
   tags: [PROFILES_TAG],

@@ -2,8 +2,8 @@ import { Type } from "@sinclair/typebox";
 import { PaginationParamsSchema } from "~/schemas/pagination.js";
 import { HttpError } from "~/types/http-error.js";
 import { getGenericResponseSchema } from "~/utils/index.js";
+import { PROFILES_TAG } from "./constants.js";
 import { ProfileListSchema } from "./index.js";
-import { PROFILES_TAG } from "./shared.js";
 
 export const ProfilesIndexSchema = {
   tags: [PROFILES_TAG],

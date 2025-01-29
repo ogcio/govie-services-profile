@@ -14,9 +14,9 @@ const isValidProfileData = (data: unknown): data is KnownProfileDataDetails => {
 
 export const getProfileImportDetails = async (
   client: PoolClient,
-  importId: string,
+  id: string,
 ): Promise<KnownProfileDataDetails[]> => {
-  if (!importId) {
+  if (!id) {
     throw httpErrors.badRequest("Profile import ID is required");
   }
 
@@ -26,13 +26,11 @@ export const getProfileImportDetails = async (
     WHERE profile_import_id = $1 
     AND data IS NOT NULL
     ORDER BY created_at DESC;`,
-    [importId],
+    [id],
   );
 
   if (result.rows.length === 0) {
-    throw httpErrors.notFound(
-      `No import details found for import ID: ${importId}`,
-    );
+    throw httpErrors.notFound(`No import details found for import ID: ${id}`);
   }
 
   return result.rows.map((row) => {
